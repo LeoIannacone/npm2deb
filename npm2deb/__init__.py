@@ -1,6 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python 
 
-from optparse import OptionParser
 from json import load as parseJSON
 from commands import getstatusoutput
 from datetime import date
@@ -56,7 +55,8 @@ class Npm2Deb():
           os.remove(f)
 
   def create_watch(self):
-    file_content = '# Please take a look to https://wiki.debian.org/debian/watch/\n'
+    file_content = '# FIX_ME Please take a look to https://wiki.debian.org/debian/watch/\n'
+    file_content += "Homepage is %s\n" % self._get_Homepage()
     homepage = self._get_Homepage()
     if homepage.find('github') >= 0:
       args = {}
@@ -167,8 +167,9 @@ class Npm2Deb():
     # move dir from node_modules
     os.rename('node_modules/%s' % self.name, self.name)
     os.rmdir('node_modules')
-    # remove debendences download by npm
-    rmtree("%s/node_modules" % self.name)
+    # remove debendences download by npm if exists
+    if os.path.isdir("%s/node_modules" % self.name):
+      rmtree("%s/node_modules" % self.name)
     if self.name is not self.debian_name:
       debug(2, "renaming %s to %s" % (self.name, self.debian_name))
       os.rename(self.name, self.debian_name)
@@ -200,41 +201,3 @@ class Npm2Deb():
         depends.append(dep_debian)
 
     return '\n , '.join(depends)
-
-def main():
-  usage = 'usage %prog [options] package_name'
-  parser = OptionParser(usage)
-  parser.add_option('-d', '--debug', help='set debug level')
-  opts, args = parser.parse_args()
-
-  if len(args) is not 1:
-    parser.error('Please specify a package_name.')
-    exit(1)
-
-  if opts.debug:
-    try:
-      utils.DEBUG_LEVEL = int(opts.debug)
-    except ValueError:
-      print("Error: debug level must be an integer.")
-      exit(1)
-
-  package_name = args[0]
-  savedPath = os.getcwd()
-  utils.create_dir(package_name)
-  utils.change_dir(package_name)
-
-  npm2deb = Npm2Deb(package_name)
-  npm2deb.start()
-
-  utils.change_dir(savedPath)
-
-  print("""
-This is not a crystal ball, so please take a look at auto-generated files.
-This command could help:
-$ grep -r FIX_ME %s/%s/debian/*
-You can use uscan after fixing watch file and start to work on packaging.
-""" % (package_name, npm2deb.debian_name))
-
-
-if __name__ == '__main__':
-    main()
