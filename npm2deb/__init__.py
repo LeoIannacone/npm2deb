@@ -24,9 +24,9 @@ class Npm2Deb ():
             print info[1]
             exit(1)
         if self.name.find('node-') is not 0:
-            self.debian_name = 'node-%s' % self.name
+            self.debian_name = 'node-%s' % self._debianize_name(self.name)
         else:
-            self.debian_name = self.name
+            self.debian_name = self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
         if os.environ.has_key('DEBEMAIL'):
             self.debian_author = os.environ['DEBEMAIL']
@@ -218,3 +218,6 @@ class Npm2Deb ():
                 depends.append(dep_debian)
 
         return '\n , '.join(depends)
+
+    def _debianize_name(self, name):
+        return name.replace('_', '-')
