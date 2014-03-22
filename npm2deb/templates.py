@@ -44,7 +44,7 @@ License: %(upstream_license_name)s
 License: %(upstream_license)s
 
 Files: debian/*
-Copyright: %(debian_date) %(debian_author)s
+Copyright: %(debian_date)s %(debian_author)s
 License: %(debian_license_name)s
 
 License: %(debian_license)s
@@ -201,6 +201,6 @@ LICENSE_MIT = """MIT
 """
 
 WATCH_GITHUB = """version=3
-opts=filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \
+opts=filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(homepage)s/tags .*/archive/v?([\d\.]+).tar.gz
 """

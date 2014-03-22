@@ -106,8 +106,8 @@ class Npm2Deb ():
         args['Homepage'] = self._get_Homepage()
         args['Vcs-Git'] = 'git://anonscm.debian.org/collab-maint/%s.git' \
            % self.debian_name
-        args['Vcs-Browser'] = 'http://anonscm.debian.org/\
-          gitweb/?p=collab-maint/%s.git' % self.debian_name
+        args['Vcs-Browser'] = 'http://anonscm.debian.org/' + \
+          'gitweb/?p=collab-maint/%s.git' % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
         args['Description'] = 'FIX_ME'
