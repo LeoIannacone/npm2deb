@@ -36,9 +36,8 @@ def main():
     debian_path = "%s/%s/debian" % (package_name, npm2deb.debian_name)
 
     print("""
-This is not a crystal ball, so please take a look at auto-generated files.
-You may want fix first these issues:
-$ grep -r FIX_ME %s/*""" % debian_path)
+This is not a crystal ball, so please take a look at auto-generated files.\n
+You may want fix first these issues:\n""")
     call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
     print ("\nYou can use uscan after fixing watch file " + 
       "and start to work on packaging")
