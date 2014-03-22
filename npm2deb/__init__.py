@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 
 from json import load as parseJSON
 from commands import getstatusoutput
@@ -216,7 +216,12 @@ class Npm2Deb ():
                 version = dependencies[dep].replace('~', '')
                 if version[0].isdigit():
                     version = '>= %s' % version
-                dep_debian = "%s (%s)" % (name, version)
+                elif version == '*' or version == 'latest':
+                    version = None
+                if version:
+                    dep_debian = "%s (%s)" % (name, version)
+                else:
+                    dep_debian = name
                 depends.append(dep_debian)
 
         return '\n , '.join(depends)
