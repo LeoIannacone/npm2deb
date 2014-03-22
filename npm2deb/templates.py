@@ -39,7 +39,7 @@ RULES = """#!/usr/bin/make -f
 #export DH_VERBOSE=1
 
 %:
-  dh $@
+	dh $@
 """
 
 COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
