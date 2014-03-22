@@ -3,6 +3,7 @@
 from json import load as parseJSON
 from commands import getstatusoutput
 from datetime import datetime
+from dateutil import tz
 from shutil import rmtree
 from npm2deb import utils
 from npm2deb import templates
@@ -31,6 +32,7 @@ class Npm2Deb ():
         if os.environ.has_key('DEBEMAIL'):
             self.debian_author = os.environ['DEBEMAIL']
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
+        self.date = datetime.now(tz.tzlocal())
     
     def start(self):
         self.download()
@@ -124,7 +126,7 @@ class Npm2Deb ():
         args = {}
         args['upstream_name'] = self.name
         args['source'] = self._get_Homepage()
-        args['upstream_date'] = datetime.now().year
+        args['upstream_date'] = self.date.year
         args['upstream_author'] = 'FIX_ME'
         if self.json.has_key('author'):
             author = self.json['author']
@@ -142,7 +144,7 @@ class Npm2Deb ():
             license_name = self.json['license']
             args['upstream_license_name'] = license_name
             args['upstream_license'] = utils.get_license(license_name)
-        args['debian_date'] = datetime.now().year
+        args['debian_date'] = self.date.year
         args['debian_author'] = self.debian_author
         args['debian_license_name'] = DEBIAN_LICENSE_NAME
         args['debian_license'] = utils.get_license(DEBIAN_LICENSE_NAME)
@@ -156,7 +158,7 @@ class Npm2Deb ():
         args['version'] = 'FIX_ME'
         if self.json.has_key('version'):
             args['version'] = self.json['version']
-        args['date'] = datetime.now().strftime('%a, %d %b %Y %X ') + '+0000' # FIX_ME: %z does not work
+        args['date'] = self.date.strftime('%a, %d %b %Y %X %z')
         file_content = templates.CHANGELOG % args
         utils.create_debian_file("changelog", file_content)
 
