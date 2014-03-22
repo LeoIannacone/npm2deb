@@ -1,0 +1,39 @@
+#!/usr/bin/python3
+
+from optparse import OptionParser
+from json import loads as parseJSON
+from subprocess import getstatusoutput
+
+class Licence():
+
+class Npm():
+  self.json = None
+  self.name = None
+
+  def __init__(self, package_name):
+    self.name = package_name
+    info = commands.getstatusoutput('npm info %s --json', package_name)
+    # if not status 0, exit
+    if info[0] != 0:
+      print info[1]
+      exit(1)
+    self.json = parseJSON(info[1])
+  
+
+
+
+
+def main():
+  usage = 'usage %prog [options] package_name'
+  parser = OptionParser(usage)
+  opts, args = parser.parse_args()
+  if len(args) is not 1:
+    parser.error('Please specify a package_name.')
+    exit(1)
+
+  package_name = args[0]
+  npm = Npm(package_name)
+
+
+if __name__ == '__main__':
+    main()
