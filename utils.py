@@ -54,8 +54,8 @@ def create_debian_file(filename, content):
   create_file("debian/%s" % filename, content)
 
 def create_file(filename, content):
-  debug(2, "creating file %s", filename)
-  with open(filename) as fd:
+  debug(2, "creating file %s" % filename)
+  with open(filename, 'w') as fd:
     fd.write(content)
 
 def create_dir(dir):

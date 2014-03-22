@@ -4,6 +4,7 @@ from optparse import OptionParser
 from json import load as parseJSON
 from commands import getstatusoutput
 from datetime import date
+from shutil import rmtree
 import utils
 import templates
 import os
@@ -18,7 +19,7 @@ class Npm2Deb():
   def __init__ (self, package_name):
     self.json = None
     self.name = package_name
-    info = commands.getstatusoutput('npm info %s --json', package_name)
+    info = getstatusoutput('npm info %s --json' % package_name)
     # if not status 0, exit
     if info[0] != 0:
       print info[1]
@@ -34,7 +35,7 @@ class Npm2Deb():
   
   def start(self):
     self.download()
-    self.change_dir(self.debian_name)
+    utils.change_dir(self.debian_name)
     self.read_package_info()
     self.create_base_debian()
     self.create_copyright()
@@ -45,10 +46,14 @@ class Npm2Deb():
     self.create_watch()
     self.clean()
 
-  def clean():
-    debug(1, "cleaning directory")
-    for f in os.listdir():
-      os.remove(f)
+  def clean(self):
+    utils.debug(1, "cleaning directory")
+    for f in os.listdir('.'):
+      if f != 'debian':
+        if os.path.isdir(f):
+          rmtree(f)
+        else:
+          os.remove(f)
 
   def create_watch(self):
     file_content = '# Please take a look to https://wiki.debian.org/debian/watch/\n'
@@ -61,15 +66,15 @@ class Npm2Deb():
     utils.create_debian_file('watch', file_content)
 
   def create_links(self):
-    if self.json.has_key('main') and json['main'] is not 'index.js':
+    if self.json.has_key('main') and self.json['main'] is not 'index.js':
       dest = self.debian_dest
-      content = "%s/%s %s/index.js\n" % (dest, json['main'], dest)
+      content = "%s/%s %s/index.js\n" % (dest, self.json['main'], dest)
       utils.create_debian_file('links', content)
 
   def create_install(self):
     files = []
     if self.json.has_key('main'):
-      files.append(json['main'])
+      files.append(self.json['main'])
     else:
       files.append('*.js')
     if os.path.isdir('lib'):
@@ -109,7 +114,7 @@ class Npm2Deb():
     if self.json.has_key('readme'):
       args['Description_Long'] = self.json['readme']
     template = utils.get_template('control')
-    self.create_debian_file('control', template % args)
+    utils.create_debian_file('control', template % args)
 
   def create_copyright(self):
     args = {}
@@ -132,7 +137,7 @@ class Npm2Deb():
     utils.create_debian_file('copyright', template % args)
 
   def create_base_debian(self):
-    debug(1, "creating debian files")
+    utils.debug(1, "creating debian files")
     utils.create_dir("debian")
     utils.create_dir("debian/source")
     utils.create_debian_file("source/format", "3.0 (quilt)\n")
@@ -140,17 +145,20 @@ class Npm2Deb():
     utils.create_debian_file("rules", utils.get_template('rules'))
 
   def read_package_info(self):
-    debug(1, "reading package info from package.json")
-    with open('packages.json') as fd:
+    utils.debug(1, "reading package info from package.json")
+    with open('package.json') as fd:
       self.json = parseJSON(fd)
 
   def download(self):
-    debug(1, "downloading %s using npm" % self.name)
-    info = commands.getstatusoutput('npm install %s', self.name)
+    utils.debug(1, "downloading %s using npm" % self.name)
+    info = getstatusoutput('npm install %s' % self.name)
     if info[0] is not 0:
       print("Error downloading package %s", self.name)
       print(info[1])
       exit(1)
+    # move dir from node_modules
+    os.rename('node_modules/%s' % self.name, self.name)
+    os.rmdir('node_modules')
     if self.name is not self.debian_name:
       os.rename(self.name, self.debian_name)
 
@@ -183,7 +191,7 @@ class Npm2Deb():
 def main():
   usage = 'usage %prog [options] package_name'
   parser = OptionParser(usage)
-  parser.add_option('-d', '--debug', help='set debug level')
+  parser.add_option('-d', '--debug', help='set utils.debug level')
   opts, args = parser.parse_args()
 
   if len(args) is not 1:
