@@ -2,7 +2,7 @@
 
 from json import load as parseJSON
 from commands import getstatusoutput
-from datetime import date
+from datetime import datetime
 from shutil import rmtree
 from npm2deb import utils
 from npm2deb import templates
@@ -37,6 +37,7 @@ class Npm2Deb ():
         utils.change_dir(self.debian_name)
         self.read_package_info()
         self.create_base_debian()
+        self.create_changelog()
         self.create_copyright()
         self.create_control()
         self.create_docs()
@@ -122,7 +123,7 @@ class Npm2Deb ():
     def create_copyright(self):
         args = {}
         args['upstream_name'] = self.name
-        args['upstream_date'] = date.today().year
+        args['upstream_date'] = datetime.now().year
         args['upstream_author'] = 'FIX_ME'
         if self.json.has_key('author'):
             author = self.json['author']
@@ -140,12 +141,23 @@ class Npm2Deb ():
             license_name = self.json['license']
             args['upstream_license_name'] = license_name
             args['upstream_license'] = utils.get_license(license_name)
-        args['debian_date'] = date.today().year
+        args['debian_date'] = datetime.now().year
         args['debian_author'] = self.debian_author
         args['debian_license_name'] = DEBIAN_LICENSE_NAME
         args['debian_license'] = utils.get_license(DEBIAN_LICENSE_NAME)
         template = utils.get_template('copyright')
         utils.create_debian_file('copyright', template % args)
+
+    def create_changelog(self):
+        args = {}
+        args['debian_author'] = self.debian_author
+        args['debian_name'] = self.debian_name
+        args['version'] = 'FIX_ME'
+        if self.json.has_key('version'):
+            args['version'] = self.json['version']
+        args['date'] = datetime.now().strftime('%a, %d %b %Y %X %z')
+        file_content = templates.CHANGELOG % args
+        utils.create_debian_file("changelog", file_content)
 
     def create_base_debian(self):
         utils.debug(1, "creating debian files")
