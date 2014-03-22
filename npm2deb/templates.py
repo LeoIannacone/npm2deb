@@ -43,6 +43,7 @@ RULES = """#!/usr/bin/make -f
 
 COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: %(upstream_name)s
+Source: %(source)s
 
 Files: *
 Copyright: %(upstream_date)s %(upstream_author)s

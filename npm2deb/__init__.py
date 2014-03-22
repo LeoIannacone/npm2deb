@@ -123,6 +123,7 @@ class Npm2Deb ():
     def create_copyright(self):
         args = {}
         args['upstream_name'] = self.name
+        args['source'] = self._get_Homepage()
         args['upstream_date'] = datetime.now().year
         args['upstream_author'] = 'FIX_ME'
         if self.json.has_key('author'):
