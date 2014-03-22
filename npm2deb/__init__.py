@@ -184,6 +184,7 @@ class Npm2Deb ():
             if repository.has_key('type') and repository.has_key('url'):
                 if repository['type'] is 'git':
                     url = repository['url']
+                    url = re.sub(r'^git@(.*):', r'http://\1/', url)
                     url = re.sub(r'^git://', 'http://', url)
                     url = re.sub(r'\.git$', '', url)
                     result = url
