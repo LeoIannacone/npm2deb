@@ -39,8 +39,8 @@ def main():
 This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
     call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
-    print ("\nYou can use uscan after fixing watch file " + 
-      "and start to work on packaging")
+    print ("\nUse uscan to get orig source files. Fix debian/watch and then run:\n\n" + 
+      "$ uscan --download-current-version\n")
 
 
 if __name__ == '__main__':
