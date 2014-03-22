@@ -68,7 +68,7 @@ class Npm2Deb ():
         utils.create_debian_file('watch', file_content)
 
     def create_links(self):
-        if self.json.has_key('main') and self.json['main'] is not 'index.js':
+        if not os.path.isfile('index.js') and self.json.has_key('main'):
             dest = self.debian_dest
             content = "%s/%s %s/index.js\n" % (dest, self.json['main'], dest)
             utils.create_debian_file('links', content)
@@ -194,7 +194,7 @@ class Npm2Deb ():
         if self.json.has_key('repository'):
             repository = self.json['repository']
             if repository.has_key('type') and repository.has_key('url'):
-                if repository['type'] is 'git':
+                if repository['type'] == 'git':
                     url = repository['url']
                     url = re.sub(r'^git@(.*):', r'http://\1/', url)
                     url = re.sub(r'^git://', 'http://', url)
