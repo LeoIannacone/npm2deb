@@ -115,8 +115,8 @@ class Npm2Deb ():
         if self.json.has_key('description'):
             args['Description'] = self.json['description']
         args['Description_Long'] = 'FIX_ME long desciption'
-        if self.json.has_key('readme'):
-            args['Description_Long'] = self.json['readme']
+        # if self.json.has_key('readme'):
+        #     args['Description_Long'] = self.json['readme']
         template = utils.get_template('control')
         utils.create_debian_file('control', template % args)
 
@@ -135,8 +135,8 @@ class Npm2Deb ():
                 if author.has_key('email'):
                     email = author['email']
                 args['upstream_author'] = "%s <%s>" % (name, email)
-        args['upstream_license_name'] = 'FIX_ME please specify a license name'
-        args['upstream_license'] = 'FIX_ME please specify a license description'
+        args['upstream_license_name'] = 'FIX_ME specify upstream license name'
+        args['upstream_license'] = 'FIX_ME specify upstream license description'
         if self.json.has_key('license'):
             license_name = self.json['license']
             args['upstream_license_name'] = license_name
