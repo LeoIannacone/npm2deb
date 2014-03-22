@@ -3,6 +3,7 @@
 from optparse import OptionParser
 from npm2deb import Npm2Deb
 from npm2deb import utils
+from subprocess import call
 import os
 
 def main():
@@ -32,12 +33,15 @@ def main():
 
     utils.change_dir(saved_path)
 
+    debian_path = "%s/%s/debian" % (package_name, npm2deb.debian_name)
+
     print("""
 This is not a crystal ball, so please take a look at auto-generated files.
-This command could help:
-$ grep -r FIX_ME %s/%s/debian/*
-You can use uscan after fixing watch file and start to work on packaging.
-""" % (package_name, npm2deb.debian_name))
+You may want fix first these issues:
+$ grep -r FIX_ME %s/*""" % debian_path)
+    call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+    print ("\nYou can use uscan after fixing watch file " + 
+      "and start to work on packaging")
 
 
 if __name__ == '__main__':
