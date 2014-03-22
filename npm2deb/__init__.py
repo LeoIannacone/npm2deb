@@ -156,7 +156,7 @@ class Npm2Deb ():
         args['version'] = 'FIX_ME'
         if self.json.has_key('version'):
             args['version'] = self.json['version']
-        args['date'] = datetime.now().strftime('%a, %d %b %Y %X %z')
+        args['date'] = datetime.now().strftime('%a, %d %b %Y %X ') + '+0000' # FIX_ME: %z does not work
         file_content = templates.CHANGELOG % args
         utils.create_debian_file("changelog", file_content)
 

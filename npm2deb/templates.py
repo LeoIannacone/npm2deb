@@ -5,6 +5,7 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) unstable; urgency=low
   * Initial release (Closes: #nnnn)
 
  -- %(debian_author)s  %(date)s
+
 """
 
 CONTROL = """Source: %(Source)s
