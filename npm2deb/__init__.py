@@ -210,7 +210,7 @@ class Npm2Deb ():
         if self.json.has_key('dependencies'):
             dependencies = self.json['dependencies']
             for dep in dependencies:
-                name = 'node-%s' % dep
+                name = 'node-%s' % self._debianize_name(dep)
                 version = dependencies[dep].replace('~', '')
                 if version[0].isdigit():
                     version = '>= %s' % version
