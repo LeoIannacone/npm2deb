@@ -1,0 +1,45 @@
+.TH npm2deb 1
+.SH NAME
+.B npm2deb
+- npm package.json to debian files
+
+.SH SYNOPSIS
+.B npm2deb\fR [\fB-d\fR \fIdebhelper\fR] [\fB-l\fR \fIlicense\fR] [\fB-n\fR] [\fB-s\fR \fIstandards-version\fR] [\fB-D\fR \fIdebug\fR] \fInode_module\fR
+.br
+.B npm2deb \fB-p\fR \fIlicense\fR
+
+.SH DESCRIPTION
+A script to make faster and easier packaging \fInodejs\fR modules already provided by \fInpm\fR.
+
+Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR and \fBDEBFULLNAME\fR) environment variables correctly.
+
+.SH OPTIONS
+.TP
+.B -d --debhelper\fR \fIversion\fR
+set debhelper \fIversion\fR in debian/control file.
+.TP
+.B -l --license\fR \fIname\fR
+set debian files license \fIname\fR in debian/copyright.
+.TP
+.B -n --noclean\fR
+do not remove files downloaded via npm.
+.TP
+.B -p --printlicense\fR \fIname\fR
+prints license \fIname\fR and exit. If license does not valid, prints
+all licenses available and exit. Licenses names are ignore case.
+.TP
+.B -s --standards\fR \fIstandards-version\fR
+set \fIStandards-Version\fR in debian/control.
+.TP
+.B -D --debug\fR \fIlevel\fR
+set debug \fIlevel\fR.
+
+.SH AUTHOR
+Leo Iannacone <l3on@ubuntu.com>
+
+.SH COPYRIGHT
+Copyright   ©   2014   Leo Iannacone
+    http://leoiannacone.com
+
+License   GPLv3+:   GNU  GPL  version  3  or  later
+   <http://gnu.org/licenses/gpl.html>.

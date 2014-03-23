@@ -16,7 +16,7 @@ Simply take a look at help option:
 ```
 $ ./npm2deb.py -h
 
-Usage: usage npm2deb.py [options] package_name
+Usage: usage npm2deb.py [options] node_module
 
 Options:
   -h, --help            show this help message and exit

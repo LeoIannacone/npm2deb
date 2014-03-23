@@ -7,7 +7,7 @@ from subprocess import call
 import os
 
 def main():
-    usage = 'usage %prog [options] package_name'
+    usage = 'usage %prog [options] node_module'
     parser = OptionParser(usage) 
 
     parser.add_option('-d', '--debhelper', default=DEBHELPER, \
@@ -36,7 +36,7 @@ def main():
             exit(1)
 
     if len(args) is not 1:
-        parser.error('Please specify a package_name.')
+        parser.error('Please specify a node_module.')
         exit(1)
 
     if opts.debug:
@@ -46,17 +46,17 @@ def main():
             print("Error: debug level must be an integer.")
             exit(1)
 
-    package_name = args[0]
+    node_module = args[0]
     saved_path = os.getcwd()
-    utils.create_dir(package_name)
-    utils.change_dir(package_name)
+    utils.create_dir(node_module)
+    utils.change_dir(node_module)
 
-    npm2deb = Npm2Deb(package_name, vars(opts))
+    npm2deb = Npm2Deb(node_module, vars(opts))
     npm2deb.start()
 
     utils.change_dir(saved_path)
 
-    debian_path = "%s/%s/debian" % (package_name, npm2deb.debian_name)
+    debian_path = "%s/%s/debian" % (node_module, npm2deb.debian_name)
 
     print("""
 This is not a crystal ball, so please take a look at auto-generated files.\n
