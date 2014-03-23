@@ -8,6 +8,7 @@ from shutil import rmtree
 from npm2deb import utils
 from npm2deb import templates
 import os
+import stat
 import re
 
 DEBHELPER = 9
@@ -180,6 +181,7 @@ class Npm2Deb ():
         utils.create_debian_file("source/format", "3.0 (quilt)\n")
         utils.create_debian_file("compat", "%s\n" % self.debian_debhelper)
         utils.create_debian_file("rules", utils.get_template('rules'))
+        os.system('chmod +x debian/rules')
 
     def read_package_info(self):
         utils.debug(1, "reading package info from package.json")
