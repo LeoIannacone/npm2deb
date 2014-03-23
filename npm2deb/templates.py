@@ -40,6 +40,11 @@ RULES = """#!/usr/bin/make -f
 
 %:
 	dh $@
+
+#override_dh_auto_build:
+
+#override_dh_auto_test:
+
 """
 
 COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
