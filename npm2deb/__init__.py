@@ -76,15 +76,16 @@ class Npm2Deb ():
                     os.remove(filename)
 
     def create_watch(self):
-        file_content = '# FIX_ME Please take a look \
-          to https://wiki.debian.org/debian/watch/\n'
-        file_content += "Homepage is %s\n" % self._get_Homepage()
         homepage = self._get_Homepage()
         if homepage.find('github') >= 0:
             args = {}
             args['homepage'] = homepage
             args['debian_name'] = self.debian_name
             file_content = templates.WATCH_GITHUB % args
+        else:
+            file_content = '# FIX_ME Please take a look \
+              at https://wiki.debian.org/debian/watch/\n'
+            file_content += "Homepage is %s\n" % homepage
         utils.create_debian_file('watch', file_content)
 
     def create_links(self):
