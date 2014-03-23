@@ -23,21 +23,23 @@ def get_license(license):
     result = None
     name = license.lower().replace('-', '')
     if name.startswith('gpl2'):
-        result = templates.LICENSE_GPL_2
+        result = templates.LICENSES['GPL-2']
     elif name.startswith('gpl3'):
-        result = templates.LICENSE_GPL_3
+        result = templates.LICENSES['GPL-3']
     elif name.startswith('lgpl2'):
-        result = templates.LICENSE_LGPL_2
+        result = templates.LICENSES['LGPL-2']
     elif name.startswith('lgpl3'):
-        result = templates.LICENSE_GPL_3        
-    elif name.startswith('mit') or name.startswith('expat'):
-        result = templates.LICENSE_MIT % name
+        result = templates.LICENSES['LGPL-3']
+    elif name.startswith('mit'):
+        result = templates.LICENSES['MIT']
+    elif name.startswith('expat'):
+        result = templates.LICENSES['Expat']
     elif name.startswith('bsd'):
-        result = templates.LICENSE_BSD
+        result = templates.LICENSES['BSD']
     elif name.startswith('artistic'):
-        result = templates.LICENSE_ARTISTIC
+        result = templates.LICENSES['Artistic']
     elif name.startswith('apache'):
-        result = templates.LICENSE_APACHE
+        result = templates.LICENSES['Apache']
     else:
         result = 'FIX_ME: please specify a license description'
     return result

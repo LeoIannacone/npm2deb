@@ -25,6 +25,8 @@ Options:
   -l LICENSE, --license=LICENSE
                         license used for debian files [default: GPL-3]
   -n, --noclean         do not remove files downloaded with npm
+  -p PRINTLICENSE, --printlicense=PRINTLICENSE
+                        print license template and exit
   -s STANDARDS, --standards=STANDARDS
                         set standards-version [default: 3.9.5]
   -D DEBUG, --debug=DEBUG

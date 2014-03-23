@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from optparse import OptionParser
-from npm2deb import Npm2Deb, utils, \
+from npm2deb import Npm2Deb, utils, templates, \
     DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE
 from subprocess import call
 import os
@@ -16,11 +16,24 @@ def main():
         help='license used for debian files [default: %default]')
     parser.add_option('-n', '--noclean', action="store_true", default=False, \
         help='do not remove files downloaded with npm')
+    parser.add_option('-p', '--printlicense', \
+        help='print license template and exit')
     parser.add_option('-s', '--standards', default=STANDARDS_VERSION, \
         help='set standards-version [default: %default]')
     parser.add_option('-D', '--debug', help='set debug level')
 
     opts, args = parser.parse_args()
+
+    if opts.printlicense:
+        template_license = utils.get_license(opts.printlicense)
+        if not template_license.startswith('FIX_ME'):
+            print(template_license)
+            exit(0)
+        else:
+            print("License \"%s\" is not valid." % opts.printlicense)
+            print("Use one of: %s" % ', '.join(templates.LICENSES.keys()).lower())
+            print("Ignore case accepted.")
+            exit(1)
 
     if len(args) is not 1:
         parser.error('Please specify a package_name.')

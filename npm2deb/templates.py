@@ -64,7 +64,9 @@ License: %(debian_license_name)s
 License: %(debian_license)s
 """
 
-LICENSE_GPL_2 = """GPL-2.0+
+LICENSES = {}
+
+LICENSES['GPL-2'] = """GPL-2.0+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
@@ -82,7 +84,7 @@ LICENSE_GPL_2 = """GPL-2.0+
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 """
 
-LICENSE_GPL_3 = """GPL-3.0+
+LICENSES['GPL-3'] = """GPL-3.0+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -100,7 +102,7 @@ LICENSE_GPL_3 = """GPL-3.0+
  Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 """
 
-LICENSE_APACHE = """Apache-2.0
+LICENSES['Apache'] = """Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -117,7 +119,7 @@ LICENSE_APACHE = """Apache-2.0
  can be found in "/usr/share/common-licenses/Apache-2.0".
 """
 
-LICENSE_ARTISTIC = """Artistic-1.0
+LICENSES['Artistic'] = """Artistic-1.0
  This program is free software; you can redistribute it and/or modify it
  under the terms of the "Artistic License" which comes with Debian.
  .
@@ -129,7 +131,7 @@ LICENSE_ARTISTIC = """Artistic-1.0
  can be found in "/usr/share/common-licenses/Artistic".
 """
 
-LICENSE_BSD = """BSD-3-Clause
+LICENSES['BSD'] = """BSD-3-Clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -158,7 +160,7 @@ LICENSE_BSD = """BSD-3-Clause
  can be found in "/usr/share/common-licenses/BSD".
 """
 
-LICENSE_LGPL_2 = """LGPL-2.0+
+LICENSES['LGPL-2'] = """LGPL-2.0+
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -176,7 +178,7 @@ LICENSE_LGPL_2 = """LGPL-2.0+
  Public License can be found in "/usr/share/common-licenses/LGPL-2".
 """
 
-LICENSE_LGPL_3 = """LGPL-3.0+
+LICENSES['LGPL-3'] = """LGPL-3.0+
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -194,7 +196,7 @@ LICENSE_LGPL_3 = """LGPL-3.0+
  Public License can be found in "/usr/share/common-licenses/LGPL-3".
 """
 
-LICENSE_MIT = """%s
+LICENSES['MIT'] = """MIT
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
@@ -212,6 +214,28 @@ LICENSE_MIT = """%s
  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
+LICENSES['Expat'] = """Expat
+ Permission is hereby granted, free of charge, to any person
+ obtaining a copy of this software and associated documentation files
+ (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, sublicense, and/or sell copies of the Software,
+ and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
 """
 
 WATCH_GITHUB = """version=3
