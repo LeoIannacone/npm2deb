@@ -3,7 +3,7 @@
 from npm2deb import templates
 import os
 
-DEBUG_LEVEL = 3
+DEBUG_LEVEL = 0
 
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
