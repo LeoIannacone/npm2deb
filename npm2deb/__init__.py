@@ -31,6 +31,9 @@ class Npm2Deb ():
         self.debian_author = 'FIX_ME'
         if os.environ.has_key('DEBEMAIL'):
             self.debian_author = os.environ['DEBEMAIL']
+        elif os.environ.has_key('DEBFULLNAME') and os.environ.has_key('EMAIL'):
+            self.debian_author = "%s <%s>" % \
+                (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
     
