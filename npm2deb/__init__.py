@@ -148,17 +148,7 @@ class Npm2Deb ():
         args['upstream_name'] = self.name
         args['source'] = self._get_Homepage()
         args['upstream_date'] = self.date.year
-        args['upstream_author'] = 'FIX_ME'
-        if self.json.has_key('author'):
-            author = self.json['author']
-            if author.__class__ is str:
-                args['upstream_author'] = author
-            elif author.__class__ is dict:
-                if author.has_key('name'):
-                    name = author['name']
-                if author.has_key('email'):
-                    email = author['email']
-                args['upstream_author'] = "%s <%s>" % (name, email)
+        args['upstream_author'] = self._get_Author()
         args['upstream_license_name'] = 'FIX_ME specify upstream license name'
         args['upstream_license'] = 'FIX_ME specify upstream license description'
         if self.json.has_key('license'):
@@ -212,6 +202,19 @@ class Npm2Deb ():
         if self.name is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             os.rename(self.name, self.debian_name)
+
+    def _get_Author(self):
+        result = 'FIX_ME'
+        if self.json.has_key('author'):
+            author = self.json['author']
+        if author.__class__ is str:
+            result = author
+        elif author.__class__ is dict:
+            if author.has_key('name') and author.has_key('email'):
+                result = "%s <%s>" % (author['name'], author['email'])
+            elif author.has_key('name'):
+                result = author['name']
+        return result
 
     def _get_Homepage(self):
         result = 'FIX_ME'
