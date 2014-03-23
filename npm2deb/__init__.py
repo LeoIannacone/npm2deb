@@ -79,15 +79,17 @@ class Npm2Deb ():
             utils.create_debian_file('links', content)
 
     def create_install(self):
-        files = []
-        if self.json.has_key('main'):
-            files.append(self.json['main'])
-        else:
-            files.append('*.js')
-        if os.path.isdir('lib'):
-            files.append('lib')
         content = ''
-        for filename in files:
+        if os.path.isdir('bin'):
+            content += 'bin/* usr/bin/\n'
+        libs = []
+        if self.json.has_key('main'):
+            libs.append(self.json['main'])
+        else:
+            libs.append('*.js')
+        if os.path.isdir('lib'):
+            libs.append('lib')
+        for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
 
