@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from json import load as parseJSON
-from commands import getstatusoutput
 from datetime import datetime
 from dateutil import tz
 from shutil import rmtree
@@ -10,6 +9,12 @@ from npm2deb import templates
 import os
 import stat
 import re
+
+# python 3 import
+try:
+    from commands import getstatusoutput
+except ImportError:
+    from subprocess import getstatusoutput
 
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
@@ -37,7 +42,7 @@ class Npm2Deb ():
         info = getstatusoutput('npm info %s --json' % package_name)
         # if not status 0, exit
         if info[0] != 0:
-            print info[1]
+            print(info[1])
             exit(1)
         if self.name.find('node-') is not 0:
             self.debian_name = 'node-%s' % self._debianize_name(self.name)
