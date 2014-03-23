@@ -9,13 +9,17 @@ import os
 def main():
     usage = 'usage %prog [options] package_name'
     parser = OptionParser(usage) 
-    parser.add_option('-D', '--debug', help='set debug level')
-    parser.add_option('-l', '--license', default=DEBIAN_LICENSE, \
-        help='license used for debian files [default: %default]')
-    parser.add_option('-s', '--standards', default=STANDARDS_VERSION, \
-        help='set standards-version [default: %default]')
+
     parser.add_option('-d', '--debhelper', default=DEBHELPER, \
         help='specify debhelper version [default: %default]')
+    parser.add_option('-l', '--license', default=DEBIAN_LICENSE, \
+        help='license used for debian files [default: %default]')
+    parser.add_option('-n', '--noclean', action="store_true", default=False, \
+        help='do not remove files downloaded with npm')
+    parser.add_option('-s', '--standards', default=STANDARDS_VERSION, \
+        help='set standards-version [default: %default]')
+    parser.add_option('-D', '--debug', help='set debug level')
+
     opts, args = parser.parse_args()
 
     if len(args) is not 1:

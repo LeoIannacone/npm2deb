@@ -22,6 +22,7 @@ class Npm2Deb ():
         self.debian_license = DEBIAN_LICENSE
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
+        self.noclean = False
         if args:
             if args.has_key('license'):
                 self.debian_license = args['license']
@@ -29,6 +30,8 @@ class Npm2Deb ():
                 self.debian_standards = args['standards']
             if args.has_key('debhelper'):
                 self.debian_debhelper = args['debhelper']
+            if args.has_key('noclean'):
+                self.noclean = args['noclean']
 
         info = getstatusoutput('npm info %s --json' % package_name)
         # if not status 0, exit
@@ -60,7 +63,8 @@ class Npm2Deb ():
         self.create_install()
         self.create_links()
         self.create_watch()
-        #self.clean()
+        if not self.noclean:
+            self.clean()
 
     def clean(self):
         utils.debug(1, "cleaning directory")
