@@ -10,15 +10,26 @@ from npm2deb import templates
 import os
 import re
 
-DEBIAN_COMPAT = 9
+DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE_NAME = 'GPL-3'
+DEBIAN_LICENSE = 'GPL-3'
 
 class Npm2Deb ():
 
-    def __init__(self, package_name):
+    def __init__(self, package_name, args):
         self.json = None
         self.name = package_name
+        self.debian_license = DEBIAN_LICENSE
+        self.debian_standards = STANDARDS_VERSION
+        self.debian_debhelper = DEBHELPER
+        if args:
+            if args.has_key('license'):
+                self.debian_license = args['license']
+            if args.has_key('standards'):
+                self.debian_standards = args['standards']
+            if args.has_key('debhelper'):
+                self.debian_debhelper = args['debhelper']
+
         info = getstatusoutput('npm info %s --json' % package_name)
         # if not status 0, exit
         if info[0] != 0:
@@ -109,8 +120,8 @@ class Npm2Deb ():
         args = {}
         args['Source'] = self.debian_name
         args['Uploaders'] = self.debian_author
-        args['debhelper'] = DEBIAN_COMPAT
-        args['Standards-Version'] = STANDARDS_VERSION
+        args['debhelper'] = self.debian_debhelper
+        args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self._get_Homepage()
         args['Vcs-Git'] = 'git://anonscm.debian.org/collab-maint/%s.git' \
            % self.debian_name
@@ -151,8 +162,8 @@ class Npm2Deb ():
             args['upstream_license'] = utils.get_license(license_name)
         args['debian_date'] = self.date.year
         args['debian_author'] = self.debian_author
-        args['debian_license_name'] = DEBIAN_LICENSE_NAME
-        args['debian_license'] = utils.get_license(DEBIAN_LICENSE_NAME)
+        args['debian_license_name'] = self.debian_license
+        args['debian_license'] = utils.get_license(self.debian_license)
         template = utils.get_template('copyright')
         utils.create_debian_file('copyright', template % args)
 
@@ -172,7 +183,7 @@ class Npm2Deb ():
         utils.create_dir("debian")
         utils.create_dir("debian/source")
         utils.create_debian_file("source/format", "3.0 (quilt)\n")
-        utils.create_debian_file("compat", "%s\n" % DEBIAN_COMPAT)
+        utils.create_debian_file("compat", "%s\n" % self.debian_debhelper)
         utils.create_debian_file("rules", utils.get_template('rules'))
 
     def read_package_info(self):

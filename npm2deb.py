@@ -1,15 +1,21 @@
 #!/usr/bin/python
 
 from optparse import OptionParser
-from npm2deb import Npm2Deb
-from npm2deb import utils
+from npm2deb import Npm2Deb, utils, \
+    DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE
 from subprocess import call
 import os
 
 def main():
     usage = 'usage %prog [options] package_name'
     parser = OptionParser(usage) 
-    parser.add_option('-d', '--debug', help='set debug level')
+    parser.add_option('-D', '--debug', help='set debug level')
+    parser.add_option('-l', '--license', default=DEBIAN_LICENSE, \
+        help='license used for debian files [default: %default]')
+    parser.add_option('-s', '--standards', default=STANDARDS_VERSION, \
+        help='set standards-version [default: %default]')
+    parser.add_option('-d', '--debhelper', default=DEBHELPER, \
+        help='specify debhelper version [default: %default]')
     opts, args = parser.parse_args()
 
     if len(args) is not 1:
@@ -28,7 +34,7 @@ def main():
     utils.create_dir(package_name)
     utils.change_dir(package_name)
 
-    npm2deb = Npm2Deb(package_name)
+    npm2deb = Npm2Deb(package_name, vars(opts))
     npm2deb.start()
 
     utils.change_dir(saved_path)
