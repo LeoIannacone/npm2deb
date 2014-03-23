@@ -30,13 +30,13 @@ class Npm2Deb ():
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         if args:
-            if args.has_key('license'):
+            if 'license' in args:
                 self.debian_license = args['license']
-            if args.has_key('standards'):
+            if 'standards' in args:
                 self.debian_standards = args['standards']
-            if args.has_key('debhelper'):
+            if 'debhelper' in args:
                 self.debian_debhelper = args['debhelper']
-            if args.has_key('noclean'):
+            if 'noclean' in args:
                 self.noclean = args['noclean']
 
         info = getstatusoutput('npm info %s --json' % package_name)
@@ -49,9 +49,9 @@ class Npm2Deb ():
         else:
             self.debian_name = self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
-        if os.environ.has_key('DEBEMAIL'):
+        if 'DEBEMAIL' in os.environ:
             self.debian_author = os.environ['DEBEMAIL']
-        elif os.environ.has_key('DEBFULLNAME') and os.environ.has_key('EMAIL'):
+        elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
                 (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
@@ -95,7 +95,7 @@ class Npm2Deb ():
         utils.create_debian_file('watch', file_content)
 
     def create_links(self):
-        if not os.path.isfile('index.js') and self.json.has_key('main'):
+        if not os.path.isfile('index.js') and 'main' in self.json:
             dest = self.debian_dest
             content = "%s/%s %s/index.js\n" % (dest, self.json['main'], dest)
             utils.create_debian_file('links', content)
@@ -105,7 +105,7 @@ class Npm2Deb ():
         if os.path.isdir('bin'):
             content += 'bin/* usr/bin/\n'
         libs = []
-        if self.json.has_key('main'):
+        if 'main' in self.json:
             libs.append(self.json['main'])
         else:
             libs.append('*.js')
@@ -117,7 +117,7 @@ class Npm2Deb ():
 
     def create_docs(self):
         docs = []
-        if self.json.has_key('readmeFilename'):
+        if 'readmeFilename' in self.json:
             docs.append(self.json['readmeFilename'])
         else:
             for name in os.listdir('.'):
@@ -141,10 +141,10 @@ class Npm2Deb ():
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
         args['Description'] = 'FIX_ME'
-        if self.json.has_key('description'):
+        if 'description' in self.json:
             args['Description'] = self.json['description']
         args['Description_Long'] = 'FIX_ME long desciption'
-        # if self.json.has_key('readme'):
+        # if 'readme' in self.json:
         #     args['Description_Long'] = self.json['readme']
         template = utils.get_template('control')
         utils.create_debian_file('control', template % args)
@@ -157,7 +157,7 @@ class Npm2Deb ():
         args['upstream_author'] = self._get_Author()
         args['upstream_license_name'] = 'FIX_ME specify upstream license name'
         args['upstream_license'] = 'FIX_ME specify upstream license description'
-        if self.json.has_key('license'):
+        if 'license' in self.json:
             license_name = self.json['license']
             args['upstream_license_name'] = license_name
             args['upstream_license'] = utils.get_license(license_name)
@@ -173,7 +173,7 @@ class Npm2Deb ():
         args['debian_author'] = self.debian_author
         args['debian_name'] = self.debian_name
         args['version'] = 'FIX_ME'
-        if self.json.has_key('version'):
+        if 'version' in self.json:
             args['version'] = self.json['version']
         args['date'] = self.date.strftime('%a, %d %b %Y %X %z')
         file_content = templates.CHANGELOG % args
@@ -212,22 +212,22 @@ class Npm2Deb ():
 
     def _get_Author(self):
         result = 'FIX_ME'
-        if self.json.has_key('author'):
+        if 'author' in self.json:
             author = self.json['author']
         if author.__class__ is str:
             result = author
         elif author.__class__ is dict:
-            if author.has_key('name') and author.has_key('email'):
+            if 'name' in author and 'email' in author:
                 result = "%s <%s>" % (author['name'], author['email'])
-            elif author.has_key('name'):
+            elif 'name' in author:
                 result = author['name']
         return result
 
     def _get_Homepage(self):
         result = 'FIX_ME'
-        if self.json.has_key('repository'):
+        if 'repository' in self.json:
             repository = self.json['repository']
-            if repository.has_key('type') and repository.has_key('url'):
+            if 'type' in repository and 'url' in repository:
                 if repository['type'] == 'git':
                     url = repository['url']
                     url = re.sub(r'^git@(.*):', r'http://\1/', url)
@@ -240,7 +240,7 @@ class Npm2Deb ():
 
     def _get_Depends(self):
         depends = ['nodejs']
-        if self.json.has_key('dependencies'):
+        if 'dependencies' in self.json:
             dependencies = self.json['dependencies']
             for dep in dependencies:
                 name = 'node-%s' % self._debianize_name(dep)
