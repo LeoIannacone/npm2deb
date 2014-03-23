@@ -30,8 +30,8 @@ def get_license(license):
         result = templates.LICENSE_LGPL_2
     elif name.startswith('lgpl3'):
         result = templates.LICENSE_GPL_3        
-    elif name.startswith('mit'):
-        result = templates.LICENSE_MIT
+    elif name.startswith('mit') or name.startswith('expat'):
+        result = templates.LICENSE_MIT % name
     elif name.startswith('bsd'):
         result = templates.LICENSE_BSD
     elif name.startswith('artistic'):

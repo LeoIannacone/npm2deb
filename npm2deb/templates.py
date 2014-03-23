@@ -194,7 +194,7 @@ LICENSE_LGPL_3 = """LGPL-3.0+
  Public License can be found in "/usr/share/common-licenses/LGPL-3".
 """
 
-LICENSE_MIT = """MIT
+LICENSE_MIT = """%s
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
