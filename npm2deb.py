@@ -8,7 +8,7 @@ import os
 import sys
 
 def main():
-    usage = "%(prog)s [[options] node_module | -p [license]]"
+    usage = "%(prog)s [options] node_module | -p [license]"
     parser = ArgumentParser(prog='npm2deb', usage=usage)
     group = parser.add_mutually_exclusive_group()
 

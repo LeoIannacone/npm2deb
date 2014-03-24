@@ -8,15 +8,19 @@ You need **npm** installed on your system:
 ```
 sudo apt-get install nmp
 ```
-
 Please, take care to have defined **DEBEMAIL** (or **EMAIL** and **DEBFULLNAME**) environment variables correctly.
+
+## Install
+```
+sudo python setup.py install
+```
 
 ## Usage
 Simply take a look at help option:
 ```
-$ ./npm2deb.py -h
+$ npm2deb -h
 
-usage: npm2deb [[options] node_module | -p [license]]
+usage: npm2deb [options] node_module | -p [license]
 
 positional arguments:
   node_module           node module available via npm
@@ -39,5 +43,5 @@ optional arguments:
 ### Example
 In the most of cases a simple command like this is enough:
 ```
-$ ./npm2deb.py bytes
+$ npm2deb bytes
 ```
