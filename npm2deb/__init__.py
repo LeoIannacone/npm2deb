@@ -68,6 +68,7 @@ class Npm2Deb ():
         self.create_docs()
         self.create_install()
         self.create_links()
+        self.create_examples()
         self.create_watch()
         if not self.noclean:
             self.clean()
@@ -93,6 +94,11 @@ class Npm2Deb ():
               at https://wiki.debian.org/debian/watch/\n'
             file_content += "Homepage is %s\n" % homepage
         utils.create_debian_file('watch', file_content)
+
+    def create_examples(self):
+        if os.path.isdir('examples'):
+            content = 'examples/*\n'
+            utils.create_debian_file('examples', content)
 
     def create_links(self):
         if not os.path.isfile('index.js') and 'main' in self.json:
