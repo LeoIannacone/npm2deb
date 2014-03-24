@@ -49,7 +49,8 @@ def change_dir(dir):
     try:
         os.chdir(dir)
     except OSError as oserror:
-        print ("OSError [%d]: %s at %s" % (oserror.errno, oserror.strerror, oserror.filename))
+        print ("OSError [%d]: %s at %s" % \
+          (oserror.errno, oserror.strerror, oserror.filename))
         exit(1)
 
 def create_debian_file(filename, content):
