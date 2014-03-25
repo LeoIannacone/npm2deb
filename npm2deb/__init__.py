@@ -56,7 +56,7 @@ class Npm2Deb ():
                 (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
-    
+
     def start(self):
         self.download()
         utils.change_dir(self.debian_name)
