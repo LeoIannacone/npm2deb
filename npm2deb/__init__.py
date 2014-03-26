@@ -122,7 +122,7 @@ class Npm2Deb ():
         utils.create_debian_file('install', content)
 
     def create_docs(self):
-        docs = []
+        docs = ['package.json']
         if 'readmeFilename' in self.json:
             docs.append(self.json['readmeFilename'])
         else:
@@ -130,8 +130,7 @@ class Npm2Deb ():
                 if name.lower().startswith('readme'):
                     docs.append(name)
                     break
-        if len(docs) > 0:
-            utils.create_debian_file('docs', '\n'.join(docs) + '\n')
+        utils.create_debian_file('docs', '\n'.join(docs) + '\n')
 
     def create_control(self):
         args = {}
