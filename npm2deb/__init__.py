@@ -44,10 +44,7 @@ class Npm2Deb ():
         if info[0] != 0:
             print(info[1])
             exit(1)
-        if self.name.find('node-') is not 0:
-            self.debian_name = 'node-%s' % self._debianize_name(self.name)
-        else:
-            self.debian_name = self._debianize_name(self.name)
+        self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
         if 'DEBEMAIL' in os.environ:
             self.debian_author = os.environ['DEBEMAIL']
