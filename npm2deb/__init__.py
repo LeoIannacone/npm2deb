@@ -18,7 +18,7 @@ except ImportError:
 
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE = 'GPL-3'
+DEBIAN_LICENSE = 'GPL-3.0+'
 
 class Npm2Deb ():
 
@@ -56,7 +56,7 @@ class Npm2Deb ():
                 (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
-    
+
     def start(self):
         self.download()
         utils.change_dir(self.debian_name)
@@ -103,7 +103,8 @@ class Npm2Deb ():
     def create_links(self):
         if not os.path.isfile('index.js') and 'main' in self.json:
             dest = self.debian_dest
-            content = "%s/%s %s/index.js\n" % (dest, self.json['main'], dest)
+            content = "%s/%s %s/index.js\n" % (dest, \
+                os.path.normpath(self.json['main']), dest)
             utils.create_debian_file('links', content)
 
     def create_install(self):
@@ -112,7 +113,7 @@ class Npm2Deb ():
             content += 'bin/* usr/bin/\n'
         libs = []
         if 'main' in self.json:
-            libs.append(self.json['main'])
+            libs.append(os.path.normpath(self.json['main']))
         else:
             libs.append('*.js')
         if os.path.isdir('lib'):
