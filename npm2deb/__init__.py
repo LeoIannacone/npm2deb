@@ -162,6 +162,8 @@ class Npm2Deb ():
         args['upstream_license'] = 'FIX_ME specify upstream license description'
         if 'license' in self.json:
             license_name = self.json['license']
+            if license_name.lower() == "mit":
+                license_name = "Expat"
             args['upstream_license_name'] = license_name
             args['upstream_license'] = utils.get_license(license_name)
         args['debian_date'] = self.date.year
