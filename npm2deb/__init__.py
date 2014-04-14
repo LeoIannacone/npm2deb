@@ -140,7 +140,8 @@ class Npm2Deb ():
                 if name.lower().startswith('readme'):
                     docs.append(name)
                     break
-        utils.create_debian_file('docs', '\n'.join(docs) + '\n')
+        if len(docs) > 0:
+            utils.create_debian_file('docs', '\n'.join(docs) + '\n')
 
     def create_control(self):
         args = {}
