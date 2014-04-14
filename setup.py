@@ -19,6 +19,7 @@ setup(name='npm2deb',
       license='GNU GPL-3',
       scripts=['npm2deb.py'],
       packages=['npm2deb'],
+      dependencies=['dateutil'],
       data_files=[
         ('share/man/man1', ['man/npm2deb.1']),
         ('share/doc/npm2deb', ['README.md', 'AUTHORS']),
