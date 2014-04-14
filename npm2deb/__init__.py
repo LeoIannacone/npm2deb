@@ -104,10 +104,16 @@ class Npm2Deb ():
             utils.create_debian_file('dirs', content)
 
     def create_links(self):
+        content = ''
         if not os.path.isfile('index.js') and 'main' in self.json:
             dest = self.debian_dest
-            content = "%s/%s %s/index.js\n" % (dest, \
+            content += "%s/%s %s/index.js\n" % (dest, \
                 os.path.normpath(self.json['main']), dest)
+        if os.path.isdir('bin'):
+            for script in os.listdir('bin'):
+                content += "%s/bin/%s usr/bin/%s" % \
+                    (dest, script, script.replace('.js', ''))
+        if len(content) > 0:
             utils.create_debian_file('links', content)
 
     def create_install(self):
