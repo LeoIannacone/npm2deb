@@ -29,7 +29,7 @@ Depends:
 Description: %(Description)s
  %(Description_Long)s
  .
- Node.js is an event-based server-side javascript engine.
+ Node.js is an event-based server-side JavaScript engine.
 """
 
 RULES = """#!/usr/bin/make -f

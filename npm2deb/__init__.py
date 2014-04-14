@@ -18,7 +18,7 @@ except ImportError:
 
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE = 'GPL-3'
+DEBIAN_LICENSE = 'GPL-3.0+'
 
 class Npm2Deb ():
 
@@ -44,16 +44,13 @@ class Npm2Deb ():
         if info[0] != 0:
             print(info[1])
             exit(1)
-        if self.name.find('node-') is not 0:
-            self.debian_name = 'node-%s' % self._debianize_name(self.name)
-        else:
-            self.debian_name = self._debianize_name(self.name)
+        self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
-        if 'DEBEMAIL' in os.environ:
-            self.debian_author = os.environ['DEBEMAIL']
-        elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
+        if 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
                 (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
+        elif 'DEBEMAIL' in os.environ:
+            self.debian_author = os.environ['DEBEMAIL']
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
 
@@ -103,7 +100,8 @@ class Npm2Deb ():
     def create_links(self):
         if not os.path.isfile('index.js') and 'main' in self.json:
             dest = self.debian_dest
-            content = "%s/%s %s/index.js\n" % (dest, self.json['main'], dest)
+            content = "%s/%s %s/index.js\n" % (dest, \
+                os.path.normpath(self.json['main']), dest)
             utils.create_debian_file('links', content)
 
     def create_install(self):
@@ -112,7 +110,7 @@ class Npm2Deb ():
             content += 'bin/* usr/bin/\n'
         libs = []
         if 'main' in self.json:
-            libs.append(self.json['main'])
+            libs.append(os.path.normpath(self.json['main']))
         else:
             libs.append('*.js')
         if os.path.isdir('lib'):
@@ -122,7 +120,7 @@ class Npm2Deb ():
         utils.create_debian_file('install', content)
 
     def create_docs(self):
-        docs = []
+        docs = ['package.json']
         if 'readmeFilename' in self.json:
             docs.append(self.json['readmeFilename'])
         else:
@@ -130,8 +128,7 @@ class Npm2Deb ():
                 if name.lower().startswith('readme'):
                     docs.append(name)
                     break
-        if len(docs) > 0:
-            utils.create_debian_file('docs', '\n'.join(docs) + '\n')
+        utils.create_debian_file('docs', '\n'.join(docs) + '\n')
 
     def create_control(self):
         args = {}
@@ -165,6 +162,8 @@ class Npm2Deb ():
         args['upstream_license'] = 'FIX_ME specify upstream license description'
         if 'license' in self.json:
             license_name = self.json['license']
+            if license_name.lower() == "mit":
+                license_name = "Expat"
             args['upstream_license_name'] = license_name
             args['upstream_license'] = utils.get_license(license_name)
         args['debian_date'] = self.date.year
@@ -208,7 +207,7 @@ class Npm2Deb ():
             exit(1)
         # move dir from node_modules
         os.rename('node_modules/%s' % self.name, self.name)
-        os.rmdir('node_modules')
+        rmtree('node_modules')
         # remove debendences download by npm if exists
         if os.path.isdir("%s/node_modules" % self.name):
             rmtree("%s/node_modules" % self.name)
@@ -220,13 +219,13 @@ class Npm2Deb ():
         result = 'FIX_ME'
         if 'author' in self.json:
             author = self.json['author']
-        if author.__class__ is str:
-            result = author
-        elif author.__class__ is dict:
-            if 'name' in author and 'email' in author:
-                result = "%s <%s>" % (author['name'], author['email'])
-            elif 'name' in author:
-                result = author['name']
+            if author.__class__ is str:
+                result = author
+            elif author.__class__ is dict:
+                if 'name' in author and 'email' in author:
+                    result = "%s <%s>" % (author['name'], author['email'])
+                elif 'name' in author:
+                    result = author['name']
         return result
 
     def _get_Homepage(self):
