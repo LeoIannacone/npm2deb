@@ -65,7 +65,7 @@ class Npm2Deb ():
         self.create_docs()
         self.create_install()
         self.create_links()
-        self.create_dir()
+        self.create_dirs()
         self.create_examples()
         self.create_watch()
         if not self.noclean:
