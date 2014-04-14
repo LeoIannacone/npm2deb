@@ -65,6 +65,7 @@ class Npm2Deb ():
         self.create_docs()
         self.create_install()
         self.create_links()
+        self.create_dir()
         self.create_examples()
         self.create_watch()
         if not self.noclean:
@@ -96,6 +97,11 @@ class Npm2Deb ():
         if os.path.isdir('examples'):
             content = 'examples/*\n'
             utils.create_debian_file('examples', content)
+
+    def create_dirs(self):
+        if os.path.isdir('bin'):
+            content = 'usr/bin'
+            utils.create_debian_file('dirs', content)
 
     def create_links(self):
         if not os.path.isfile('index.js') and 'main' in self.json:
