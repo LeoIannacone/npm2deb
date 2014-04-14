@@ -12,15 +12,17 @@ def main():
     parser = ArgumentParser(prog='npm2deb', usage=usage)
     group = parser.add_mutually_exclusive_group()
 
-    parser.add_argument('-d', '--debhelper', default=DEBHELPER, \
-        help='specify debhelper version [default: %(default)s]')
-    parser.add_argument('-l', '--license', default=DEBIAN_LICENSE, \
-        help='license used for debian files [default: %(default)s]')
+    parser.add_argument('-s', '--show', action="store_true",
+        default=False, help='show package dependencies in npm and debian')
     parser.add_argument('-n', '--noclean', action="store_true", \
         default=False, help='do not remove files downloaded with npm')
     group.add_argument('-p', '--printlicense', nargs='?', \
         help='print license template and exit')
-    parser.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
+    parser.add_argument('--debhelper', default=DEBHELPER, \
+        help='specify debhelper version [default: %(default)s]')
+    parser.add_argument('--license', default=DEBIAN_LICENSE, \
+        help='license used for debian files [default: %(default)s]')
+    parser.add_argument('--standards', default=STANDARDS_VERSION, \
         help='set standards-version [default: %(default)s]')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
     group.add_argument('node_module', nargs='?', \
@@ -53,11 +55,15 @@ def main():
         utils.DEBUG_LEVEL = int(opts.debug)
 
     node_module = opts.node_module
+    npm2deb = Npm2Deb(node_module, vars(opts))
+
+    if opts.show:
+        npm2deb.show_dependencies()
+        exit(0)
+    
     saved_path = os.getcwd()
     utils.create_dir(node_module)
     utils.change_dir(node_module)
-
-    npm2deb = Npm2Deb(node_module, vars(opts))
     npm2deb.start()
 
     utils.change_dir(saved_path)

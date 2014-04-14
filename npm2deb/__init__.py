@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from json import load as parseJSON
+from json import loads as parseJSON
 from datetime import datetime
 from dateutil import tz
 from shutil import rmtree
@@ -39,11 +39,8 @@ class Npm2Deb ():
             if 'noclean' in args:
                 self.noclean = args['noclean']
 
-        info = getstatusoutput('npm info %s --json' % package_name)
-        # if not status 0, exit
-        if info[0] != 0:
-            print(info[1])
-            exit(1)
+        # get first info
+        getstatusoutput("npm info %s version" % package_name)
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
         if 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
@@ -54,7 +51,32 @@ class Npm2Deb ():
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
 
+    def show_dependencies(self):
+        self.read_package_info()
+        if 'dependencies' in self.json:
+            formatted = "{0:50}{1}"
+            print(formatted.format("NPM", "Debian"))
+            for depend in self.json['dependencies']:
+                npminfo = depend
+                npmver = getstatusoutput( \
+                    "npm info %s version" % depend)[1].split('\n')[-2].strip()
+                npminfo += " (%s)" % npmver
+                debinfo = ""
+                debtmp = getstatusoutput( \
+                    "apt-cache madison node-%s | grep Source" % \
+                    depend.split(" ")[0])
+                if debtmp[0] == 0:
+                    tmp = debtmp[1].split('|')
+                    if len(tmp) >= 2:
+                        debinfo += tmp[0].strip()
+                        debinfo += " (%s)" % tmp[1].strip()
+                print(formatted.format(npminfo, debinfo))
+        else:
+            print("Module %s has no dependencies." % self.name)
+
+
     def start(self):
+        self.read_package_info()
         self.download()
         utils.change_dir(self.debian_name)
         self.read_package_info()
@@ -119,14 +141,14 @@ class Npm2Deb ():
     def create_install(self):
         content = ''
         libs = ['package.json']
-        if os.path.isdir('bin'):
-            libs.append('bin')
         if 'main' in self.json:
             libs.append(os.path.normpath(self.json['main']))
         else:
             libs.append('*.js')
         if os.path.isdir('lib'):
             libs.append('lib')
+        if os.path.isdir('bin'):
+            libs.append('bin')
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
@@ -208,8 +230,12 @@ class Npm2Deb ():
 
     def read_package_info(self):
         utils.debug(1, "reading package info from package.json")
-        with open('package.json') as package_json:
-            self.json = parseJSON(package_json)
+        info = getstatusoutput('npm info %s --json' % self.name)
+        # if not status 0, exit
+        if info[0] != 0:
+            print(info[1])
+            exit(1)
+        self.json= parseJSON(info[1])
 
     def download(self):
         utils.debug(1, "downloading %s using npm" % self.name)
@@ -229,7 +255,7 @@ class Npm2Deb ():
             os.rename(self.name, self.debian_name)
 
     def _get_Author(self):
-        result = 'FIX_ME'
+        result = 'FIX_ME upstream author'
         if 'author' in self.json:
             author = self.json['author']
             if author.__class__ is str:

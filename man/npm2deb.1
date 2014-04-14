@@ -4,7 +4,9 @@
 - npm package.json to debian files
 
 .SH SYNOPSIS
-.B npm2deb\fR [\fB-d\fR \fIdebhelper\fR] [\fB-l\fR \fIlicense\fR] [\fB-n\fR] [\fB-s\fR \fIstandards-version\fR] [\fB-D\fR \fIdebug\fR] \fInode_module\fR
+.B npm2deb\fR [\fB--debhelper\fR \fIdebhelper\fR] [\fB--license\fR \fIlicense\fR] [\fB-n\fR] [\fB--standards\fR \fIstandards-version\fR] [\fB-D\fR \fIdebug\fR] \fInode_module\fR
+.br
+.B npm2deb \fB-s\fR \fInode_module\fR
 .br
 .B npm2deb \fB-p\fR \fIlicense\fR
 
@@ -15,11 +17,8 @@ Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR and \fBDEBFULLNAME\fR) 
 
 .SH OPTIONS
 .TP
-.B -d --debhelper\fR \fIversion\fR
-set debhelper \fIversion\fR in debian/control file.
-.TP
-.B -l --license\fR \fIname\fR
-set debian files license \fIname\fR in debian/copyright.
+.B -s --show\fR
+show package \fBdependencies\fR in npm and Debian. Useful to know which packages are already in Debian.
 .TP
 .B -n --noclean\fR
 do not remove files downloaded via npm.
@@ -28,7 +27,13 @@ do not remove files downloaded via npm.
 prints license \fIname\fR and exit. If license does not valid, prints
 all licenses available and exit. Licenses names are ignore case.
 .TP
-.B -s --standards\fR \fIstandards-version\fR
+.B --debhelper\fR \fIversion\fR
+set debhelper \fIversion\fR in debian/control file.
+.TP
+.B --license\fR \fIname\fR
+set debian files license \fIname\fR in debian/copyright.
+.TP
+.B --standards\fR \fIstandards-version\fR
 set \fIStandards-Version\fR in debian/control.
 .TP
 .B -D --debug\fR \fIlevel\fR
