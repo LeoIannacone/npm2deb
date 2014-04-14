@@ -112,9 +112,9 @@ class Npm2Deb ():
 
     def create_install(self):
         content = ''
+        libs = ['package.json']
         if os.path.isdir('bin'):
-            content += 'bin/* usr/bin/\n'
-        libs = []
+            libs.append('bin')
         if 'main' in self.json:
             libs.append(os.path.normpath(self.json['main']))
         else:
@@ -126,7 +126,7 @@ class Npm2Deb ():
         utils.create_debian_file('install', content)
 
     def create_docs(self):
-        docs = ['package.json']
+        docs = []
         if 'readmeFilename' in self.json:
             docs.append(self.json['readmeFilename'])
         else:
