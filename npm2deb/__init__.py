@@ -207,7 +207,7 @@ class Npm2Deb ():
             exit(1)
         # move dir from node_modules
         os.rename('node_modules/%s' % self.name, self.name)
-        os.rmdir('node_modules')
+        rmtree('node_modules')
         # remove debendences download by npm if exists
         if os.path.isdir("%s/node_modules" % self.name):
             rmtree("%s/node_modules" % self.name)
@@ -219,13 +219,13 @@ class Npm2Deb ():
         result = 'FIX_ME'
         if 'author' in self.json:
             author = self.json['author']
-        if author.__class__ is str:
-            result = author
-        elif author.__class__ is dict:
-            if 'name' in author and 'email' in author:
-                result = "%s <%s>" % (author['name'], author['email'])
-            elif 'name' in author:
-                result = author['name']
+            if author.__class__ is str:
+                result = author
+            elif author.__class__ is dict:
+                if 'name' in author and 'email' in author:
+                    result = "%s <%s>" % (author['name'], author['email'])
+                elif 'name' in author:
+                    result = author['name']
         return result
 
     def _get_Homepage(self):
