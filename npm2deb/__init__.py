@@ -20,7 +20,7 @@ DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
 DEBIAN_LICENSE = 'GPL-3.0+'
 
-class Npm2Deb ():
+class Npm2Deb():
 
     def __init__(self, package_name, args):
         self.json = None
@@ -40,7 +40,7 @@ class Npm2Deb ():
                 self.noclean = args['noclean']
 
         # get first info
-        getstatusoutput("npm info %s version" % package_name)
+        getstatusoutput("npm view %s version" % package_name)
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
         if 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
@@ -54,12 +54,12 @@ class Npm2Deb ():
     def show_dependencies(self):
         self.read_package_info()
         if 'dependencies' in self.json:
-            formatted = "{0:50}{1}"
+            formatted = "{0:40}{1}"
             print(formatted.format("NPM", "Debian"))
             for depend in self.json['dependencies']:
                 npminfo = depend
                 npmver = getstatusoutput( \
-                    "npm info %s version" % depend)[1].split('\n')[-2].strip()
+                    "npm view %s version" % depend)[1].split('\n')[-2].strip()
                 npminfo += " (%s)" % npmver
                 debinfo = ""
                 debtmp = getstatusoutput( \
@@ -79,7 +79,6 @@ class Npm2Deb ():
         self.read_package_info()
         self.download()
         utils.change_dir(self.debian_name)
-        self.read_package_info()
         self.create_base_debian()
         self.create_changelog()
         self.create_copyright()
@@ -127,8 +126,8 @@ class Npm2Deb ():
 
     def create_links(self):
         content = ''
+        dest = self.debian_dest
         if not os.path.isfile('index.js') and 'main' in self.json:
-            dest = self.debian_dest
             content += "%s/%s %s/index.js\n" % (dest, \
                 os.path.normpath(self.json['main']), dest)
         if os.path.isdir('bin'):
@@ -229,13 +228,13 @@ class Npm2Deb ():
         os.system('chmod +x debian/rules')
 
     def read_package_info(self):
-        utils.debug(1, "reading package info from package.json")
-        info = getstatusoutput('npm info %s --json' % self.name)
+        utils.debug(1, "reading package info using npm view")
+        info = getstatusoutput('npm view %s --json' % self.name)
         # if not status 0, exit
         if info[0] != 0:
             print(info[1])
             exit(1)
-        self.json= parseJSON(info[1])
+        self.json = parseJSON(info[1])
 
     def download(self):
         utils.debug(1, "downloading %s using npm" % self.name)
