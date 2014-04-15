@@ -12,9 +12,8 @@ except ImportError:
 DEBUG_LEVEL = 0
 
 map_npm_debian = {
-    'uglifyjs': 'uglifyjs'
+    'uglify-js': 'node-uglify'
   , 'coffee-script': 'coffeescript'
-  , 'jade': 'jade'
 }
 
 def debug(level, msg):
