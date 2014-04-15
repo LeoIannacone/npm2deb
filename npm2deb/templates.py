@@ -16,6 +16,7 @@ Uploaders: %(Uploaders)s
 Build-Depends:
  debhelper (>= %(debhelper)s)
  , dh-buildinfo
+ , nodejs
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
