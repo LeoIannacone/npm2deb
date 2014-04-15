@@ -69,7 +69,6 @@ class Npm2Deb():
         else:
             print("Module %s has no dependencies." % self.name)
 
-
     def start(self):
         self.read_package_info()
         self.download()
@@ -136,7 +135,9 @@ class Npm2Deb():
         content = ''
         libs = ['package.json']
         if 'main' in self.json:
-            libs.append(os.path.normpath(self.json['main']))
+            if not self.json.startswith('lib/') or \
+                not self.json.startswith('bin/'):
+                libs.append(os.path.normpath(self.json['main']))
         else:
             libs.append('*.js')
         if os.path.isdir('lib'):
