@@ -53,24 +53,19 @@ class Npm2Deb():
 
     def show_dependencies(self):
         self.read_package_info()
+        if 'devDependencies' in self.json:
+            print "Build dependencies:"
+            print('\n'.join(self._get_formatted_comparision_npm_deb(\
+                    self.json['devDependencies'])))
+            print("")
+        else:
+            print("Module %s has no build dependencies." % self.name)
+
         if 'dependencies' in self.json:
-            formatted = "{0:40}{1}"
-            print(formatted.format("NPM", "Debian"))
-            for depend in self.json['dependencies']:
-                npminfo = depend
-                npmver = getstatusoutput( \
-                    "npm view %s version" % depend)[1].split('\n')[-2].strip()
-                npminfo += " (%s)" % npmver
-                debinfo = ""
-                debtmp = getstatusoutput( \
-                    "apt-cache madison node-%s | grep Source" % \
-                    depend.split(" ")[0])
-                if debtmp[0] == 0:
-                    tmp = debtmp[1].split('|')
-                    if len(tmp) >= 2:
-                        debinfo += tmp[0].strip()
-                        debinfo += " (%s)" % tmp[1].strip()
-                print(formatted.format(npminfo, debinfo))
+            print "Dependecies:"
+            print('\n'.join(self._get_formatted_comparision_npm_deb(\
+                    self.json['dependencies'])))
+            print("")
         else:
             print("Module %s has no dependencies." % self.name)
 
@@ -268,6 +263,10 @@ class Npm2Deb():
 
     def _get_Homepage(self):
         result = 'FIX_ME'
+
+        if 'homepage' in self.json:
+            return self.json['homepage']
+
         if 'repository' in self.json:
             repository = self.json['repository']
             if 'type' in repository and 'url' in repository:
@@ -302,3 +301,13 @@ class Npm2Deb():
 
     def _debianize_name(self, name):
         return name.replace('_', '-')
+
+    def _get_formatted_comparision_npm_deb(self, module_list):
+        formatted = "{0:40}{1}"
+        result = [formatted.format("NPM", "Debian")]
+        for module_name in module_list:
+            npmver = utils.get_npm_version(module_name)
+            npminfo = "%s (%s)" % (module_name, npmver)
+            debinfo = utils.get_debian_package(module_name)
+            result.append(formatted.format(npminfo, debinfo))
+        return result
