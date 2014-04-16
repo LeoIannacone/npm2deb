@@ -73,9 +73,11 @@ class Npm2Deb():
         from urllib2 import urlopen
         url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
         + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
-        data = urlopen(url % {'name': self.name}).read()
+        url = url % {'name': self.name}
+        utils.debug(1, "opening url %s" % url)
+        data = urlopen(url).read()
         data = parseJSON(data)
-        if 'rows' in data:
+        if 'rows' in data and len(data['rows']) > 0:
             print("Reverse Depends:")
             for row in data['rows']:
                 print("  %s" % row['key'][1])
