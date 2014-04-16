@@ -43,11 +43,12 @@ class Npm2Deb():
         getstatusoutput("npm view %s version" % package_name)
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
-        if 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
+        if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
+            self.debian_author = "%s <%s>" % \
+                (os.environ['DEBFULLNAME'], os.environ['DEBEMAIL'])
+        elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
                 (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
-        elif 'DEBEMAIL' in os.environ:
-            self.debian_author = os.environ['DEBEMAIL']
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
