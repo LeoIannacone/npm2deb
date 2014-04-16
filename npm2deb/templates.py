@@ -39,12 +39,14 @@ RULES = """#!/usr/bin/make -f
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-%:
+%%:
 	dh $@
 
 #override_dh_auto_build:
 
 #override_dh_auto_test:
+
+%(overrides)s
 
 """
 

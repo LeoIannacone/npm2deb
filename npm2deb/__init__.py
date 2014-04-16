@@ -89,6 +89,7 @@ class Npm2Deb():
         self.download()
         utils.change_dir(self.debian_name)
         self.create_base_debian()
+        self.create_rules()
         self.create_changelog()
         self.create_copyright()
         self.create_control()
@@ -229,14 +230,25 @@ class Npm2Deb():
         file_content = templates.CHANGELOG % args
         utils.create_debian_file("changelog", file_content)
 
+    def create_rules(self):
+        args = {}
+        args['overrides'] = ''
+        for filename in os.listdir('.'):
+            if filename.lower().startswith('history'):
+                args['overrides'] += \
+                "override_dh_installchangelogs:\n" + \
+                "\tdh_installchangelogs -k %s\n" % filename
+                break
+        content = utils.get_template('rules') % args
+        utils.create_debian_file("rules", content)
+        os.system('chmod +x debian/rules')
+
     def create_base_debian(self):
         utils.debug(1, "creating debian files")
         utils.create_dir("debian")
         utils.create_dir("debian/source")
         utils.create_debian_file("source/format", "3.0 (quilt)\n")
         utils.create_debian_file("compat", "%s\n" % self.debian_debhelper)
-        utils.create_debian_file("rules", utils.get_template('rules'))
-        os.system('chmod +x debian/rules')
 
     def read_package_info(self):
         utils.debug(1, "reading package info using npm view")
