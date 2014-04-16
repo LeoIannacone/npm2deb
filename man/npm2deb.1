@@ -6,9 +6,9 @@
 .SH SYNOPSIS
 .B npm2deb\fR [\fB--debhelper\fR \fIdebhelper\fR] [\fB--license\fR \fIlicense\fR] [\fB-n\fR] [\fB--standards\fR \fIstandards-version\fR] [\fB-D\fR \fIdebug\fR] \fInode_module\fR
 .br
-.B npm2deb \fB-s\fR \fInode_module\fR
+.B npm2deb\fR [\fB-s\fR] [\fB-r\fR] \fInode_module\fR
 .br
-.B npm2deb \fB-p\fR \fIlicense\fR
+.B npm2deb\fR \fB-p\fR \fIlicense\fR
 
 .SH DESCRIPTION
 A script to make faster and easier packaging \fInodejs\fR modules already provided by \fInpm\fR.
@@ -19,6 +19,9 @@ Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR and \fBDEBFULLNAME\fR) 
 .TP
 .B -s --show\fR
 show package \fBdependencies\fR in npm and Debian. Useful to know which packages are already in Debian.
+.TP
+.B -r --rdepends\fR
+show the \fBreverse dependencies\fR of module in npm.
 .TP
 .B -n --noclean\fR
 do not remove files downloaded via npm.

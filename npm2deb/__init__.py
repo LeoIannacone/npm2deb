@@ -50,9 +50,9 @@ class Npm2Deb():
             self.debian_author = os.environ['DEBEMAIL']
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
+        self.read_package_info()
 
     def show_dependencies(self):
-        self.read_package_info()
         if 'devDependencies' in self.json:
             print "Build dependencies:"
             print('\n'.join(self._get_formatted_comparision_npm_deb(\
@@ -69,8 +69,20 @@ class Npm2Deb():
         else:
             print("Module %s has no dependencies." % self.name)
 
+    def show_reverse_dependencies(self):
+        from urllib2 import urlopen
+        url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
+        + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
+        data = urlopen(url % {'name': self.name}).read()
+        data = parseJSON(data)
+        if 'rows' in data:
+            print("Reverse Depends:")
+            for row in data['rows']:
+                print("  %s" % row['key'][1])
+        else:
+            print ("Module %s has no reverse dependencies" % self.name)
+
     def start(self):
-        self.read_package_info()
         self.download()
         utils.change_dir(self.debian_name)
         self.create_base_debian()

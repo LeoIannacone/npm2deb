@@ -14,6 +14,8 @@ def main():
 
     parser.add_argument('-s', '--show', action="store_true",
         default=False, help='show package dependencies in npm and debian')
+    parser.add_argument('-r', '--rdepends', action="store_true",
+        default=False, help='show the reverse dependencies for module')
     parser.add_argument('-n', '--noclean', action="store_true", \
         default=False, help='do not remove files downloaded with npm')
     group.add_argument('-p', '--printlicense', nargs='?', \
@@ -57,8 +59,11 @@ def main():
     node_module = opts.node_module
     npm2deb = Npm2Deb(node_module, vars(opts))
 
-    if opts.show:
-        npm2deb.show_dependencies()
+    if opts.show or opts.rdepends:
+        if opts.show:
+            npm2deb.show_dependencies()
+        if opts.rdepends:
+            npm2deb.show_reverse_dependencies()
         exit(0)
     
     saved_path = os.getcwd()
