@@ -150,8 +150,8 @@ class Npm2Deb():
         content = ''
         libs = ['package.json']
         if 'main' in self.json:
-            if not self.json.startswith('lib/') or \
-                not self.json.startswith('bin/'):
+            if not self.json['main'].startswith('lib/') or \
+                not self.json['main'].startswith('bin/'):
                 libs.append(os.path.normpath(self.json['main']))
         else:
             libs.append('*.js')
