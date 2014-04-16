@@ -150,16 +150,19 @@ class Npm2Deb():
     def create_install(self):
         content = ''
         libs = ['package.json']
-        if 'main' in self.json:
-            if not self.json['main'].startswith('lib/') or \
-                not self.json['main'].startswith('bin/'):
-                libs.append(os.path.normpath(self.json['main']))
-        else:
-            libs.append('*.js')
-        if os.path.isdir('lib'):
-            libs.append('lib')
         if os.path.isdir('bin'):
             libs.append('bin')
+        if os.path.isdir('lib'):
+            libs.append('lib')
+        # install main if not in a subpath
+        if 'main' in self.json and \
+            not self.json['main'].index('/') > 0:
+            libs.append(os.path.normpath(self.json['main']))
+        else:
+            if os.path.exists('index.js'):
+                libs.append('index.js')
+            else:
+                libs.append('*.js')
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
