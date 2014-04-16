@@ -23,6 +23,7 @@ setup(name='npm2deb',
       data_files=[
         ('share/man/man1', ['man/npm2deb.1']),
         ('share/doc/npm2deb', ['README.md', 'AUTHORS']),
+        ('etc/bash_completion.d', ['etc/npm2deb.completion'])
       ],
       cmdclass={"install_scripts": remove_extension},
 )

@@ -1,0 +1,25 @@
+have npm2deb &&
+_npm2deb()
+{
+	local cur prev options
+
+	COMPREPLY=()
+	cur=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
+
+	case "$prev" in
+	    license)
+        options='apache artistic bsd expat gpl-2 gpl-3 lgpl-2 lgpl-3 mit'
+	    ;;
+      npm2deb)
+        options='create depends rdepends license'
+      ;;
+	esac;
+
+	COMPREPLY=( $( compgen -W "$options" -- $cur ) )
+
+	return 0
+
+}
+complete -F _npm2deb npm2deb
+
