@@ -54,18 +54,18 @@ class Npm2Deb():
         self.read_package_info()
 
     def show_dependencies(self):
-        if 'devDependencies' in self.json:
+        if 'devDependencies' in self.json and self.json['devDependencies']:
             print "Build dependencies:"
-            print('\n'.join(self._get_formatted_comparision_npm_deb(\
-                    self.json['devDependencies'])))
+            self._get_formatted_comparision_npm_deb(\
+                    self.json['devDependencies'])
             print("")
         else:
             print("Module %s has no build dependencies." % self.name)
 
-        if 'dependencies' in self.json:
-            print "Dependecies:"
-            print('\n'.join(self._get_formatted_comparision_npm_deb(\
-                    self.json['dependencies'])))
+        if 'dependencies' in self.json and self.json['dependencies']:
+            print "Dependencies:"
+            self._get_formatted_comparision_npm_deb(\
+                    self.json['dependencies'])
             print("")
         else:
             print("Module %s has no dependencies." % self.name)
@@ -320,10 +320,9 @@ class Npm2Deb():
 
     def _get_formatted_comparision_npm_deb(self, module_list):
         formatted = "{0:40}{1}"
-        result = [formatted.format("NPM", "Debian")]
+        print(formatted.format("NPM", "Debian"))
         for module_name in module_list:
             npmver = utils.get_npm_version(module_name)
             npminfo = "%s (%s)" % (module_name, npmver)
             debinfo = utils.get_debian_package(module_name)
-            result.append(formatted.format(npminfo, debinfo))
-        return result
+            print(formatted.format(npminfo, debinfo))
