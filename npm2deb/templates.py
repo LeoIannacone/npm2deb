@@ -67,7 +67,7 @@ License: %(debian_license)s
 
 LICENSES = {}
 
-LICENSES['GPL-2'] = """GPL-2.0+
+LICENSES['GPL-2'] = """GPL-2
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
@@ -85,7 +85,7 @@ LICENSES['GPL-2'] = """GPL-2.0+
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 """
 
-LICENSES['GPL-3'] = """GPL-3.0+
+LICENSES['GPL-3'] = """GPL-3
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -161,7 +161,7 @@ LICENSES['BSD'] = """BSD-3-Clause
  can be found in "/usr/share/common-licenses/BSD".
 """
 
-LICENSES['LGPL-2'] = """LGPL-2.0+
+LICENSES['LGPL-2'] = """LGPL-2
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -179,7 +179,7 @@ LICENSES['LGPL-2'] = """LGPL-2.0+
  Public License can be found in "/usr/share/common-licenses/LGPL-2".
 """
 
-LICENSES['LGPL-3'] = """LGPL-3.0+
+LICENSES['LGPL-3'] = """LGPL-3
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either

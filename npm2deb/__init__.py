@@ -18,7 +18,7 @@ except ImportError:
 
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE = 'GPL-3.0+'
+DEBIAN_LICENSE = 'GPL-3'
 
 class Npm2Deb():
 
