@@ -5,75 +5,96 @@ from npm2deb import Npm2Deb, utils, templates, \
     DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE
 from subprocess import call
 import os
-import sys
 
 def main():
-    usage = "%(prog)s [options] node_module | -p [license]"
-    parser = ArgumentParser(prog='npm2deb', usage=usage)
-    group = parser.add_mutually_exclusive_group()
-
-    parser.add_argument('-s', '--show', action="store_true",
-        default=False, help='show package dependencies in npm and debian')
-    parser.add_argument('-r', '--rdepends', action="store_true",
-        default=False, help='show the reverse dependencies for module')
-    parser.add_argument('-n', '--noclean', action="store_true", \
-        default=False, help='do not remove files downloaded with npm')
-    group.add_argument('-p', '--printlicense', nargs='?', \
-        help='print license template and exit')
-    parser.add_argument('--debhelper', default=DEBHELPER, \
-        help='specify debhelper version [default: %(default)s]')
-    parser.add_argument('--license', default=DEBIAN_LICENSE, \
-        help='license used for debian files [default: %(default)s]')
-    parser.add_argument('--standards', default=STANDARDS_VERSION, \
-        help='set standards-version [default: %(default)s]')
+    parser = ArgumentParser(prog='npm2deb')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
-    group.add_argument('node_module', nargs='?', \
+
+    subparsers = parser.add_subparsers(title='commands')
+
+    parser_create = subparsers.add_parser('create', \
+        help='create the debian files')
+    parser_create.add_argument('-n', '--noclean', action="store_true", \
+        default=False, help='do not remove files downloaded with npm')
+    parser_create.add_argument('-d', '--debhelper', default=DEBHELPER, \
+        help='specify debhelper version [default: %(default)s]')
+    parser_create.add_argument('-l', '--license', default=DEBIAN_LICENSE, \
+        help='license used for debian files [default: %(default)s]')
+    parser_create.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
+        help='set standards-version [default: %(default)s]')
+    parser_create.add_argument('node_module', \
         help='node module available via npm')
+    parser_create.set_defaults(func=create)
 
-    opts = parser.parse_args()
+    parser_license = subparsers.add_parser('license', \
+        help='print license template and exit')
+    parser_license.add_argument('-l', '--list', action="store_true", \
+        default=False, help='show the available licenses')
+    parser_license.add_argument('name', nargs='?', \
+        help='the license name to show')
+    parser_license.set_defaults(func=print_license)
 
-    if '-p' in sys.argv or '--printlicense' in sys.argv:
-        try:
-            if opts.printlicense is None:
-                raise ValueError
-            template_license = utils.get_license(opts.printlicense)
+    parser_depends = subparsers.add_parser('depends', \
+        help='show module dependencies in npm and debian')
+    parser_depends.add_argument('node_module', \
+        help='node module available via npm')
+    parser_depends.set_defaults(func=show_dependencies)
+
+    parser_rdepends = subparsers.add_parser('rdepends', \
+        help='show the reverse dependencies for module')
+    parser_rdepends.add_argument('node_module', \
+        help='node module available via npm')
+    parser_rdepends.set_defaults(func=show_reverse_dependencies)
+
+    args = parser.parse_args()
+
+    if args.debug:
+        utils.DEBUG_LEVEL = args.debug
+
+    args.func(args)
+
+def print_license(args, prefix=""):
+    if args.list:
+        print("%s Available licenses are: %s." % \
+                (prefix, ', '.join(sorted(templates.LICENSES.keys())).lower()))
+    else:
+        if args.name is None:
+            print("You have to specify a license name")
+            args.list = True
+            print_license(args)
+        else:
+            template_license = utils.get_license(args.name)
             if not template_license.startswith('FIX_ME'):
                 print(template_license)
-                exit(0)
             else:
-                print("License \"%s\" is not valid." % opts.printlicense)
-                raise ValueError
-        except ValueError:
-            print("Available licenses are: %s" % \
-                ', '.join(sorted(templates.LICENSES.keys())).lower())
-            print("Ignore case accepted.")
-            exit(1)
+                print("Wrong license name.")
+                args.list = True
+                print_license(args)
 
-    if not opts.node_module or len(opts.node_module) is 0:
+def get_npm2deb_instance(args):
+    if not args.node_module or len(args.node_module) is 0:
         parser.error('please specify a node_module.')
         exit(1)
 
-    if opts.debug:
-        utils.DEBUG_LEVEL = int(opts.debug)
+    node_module = args.node_module
+    return Npm2Deb(node_module, vars(args))
 
-    node_module = opts.node_module
-    npm2deb = Npm2Deb(node_module, vars(opts))
+def show_dependencies(args):
+    get_npm2deb_instance(args).show_dependencies()
 
-    if opts.show or opts.rdepends:
-        if opts.show:
-            npm2deb.show_dependencies()
-        if opts.rdepends:
-            npm2deb.show_reverse_dependencies()
-        exit(0)
-    
+def show_reverse_dependencies(args):
+    get_npm2deb_instance(args).show_reverse_dependencies()
+
+def create(args):
+    npm2deb = get_npm2deb_instance(args)
     saved_path = os.getcwd()
-    utils.create_dir(node_module)
-    utils.change_dir(node_module)
+    utils.create_dir(npm2deb.name)
+    utils.change_dir(npm2deb.name)
     npm2deb.start()
 
     utils.change_dir(saved_path)
 
-    debian_path = "%s/%s/debian" % (node_module, npm2deb.debian_name)
+    debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
 
     print("""
 This is not a crystal ball, so please take a look at auto-generated files.\n
