@@ -199,7 +199,7 @@ class Npm2Deb():
         args['Uploaders'] = self.debian_author
         args['debhelper'] = self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
-        args['Homepage'] = self._get_Homepage()
+        args['Homepage'] = self.homepage
         args['Vcs-Git'] = 'git://anonscm.debian.org/collab-maint/%s.git' \
            % self.debian_name
         args['Vcs-Browser'] = 'http://anonscm.debian.org/' + \
@@ -321,12 +321,12 @@ class Npm2Deb():
         self.upstream_author = result
 
     def _get_Homepage(self):
-        result = 'FIX_ME'
+        result = 'FIX_ME homepage'
 
         if 'homepage' in self.json:
-            return self.json['homepage']
+            result = self.json['homepage']
 
-        if 'repository' in self.json:
+        elif 'repository' in self.json:
             repository = self.json['repository']
             if 'type' in repository and 'url' in repository:
                 if repository['type'] == 'git':
