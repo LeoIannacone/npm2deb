@@ -53,6 +53,9 @@ class Npm2Deb():
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
 
+    def show_itp(self):
+        print self._get_ITP()
+
     def show_dependencies(self):
         if 'devDependencies' in self.json and self.json['devDependencies']:
             print "Build dependencies:"
@@ -106,16 +109,7 @@ class Npm2Deb():
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
-        args = {}
-        args['debian_author'] = self.debian_author
-        args['debian_name'] = self.debian_name
-        args['upstream_author'] = self.upstream_author
-        args['homepage'] = self.homepage
-        args['description'] = self.description
-        args['version'] = self.version
-        args['license'] = self.license
-        content = utils.get_template('wnpp')
-        utils.create_file('%s_itp.mail' % self.debian_name, content % args)
+        utils.create_file('%s_itp.mail' % self.debian_name, self._get_ITP())
 
     def clean(self):
         utils.debug(1, "cleaning directory")
@@ -285,6 +279,18 @@ class Npm2Deb():
         if self.name is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             os.rename(self.name, self.debian_name)
+
+    def _get_ITP(self):
+        args = {}
+        args['debian_author'] = self.debian_author
+        args['debian_name'] = self.debian_name
+        args['upstream_author'] = self.upstream_author
+        args['homepage'] = self.homepage
+        args['description'] = self.description
+        args['version'] = self.version
+        args['license'] = self.license
+        content = utils.get_template('wnpp')
+        return content % args
 
     def _get_License(self):
         if 'license' in self.json:

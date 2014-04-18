@@ -26,14 +26,6 @@ def main():
         help='node module available via npm')
     parser_create.set_defaults(func=create)
 
-    parser_license = subparsers.add_parser('license', \
-        help='print license template and exit')
-    parser_license.add_argument('-l', '--list', action="store_true", \
-        default=False, help='show the available licenses')
-    parser_license.add_argument('name', nargs='?', \
-        help='the license name to show')
-    parser_license.set_defaults(func=print_license)
-
     parser_depends = subparsers.add_parser('depends', \
         help='show module dependencies in npm and debian')
     parser_depends.add_argument('node_module', \
@@ -46,12 +38,29 @@ def main():
         help='node module available via npm')
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
+    parser_itp = subparsers.add_parser('itp', \
+        help="print a itp bug template")
+    parser_itp.add_argument('node_module', \
+        help='node module available via npm')
+    parser_itp.set_defaults(func=print_itp)
+
+    parser_license = subparsers.add_parser('license', \
+        help='print license template and exit')
+    parser_license.add_argument('-l', '--list', action="store_true", \
+        default=False, help='show the available licenses')
+    parser_license.add_argument('name', nargs='?', \
+        help='the license name to show')
+    parser_license.set_defaults(func=print_license)
+
     args = parser.parse_args()
 
     if args.debug:
         utils.DEBUG_LEVEL = args.debug
 
     args.func(args)
+
+def print_itp(args):
+    get_npm2deb_instance(args).show_itp()
 
 def print_license(args, prefix=""):
     if args.list:

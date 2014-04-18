@@ -12,7 +12,7 @@ _npm2deb()
         options='apache artistic bsd expat gpl-2 gpl-3 lgpl-2 lgpl-3 mit'
 	    ;;
       npm2deb)
-        options='create depends rdepends license'
+        options='create depends rdepends license itp'
       ;;
 	esac;
 
