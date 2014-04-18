@@ -101,6 +101,21 @@ class Npm2Deb():
         self.create_watch()
         if not self.noclean:
             self.clean()
+        utils.change_dir('..')
+        self.create_itp_bug()
+
+    def create_itp_bug(self):
+        utils.debug(1, "creating wnpp bug template")
+        args = {}
+        args['debian_author'] = self.debian_author
+        args['debian_name'] = self.debian_name
+        args['upstream_author'] = self.upstream_author
+        args['homepage'] = self.homepage
+        args['description'] = self.description
+        args['version'] = self.version
+        args['license'] = self.license
+        content = utils.get_template('wnpp')
+        utils.create_file('%s_itp.mail' % self.debian_name, content % args)
 
     def clean(self):
         utils.debug(1, "cleaning directory")
@@ -112,16 +127,15 @@ class Npm2Deb():
                     os.remove(filename)
 
     def create_watch(self):
-        homepage = self._get_Homepage()
-        if homepage.find('github') >= 0:
+        if self.homepage.find('github') >= 0:
             args = {}
-            args['homepage'] = homepage
+            args['homepage'] = self.homepage
             args['debian_name'] = self.debian_name
             file_content = templates.WATCH_GITHUB % args
         else:
             file_content = '# FIX_ME Please take a look \
               at https://wiki.debian.org/debian/watch/\n'
-            file_content += "Homepage is %s\n" % homepage
+            file_content += "Homepage is %s\n" % self.homepage
         utils.create_debian_file('watch', file_content)
 
     def create_examples(self):
@@ -192,29 +206,19 @@ class Npm2Deb():
           'gitweb/?p=collab-maint/%s.git' % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
-        args['Description'] = 'FIX_ME'
-        if 'description' in self.json:
-            args['Description'] = self.json['description']
-        args['Description_Long'] = 'FIX_ME long desciption'
-        # if 'readme' in self.json:
-        #     args['Description_Long'] = self.json['readme']
+        args['Description'] = self.description
+        args['Description_Long'] = 'FIX_ME long description'
         template = utils.get_template('control')
         utils.create_debian_file('control', template % args)
 
     def create_copyright(self):
         args = {}
         args['upstream_name'] = self.name
-        args['source'] = self._get_Homepage()
+        args['source'] = self.homepage
         args['upstream_date'] = self.date.year
-        args['upstream_author'] = self._get_Author()
-        args['upstream_license_name'] = 'FIX_ME specify upstream license name'
-        args['upstream_license'] = 'FIX_ME specify upstream license description'
-        if 'license' in self.json:
-            license_name = self.json['license']
-            if license_name.lower() == "mit":
-                license_name = "Expat"
-            args['upstream_license_name'] = license_name
-            args['upstream_license'] = utils.get_license(license_name)
+        args['upstream_author'] = self.upstream_author
+        args['upstream_license_name'] = self.license
+        args['upstream_license'] = utils.get_license(self.license)
         args['debian_date'] = self.date.year
         args['debian_author'] = self.debian_author
         args['debian_license_name'] = self.debian_license
@@ -226,9 +230,7 @@ class Npm2Deb():
         args = {}
         args['debian_author'] = self.debian_author
         args['debian_name'] = self.debian_name
-        args['version'] = 'FIX_ME'
-        if 'version' in self.json:
-            args['version'] = self.json['version']
+        args['version'] = self.version
         args['date'] = self.date.strftime('%a, %d %b %Y %X %z')
         file_content = templates.CHANGELOG % args
         utils.create_debian_file("changelog", file_content)
@@ -261,6 +263,11 @@ class Npm2Deb():
             print(info[1])
             exit(1)
         self.json = parseJSON(info[1])
+        self._get_Author()
+        self._get_Homepage()
+        self._get_Description()
+        self._get_Version()
+        self._get_License()
 
     def download(self):
         utils.debug(1, "downloading %s using npm" % self.name)
@@ -279,18 +286,39 @@ class Npm2Deb():
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             os.rename(self.name, self.debian_name)
 
+    def _get_License(self):
+        if 'license' in self.json:
+            license_name = self.json['license']
+            if license_name.lower() == "mit":
+                license_name = "Expat"
+            self.license = license_name
+        else:
+            self.license = "FIX_ME upstream license"
+
+    def _get_Version(self):
+        if 'version' in self.json:
+            self.version = self.json['version']
+        else:
+            self.version = 'FIX_ME version'
+
+    def _get_Description(self):
+        if 'description' in self.json:
+            self.description = self.json['description']
+        else:
+            self.description = 'FIX_ME description'
+
     def _get_Author(self):
         result = 'FIX_ME upstream author'
         if 'author' in self.json:
             author = self.json['author']
-            if author.__class__ is str:
+            if isinstance(author, (str, unicode)):
                 result = author
-            elif author.__class__ is dict:
+            elif isinstance(author, dict):
                 if 'name' in author and 'email' in author:
                     result = "%s <%s>" % (author['name'], author['email'])
                 elif 'name' in author:
                     result = author['name']
-        return result
+        self.upstream_author = result
 
     def _get_Homepage(self):
         result = 'FIX_ME'
@@ -309,7 +337,7 @@ class Npm2Deb():
                     result = url
                 else:
                     result = repository['url']
-        return result
+        self.homepage = result
 
     def _get_Depends(self):
         depends = ['nodejs']

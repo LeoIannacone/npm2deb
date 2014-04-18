@@ -46,6 +46,8 @@ def get_template(filename):
         result = templates.COPYRIGHT
     elif filename is 'rules':
         result = templates.RULES
+    elif filename is 'wnpp':
+        result = templates.WNPP
     return result
 
 def get_license(license):

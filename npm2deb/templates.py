@@ -67,6 +67,25 @@ License: %(debian_license_name)s
 License: %(debian_license)s
 """
 
+WNPP = """Subject: ITP: %(debian_name)s -- %(description)s
+Package: wnpp
+Severity: wishlist
+Owner: %(debian_author)s
+
+* Package name    : %(debian_name)s
+  Version         : %(version)s
+  Upstream Author : %(upstream_author)s
+* URL             : %(homepage)s
+* License         : %(license)s
+  Programming Lang: JavaScript
+  Description     : %(description)s
+
+ FIX_ME bug long description
+ .
+ Node.js is an event-based server-side JavaScript engine.
+
+"""
+
 LICENSES = {}
 
 LICENSES['GPL-2'] = """GPL-2
