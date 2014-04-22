@@ -45,10 +45,12 @@ class Npm2Deb():
         self.debian_author = 'FIX_ME'
         if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
-                (os.environ['DEBFULLNAME'], os.environ['DEBEMAIL'])
+                (os.environ['DEBFULLNAME'].decode('utf-8')
+                    , os.environ['DEBEMAIL'].decode('utf-8'))
         elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
-                (os.environ['DEBFULLNAME'], os.environ['EMAIL'])
+                (os.environ['DEBFULLNAME'].decode('utf-8'),
+                    os.environ['EMAIL'].decode('utf-8'))
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
