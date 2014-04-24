@@ -145,16 +145,14 @@ class Npm2Deb():
             utils.create_debian_file('dirs', content)
 
     def create_links(self):
-        content = ''
+        links = []
         dest = self.debian_dest
-        if not os.path.isfile('index.js') and 'main' in self.json:
-            content += "%s/%s %s/index.js\n" % (dest, \
-                os.path.normpath(self.json['main']), dest)
         if os.path.isdir('bin'):
             for script in os.listdir('bin'):
-                content += "%s/bin/%s usr/bin/%s" % \
-                    (dest, script, script.replace('.js', ''))
-        if len(content) > 0:
+                links.append("%s/bin/%s usr/bin/%s" % \
+                    (dest, script, script.replace('.js', '')))
+        if len(links) > 0:
+            content = '\n'.join(links)
             utils.create_debian_file('links', content)
 
     def create_install(self):
@@ -266,7 +264,7 @@ class Npm2Deb():
         self._get_License()
 
     def download(self):
-        utils.debug(1, "downloading %s using npm" % self.name)
+        utils.debug(1, "downloading %s via npm" % self.name)
         info = getstatusoutput('npm install %s' % self.name)
         if info[0] is not 0:
             print("Error downloading package %s", self.name)
@@ -275,7 +273,7 @@ class Npm2Deb():
         # move dir from node_modules
         os.rename('node_modules/%s' % self.name, self.name)
         rmtree('node_modules')
-        # remove debendences download by npm if exists
+        # remove any dependency downloaded via npm
         if os.path.isdir("%s/node_modules" % self.name):
             rmtree("%s/node_modules" % self.name)
         if self.name is not self.debian_name:
