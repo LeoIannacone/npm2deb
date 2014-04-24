@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from npm2deb import templates
+import codecs
 import os
 
 # python 3 import
@@ -89,7 +90,7 @@ def create_debian_file(filename, content):
 
 def create_file(filename, content):
     debug(2, "creating file %s" % filename)
-    with open(filename, 'w') as writer:
+    with codecs.open(filename, 'w', 'utf-8') as writer:
         writer.write(content)
 
 def create_dir(dir):
