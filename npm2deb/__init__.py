@@ -40,8 +40,6 @@ class Npm2Deb(object):
             if 'noclean' in args:
                 self.noclean = args['noclean']
 
-        # get first info
-        getstatusoutput("npm view %s version" % package_name)
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME'
         if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
@@ -299,9 +297,10 @@ class Npm2Deb(object):
 
     def read_package_info(self):
         utils.debug(1, "reading package info using npm view")
-        info = getstatusoutput('npm view %s --json' % self.name)
+        info = getstatusoutput('npm view %s --json 2>/dev/null' % self.name)
         # if not status 0, exit
         if info[0] != 0:
+            info = getstatusoutput('npm view %s --json' % self.name)
             print(info[1])
             exit(1)
         self.json = parseJSON(info[1])
