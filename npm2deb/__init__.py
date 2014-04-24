@@ -19,14 +19,14 @@ except ImportError:
 VERSION = '0.1.0'
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE = 'GPL-3'
+DEBIAN_LICENSE_AS_UPS = 'AS_UPSTREAM'
 
 class Npm2Deb(object):
 
     def __init__(self, package_name, args):
         self.json = None
         self.name = package_name
-        self.debian_license = DEBIAN_LICENSE
+        self.debian_license = DEBIAN_LICENSE_AS_UPS
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
@@ -258,11 +258,16 @@ class Npm2Deb(object):
         args['upstream_date'] = self.date.year
         args['upstream_author'] = self.upstream_author
         args['upstream_license_name'] = self.license
-        args['upstream_license'] = utils.get_license(self.license)
+        if self.license != self.debian_license:
+            args['upstream_license'] = "\nLicense: %s" % \
+                utils.get_license(self.license)
+        else:
+            args['upstream_license'] = '' # do not insert same license twice
         args['debian_date'] = self.date.year
         args['debian_author'] = self.debian_author
         args['debian_license_name'] = self.debian_license
-        args['debian_license'] = utils.get_license(self.debian_license)
+        args['debian_license'] = "License: %s" % \
+            utils.get_license(self.debian_license)
         template = utils.get_template('copyright')
         utils.create_debian_file('copyright', template % args)
 
@@ -345,6 +350,8 @@ class Npm2Deb(object):
             if license_name.lower() == "mit":
                 license_name = "Expat"
             self.license = license_name
+            if self.debian_license == DEBIAN_LICENSE_AS_UPS:
+                self.debian_license = self.license
         else:
             self.license = "FIX_ME upstream license"
 

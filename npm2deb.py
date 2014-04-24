@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 from npm2deb import Npm2Deb, utils, templates, \
-    DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE
+    DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE_AS_UPS
 from subprocess import call
 import os
 
@@ -18,8 +18,9 @@ def main():
         default=False, help='do not remove files downloaded with npm')
     parser_create.add_argument('-d', '--debhelper', default=DEBHELPER, \
         help='specify debhelper version [default: %(default)s]')
-    parser_create.add_argument('-l', '--license', default=DEBIAN_LICENSE, \
-        help='license used for debian files [default: %(default)s]')
+    parser_create.add_argument('-l', '--license', \
+        default=DEBIAN_LICENSE_AS_UPS, \
+        help='license used for debian files [default: the same for upstream]')
     parser_create.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
         help='set standards-version [default: %(default)s]')
     parser_create.add_argument('node_module', \

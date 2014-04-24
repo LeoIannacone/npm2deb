@@ -57,14 +57,13 @@ Source: %(source)s
 Files: *
 Copyright: %(upstream_date)s %(upstream_author)s
 License: %(upstream_license_name)s
-
-License: %(upstream_license)s
+%(upstream_license)s
 
 Files: debian/*
 Copyright: %(debian_date)s %(debian_author)s
 License: %(debian_license_name)s
 
-License: %(debian_license)s
+%(debian_license)s
 """
 
 WNPP = """Subject: ITP: %(debian_name)s -- %(description)s
@@ -88,7 +87,7 @@ Owner: %(debian_author)s
 
 LICENSES = {}
 
-LICENSES['GPL-2'] = """GPL-2
+LICENSES['GPL-2'] = """GPL-2+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
@@ -106,7 +105,7 @@ LICENSES['GPL-2'] = """GPL-2
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 """
 
-LICENSES['GPL-3'] = """GPL-3
+LICENSES['GPL-3'] = """GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
