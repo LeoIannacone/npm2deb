@@ -19,7 +19,7 @@ except ImportError:
 VERSION = '0.1.0'
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE_AS_UPS = 'AS_UPSTREAM'
+DEBIAN_LICENSE_AS_UPS = 'FIX_ME debian license'
 
 class Npm2Deb(object):
 
@@ -258,7 +258,8 @@ class Npm2Deb(object):
         args['upstream_date'] = self.date.year
         args['upstream_author'] = self.upstream_author
         args['upstream_license_name'] = self.license
-        if self.license != self.debian_license:
+        if self.license != self.debian_license and \
+                self.debian_license != DEBIAN_LICENSE_AS_UPS:
             args['upstream_license'] = "\nLicense: %s" % \
                 utils.get_license(self.license)
         else:

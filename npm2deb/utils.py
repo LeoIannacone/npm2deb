@@ -73,7 +73,7 @@ def get_license(license):
     elif name.startswith('apache'):
         result = templates.LICENSES['Apache']
     else:
-        result = 'FIX_ME: please specify a license description'
+        result = 'FIX_ME please specify a license description'
     return result
 
 def change_dir(dir):
