@@ -59,6 +59,7 @@ class Npm2Deb(object):
     def check(self):
         from urllib2 import urlopen
         from xml.dom import minidom
+        import SOAPpy
         repositories = ['collab-maint', 'pkg-javascript']
         formatted="  {0:40} | {1}"
         found = False
@@ -80,6 +81,27 @@ class Npm2Deb(object):
                     continue
         if not found:
             print ("  no repo found.")
+
+        # at least for now, do not check bugs - more tests needed
+        return
+
+        url = 'http://bugs.debian.org/cgi-bin/soap.cgi'
+        server = SOAPpy.SOAPProxy(url, 'Debbugs/SOAP')
+        bugs = server.get_bugs("package", "wnpp")
+        found = False
+        print("Inspecting %s reports on wnpp:" % len(bugs))
+        statuses = server.get_status(bugs)
+        for status in statuses:
+            try:
+                subject = status['item']['value']['subject']
+                bug = status['item']['value']['bug_num']
+                if subject.find(self.name) >= 0:
+                    found = True
+                    print("  #%s  %s" % (bug, subject))
+            except:
+                continue
+        if not found:
+            print("  no bug found.")
 
     def show_itp(self):
         print self._get_ITP()
