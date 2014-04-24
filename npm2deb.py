@@ -38,6 +38,12 @@ def main():
         help='node module available via npm')
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
+    parser_check = subparsers.add_parser('check', \
+        help="check if module is already in debian")
+    parser_check.add_argument('node_module', \
+        help='node module available via npm')
+    parser_check.set_defaults(func=check)
+
     parser_itp = subparsers.add_parser('itp', \
         help="print a itp bug template")
     parser_itp.add_argument('node_module', \
@@ -58,6 +64,9 @@ def main():
         utils.DEBUG_LEVEL = args.debug
 
     args.func(args)
+
+def check(args):
+    get_npm2deb_instance(args).check()
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()

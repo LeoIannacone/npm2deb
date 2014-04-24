@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
+from npm2deb import VERSION
 import shutil
 
 class remove_extension(install_scripts):
@@ -11,7 +12,7 @@ class remove_extension(install_scripts):
                 shutil.move(script, script[:-3])
 
 setup(name='npm2deb',
-      version='0.1.0',
+      version=VERSION,
       author='Leo Iannacone',
       author_email='l3on@ubuntu.com',
       description='A script to make faster and easier packaging nodejs modules',

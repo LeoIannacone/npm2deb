@@ -16,11 +16,12 @@ try:
 except ImportError:
     from subprocess import getstatusoutput
 
+VERSION = '0.1.0'
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
 DEBIAN_LICENSE = 'GPL-3'
 
-class Npm2Deb():
+class Npm2Deb(object):
 
     def __init__(self, package_name, args):
         self.json = None
@@ -54,6 +55,31 @@ class Npm2Deb():
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
+
+    def check(self):
+        from urllib2 import urlopen
+        from xml.dom import minidom
+        repositories = ['collab-maint', 'pkg-javascript']
+        formatted="  {0:40} | {1}"
+        found = False
+        print("Looking for an existing repository:")
+        for repo in repositories:
+            url_base = "http://anonscm.debian.org/gitweb"
+            data = urlopen("%s/?a=project_list&pf=%s&s=%s" %
+                (url_base, repo, self.name)).read()
+            dom = minidom.parseString(data)
+            for row in dom.getElementsByTagName('tr')[1:]:
+                try:
+                    columns = row.getElementsByTagName('td')
+                    name = columns[0].firstChild.getAttribute('href')\
+                        .split('.git')[0].split('?p=')[1]
+                    description = columns[1].firstChild.getAttribute('title')
+                    found = True
+                    print(formatted.format(name, description))
+                except:
+                    continue
+        if not found:
+            print ("  no repo found.")
 
     def show_itp(self):
         print self._get_ITP()
