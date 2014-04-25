@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 from argparse import ArgumentParser
-from npm2deb import Npm2Deb, utils, templates, \
-    DEBHELPER, STANDARDS_VERSION, DEBIAN_LICENSE_AS_UPS
+from npm2deb import Npm2Deb, utils, templates, helper, \
+    DEBHELPER, STANDARDS_VERSION
 from subprocess import call
 import os
 
@@ -18,8 +18,7 @@ def main():
         default=False, help='do not remove files downloaded with npm')
     parser_create.add_argument('-d', '--debhelper', default=DEBHELPER, \
         help='specify debhelper version [default: %(default)s]')
-    parser_create.add_argument('-l', '--license', \
-        default=DEBIAN_LICENSE_AS_UPS, \
+    parser_create.add_argument('-l', '--license', default=None, \
         help='license used for debian files [default: the same for upstream]')
     parser_create.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
         help='set standards-version [default: %(default)s]')
@@ -39,11 +38,11 @@ def main():
         help='node module available via npm')
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
-    parser_check = subparsers.add_parser('check', \
-        help="check if module is already in debian")
+    parser_check = subparsers.add_parser('search', \
+        help="look if module is already in debian")
     parser_check.add_argument('node_module', \
         help='node module available via npm')
-    parser_check.set_defaults(func=check)
+    parser_check.set_defaults(func=search_for_module)
 
     parser_itp = subparsers.add_parser('itp', \
         help="print a itp bug template")
@@ -66,8 +65,10 @@ def main():
 
     args.func(args)
 
-def check(args):
-    get_npm2deb_instance(args).check()
+def search_for_module(args):
+    node_module = check_module_name(args)
+    utils.get_debian_package(node_module)
+    helper.search_for_repository(node_module)
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()
@@ -90,19 +91,22 @@ def print_license(args, prefix=""):
                 args.list = True
                 print_license(args)
 
-def get_npm2deb_instance(args):
+def check_module_name(args):
     if not args.node_module or len(args.node_module) is 0:
-        parser.error('please specify a node_module.')
+        print('please specify a node_module.')
         exit(1)
+    return args.node_module
 
-    node_module = args.node_module
+def get_npm2deb_instance(args):
+    node_module = check_module_name(args)
     return Npm2Deb(node_module, vars(args))
 
 def show_dependencies(args):
     get_npm2deb_instance(args).show_dependencies()
 
 def show_reverse_dependencies(args):
-    get_npm2deb_instance(args).show_reverse_dependencies()
+    node_module = check_module_name(args)
+    helper.search_for_reverse_dependencies(node_module)
 
 def create(args):
     npm2deb = get_npm2deb_instance(args)

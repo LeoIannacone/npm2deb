@@ -4,8 +4,6 @@ from json import loads as parseJSON
 from datetime import datetime
 from dateutil import tz
 from shutil import rmtree
-from npm2deb import utils
-from npm2deb import templates
 import os
 import stat
 import re
@@ -16,28 +14,30 @@ try:
 except ImportError:
     from subprocess import getstatusoutput
 
+from npm2deb import utils, templates
+
 VERSION = '0.1.0'
 DEBHELPER = 9
 STANDARDS_VERSION = '3.9.5'
-DEBIAN_LICENSE_AS_UPS = 'FIX_ME debian license'
 
 class Npm2Deb(object):
 
-    def __init__(self, package_name, args):
+    def __init__(self, package_name, args={}):
         self.name = package_name
+        self.args = args
         self.json = None
         self.homepage = None
-        self.repo_url = None
-        self.upstream_author = None
-        self.license = None
-        self.version = None
         self.description = None
-        self.debian_license = DEBIAN_LICENSE_AS_UPS
+        self.upstream_author = None
+        self.upstream_license = None
+        self.upstream_version = None
+        self.upstream_repo_url = None
+        self.debian_license = "FIX_ME debian license"
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         if args:
-            if 'license' in args:
+            if 'license' in args and args['license']:
                 self.debian_license = args['license']
             if 'standards' in args:
                 self.debian_standards = args['standards']
@@ -47,7 +47,7 @@ class Npm2Deb(object):
                 self.noclean = args['noclean']
 
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
-        self.debian_author = 'FIX_ME'
+        self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
                 (os.environ['DEBFULLNAME'].decode('utf-8')
@@ -59,53 +59,6 @@ class Npm2Deb(object):
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
-
-    def check(self):
-        from urllib2 import urlopen
-        from xml.dom import minidom
-        import SOAPpy
-        repositories = ['collab-maint', 'pkg-javascript']
-        formatted = "  {0:40} | {1}"
-        found = False
-        print("Looking for an existing repository:")
-        for repo in repositories:
-            url_base = "http://anonscm.debian.org/gitweb"
-            data = urlopen("%s/?a=project_list&pf=%s&s=%s" %
-                (url_base, repo, self.name)).read()
-            dom = minidom.parseString(data)
-            for row in dom.getElementsByTagName('tr')[1:]:
-                try:
-                    columns = row.getElementsByTagName('td')
-                    name = columns[0].firstChild.getAttribute('href')\
-                        .split('.git')[0].split('?p=')[1]
-                    description = columns[1].firstChild.getAttribute('title')
-                    found = True
-                    print(formatted.format(name, description))
-                except:
-                    continue
-        if not found:
-            print ("  no repo found.")
-
-        # at least for now, do not check bugs - more tests needed
-        return
-
-        url = 'http://bugs.debian.org/cgi-bin/soap.cgi'
-        server = SOAPpy.SOAPProxy(url, 'Debbugs/SOAP')
-        bugs = server.get_bugs("package", "wnpp")
-        found = False
-        print("Inspecting %s reports on wnpp:" % len(bugs))
-        statuses = server.get_status(bugs)
-        for status in statuses:
-            try:
-                subject = status['item']['value']['subject']
-                bug = status['item']['value']['bug_num']
-                if subject.find(self.name) >= 0:
-                    found = True
-                    print("  #%s  %s" % (bug, subject))
-            except:
-                continue
-        if not found:
-            print("  no bug found.")
 
     def show_itp(self):
         print self._get_ITP()
@@ -126,21 +79,6 @@ class Npm2Deb(object):
             print("")
         else:
             print("Module %s has no dependencies." % self.name)
-
-    def show_reverse_dependencies(self):
-        from urllib2 import urlopen
-        url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
-        + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
-        url = url % {'name': self.name}
-        utils.debug(1, "opening url %s" % url)
-        data = urlopen(url).read()
-        data = parseJSON(data)
-        if 'rows' in data and len(data['rows']) > 0:
-            print("Reverse Depends:")
-            for row in data['rows']:
-                print("  %s" % row['key'][1])
-        else:
-            print ("Module %s has no reverse dependencies" % self.name)
 
     def start(self):
         self.download()
@@ -176,8 +114,9 @@ class Npm2Deb(object):
 
     def create_watch(self):
         args = {}
-        if self.repo_url and self.repo_url.find('github') >= 0:
-            args['homepage'] = self.repo_url
+        if self.upstream_repo_url and \
+                self.upstream_repo_url.find('github') >= 0:
+            args['homepage'] = self.upstream_repo_url
             args['debian_name'] = self.debian_name
             content = templates.WATCH_GITHUB % args
         else:
@@ -263,11 +202,11 @@ class Npm2Deb(object):
         args['source'] = self.homepage
         args['upstream_date'] = self.date.year
         args['upstream_author'] = self.upstream_author
-        args['upstream_license_name'] = self.license
-        if self.license != self.debian_license and \
-                self.debian_license != DEBIAN_LICENSE_AS_UPS:
+        args['upstream_license_name'] = self.upstream_license
+        if self.debian_license and \
+                self.upstream_license != self.debian_license:
             args['upstream_license'] = "\nLicense: %s" % \
-                utils.get_license(self.license)
+                utils.get_license(self.upstream_license)
         else:
             args['upstream_license'] = '' # do not insert same license twice
         args['debian_date'] = self.date.year
@@ -282,7 +221,7 @@ class Npm2Deb(object):
         args = {}
         args['debian_author'] = self.debian_author
         args['debian_name'] = self.debian_name
-        args['version'] = self.version
+        args['version'] = self.upstream_version
         args['date'] = self.date.strftime('%a, %d %b %Y %X %z')
         file_content = templates.CHANGELOG % args
         utils.create_debian_file("changelog", file_content)
@@ -347,8 +286,8 @@ class Npm2Deb(object):
         args['upstream_author'] = self.upstream_author
         args['homepage'] = self.homepage
         args['description'] = self.description
-        args['version'] = self.version
-        args['license'] = self.license
+        args['version'] = self.upstream_version
+        args['license'] = self.upstream_license
         content = utils.get_template('wnpp')
         return content % args
 
@@ -357,17 +296,18 @@ class Npm2Deb(object):
             license_name = self.json['license']
             if license_name.lower() == "mit":
                 license_name = "Expat"
-            self.license = license_name
-            if self.debian_license == DEBIAN_LICENSE_AS_UPS:
-                self.debian_license = self.license
+            self.upstream_license = license_name
+            if self.debian_license is None or \
+                self.debian_license.find('FIX_ME') >= 0:
+                self.debian_license = self.upstream_license
         else:
-            self.license = "FIX_ME upstream license"
+            self.upstream_license = "FIX_ME upstream license"
 
     def _get_json_version(self):
         if 'version' in self.json:
-            self.version = self.json['version']
+            self.upstream_version = self.json['version']
         else:
-            self.version = 'FIX_ME version'
+            self.upstream_version = 'FIX_ME version'
 
     def _get_json_description(self):
         if 'description' in self.json:
@@ -406,14 +346,14 @@ class Npm2Deb(object):
                         result = url
                 else:
                     result = url
-        self.repo_url = result
+        self.upstream_repo_url = result
 
     def _get_json_homepage(self):
         result = 'FIX_ME homepage'
         if 'homepage' in self.json:
             result = self.json['homepage']
-        elif self.repo_url:
-            result = self.repo_url
+        elif self.upstream_repo_url:
+            result = self.upstream_repo_url
         self.homepage = result
 
     def _get_Depends(self):
