@@ -67,8 +67,12 @@ def main():
 
 def search_for_module(args):
     node_module = check_module_name(args)
-    utils.get_debian_package(node_module)
+    print("\nLooking for similiar package:")
+    print("  %s" % utils.get_debian_package(node_module))
+    print("")
     helper.search_for_repository(node_module)
+    print("")
+    helper.search_for_bug(node_module)
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()

@@ -33,7 +33,7 @@ def get_debian_package(module_name):
             debinfo = tmp[0].strip()
             debinfo += " (%s)" % tmp[1].strip()
             return debinfo
-    return "None"
+    return None
 
 def get_npm_version(module_name):
     return getstatusoutput( \
