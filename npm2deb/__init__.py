@@ -210,7 +210,7 @@ class Npm2Deb(object):
             libs.append('lib')
         # install main if not in a subpath
         if 'main' in self.json and \
-            not self.json['main'].index('/') > 0:
+            not self.json['main'].find('/') > 0:
             libs.append(os.path.normpath(self.json['main']))
         else:
             if os.path.exists('index.js'):
