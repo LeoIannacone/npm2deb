@@ -24,8 +24,14 @@ DEBIAN_LICENSE_AS_UPS = 'FIX_ME debian license'
 class Npm2Deb(object):
 
     def __init__(self, package_name, args):
-        self.json = None
         self.name = package_name
+        self.json = None
+        self.homepage = None
+        self.repo_url = None
+        self.upstream_author = None
+        self.license = None
+        self.version = None
+        self.description = None
         self.debian_license = DEBIAN_LICENSE_AS_UPS
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
@@ -59,7 +65,7 @@ class Npm2Deb(object):
         from xml.dom import minidom
         import SOAPpy
         repositories = ['collab-maint', 'pkg-javascript']
-        formatted="  {0:40} | {1}"
+        formatted = "  {0:40} | {1}"
         found = False
         print("Looking for an existing repository:")
         for repo in repositories:
@@ -169,16 +175,16 @@ class Npm2Deb(object):
                     os.remove(filename)
 
     def create_watch(self):
-        if self.homepage.find('github') >= 0:
-            args = {}
-            args['homepage'] = self.homepage
+        args = {}
+        if self.repo_url and self.repo_url.find('github') >= 0:
+            args['homepage'] = self.repo_url
             args['debian_name'] = self.debian_name
-            file_content = templates.WATCH_GITHUB % args
+            content = templates.WATCH_GITHUB % args
         else:
-            file_content = '# FIX_ME Please take a look \
-              at https://wiki.debian.org/debian/watch/\n'
-            file_content += "Homepage is %s\n" % self.homepage
-        utils.create_debian_file('watch', file_content)
+            content = "# FIX_ME Please take a look " \
+                "at https://wiki.debian.org/debian/watch/\n" \
+                "Homepage is %s\n" % self.homepage
+        utils.create_debian_file('watch', content)
 
     def create_examples(self):
         if os.path.isdir('examples'):
@@ -310,11 +316,12 @@ class Npm2Deb(object):
             print(info[1])
             exit(1)
         self.json = parseJSON(info[1])
-        self._get_Author()
-        self._get_Homepage()
-        self._get_Description()
-        self._get_Version()
-        self._get_License()
+        self._get_json_author()
+        self._get_json_repo_url()
+        self._get_json_homepage()
+        self._get_json_description()
+        self._get_json_version()
+        self._get_json_license()
 
     def download(self):
         utils.debug(1, "downloading %s via npm" % self.name)
@@ -345,7 +352,7 @@ class Npm2Deb(object):
         content = utils.get_template('wnpp')
         return content % args
 
-    def _get_License(self):
+    def _get_json_license(self):
         if 'license' in self.json:
             license_name = self.json['license']
             if license_name.lower() == "mit":
@@ -356,19 +363,19 @@ class Npm2Deb(object):
         else:
             self.license = "FIX_ME upstream license"
 
-    def _get_Version(self):
+    def _get_json_version(self):
         if 'version' in self.json:
             self.version = self.json['version']
         else:
             self.version = 'FIX_ME version'
 
-    def _get_Description(self):
+    def _get_json_description(self):
         if 'description' in self.json:
             self.description = self.json['description']
         else:
             self.description = 'FIX_ME description'
 
-    def _get_Author(self):
+    def _get_json_author(self):
         result = 'FIX_ME upstream author'
         if 'author' in self.json:
             author = self.json['author']
@@ -381,23 +388,32 @@ class Npm2Deb(object):
                     result = author['name']
         self.upstream_author = result
 
-    def _get_Homepage(self):
-        result = 'FIX_ME homepage'
-
-        if 'homepage' in self.json:
-            result = self.json['homepage']
-
-        elif 'repository' in self.json:
+    def _get_json_repo_url(self):
+        result = 'FIX_ME repo url'
+        if 'repository' in self.json:
             repository = self.json['repository']
             if 'type' in repository and 'url' in repository:
+                url = repository['url']
                 if repository['type'] == 'git':
-                    url = repository['url']
-                    url = re.sub(r'^git@(.*):', r'http://\1/', url)
-                    url = re.sub(r'^git://', 'http://', url)
-                    url = re.sub(r'\.git$', '', url)
-                    result = url
+                    if url.find('github') >= 0:
+                        tmp = self._get_github_url_from_git(url)
+                        if tmp:
+                            result = tmp
+                    else:
+                        url = re.sub(r'^git@(.*):', r'http://\1/', url)
+                        url = re.sub(r'^git://', 'http://', url)
+                        url = re.sub(r'\.git$', '', url)
+                        result = url
                 else:
-                    result = repository['url']
+                    result = url
+        self.repo_url = result
+
+    def _get_json_homepage(self):
+        result = 'FIX_ME homepage'
+        if 'homepage' in self.json:
+            result = self.json['homepage']
+        elif self.repo_url:
+            result = self.repo_url
         self.homepage = result
 
     def _get_Depends(self):
@@ -430,3 +446,11 @@ class Npm2Deb(object):
             npminfo = "%s (%s)" % (module_name, npmver)
             debinfo = utils.get_debian_package(module_name)
             print(formatted.format(npminfo, debinfo))
+
+    def _get_github_url_from_git(self, url):
+        result = getstatusoutput("nodejs -e "
+            "\"console.log(require('github-url-from-git')"
+            "('%s'));\"" % url)[1]
+        if result == 'undefined':
+            result = None
+        return result
