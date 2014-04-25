@@ -176,7 +176,8 @@ class Npm2Deb(object):
                     docs.append(name)
                     break
         if len(docs) > 0:
-            utils.create_debian_file('docs', '\n'.join(docs) + '\n')
+            content = '\n'.join(docs) + '\n'
+            utils.create_debian_file('docs', content)
 
     def create_control(self):
         args = {}
@@ -352,7 +353,8 @@ class Npm2Deb(object):
         result = 'FIX_ME homepage'
         if 'homepage' in self.json:
             result = self.json['homepage']
-        elif self.upstream_repo_url:
+        elif self.upstream_repo_url and not \
+                self.upstream_repo_url.find('FIX_ME') >= 0:
             result = self.upstream_repo_url
         self.homepage = result
 
