@@ -46,13 +46,13 @@ def search_for_bug(module_name, do_print=True):
     '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
     '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
     '&owner%5B%5D=no&col%5B%5D=type&col%5B%5D=description&sort=project'
-
+    my_print('Looking for wnpp bugs:')
+    debug(1, "getting bugs from http://wnpp.debian.net")
     data = urlopen(url).read()
     rows = data.split('class="data_table">')[1].split('</table>')[0].split('\n')
     found = False
     formatted = "  #{0}  {1:>3}:  {2:25} -- {3}"
     result = []
-    my_print('Looking for wnpp bugs:')
     for row in rows:
         row = row.replace('&nbsp;', '')
         if len(row) > 0:
@@ -69,8 +69,6 @@ def search_for_bug(module_name, do_print=True):
                         bug["description"].find(module_name) >= 0:
                     found = True
                     result.append(bug)
-                    #my_print("  #%(num)s  %(type)s: %(package)s " \
-                    #"-- %(description)s" % bug)
                     my_print(formatted.format(bug["num"], \
                         bug["type"], bug["package"], bug["description"]))
             except:
