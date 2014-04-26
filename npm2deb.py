@@ -28,6 +28,14 @@ def main():
 
     parser_depends = subparsers.add_parser('depends', \
         help='show module dependencies in npm and debian')
+    parser_depends.add_argument('-r', '--recursive', action="store_true", \
+        default=False, help='look for binary dependencies recursively')
+    parser_depends.add_argument('-f', '--force', action="store_true", \
+        default=False, help='force inspection for modules already in debian')
+    parser_depends.add_argument('-b', '--binary', action="store_true", \
+        default=False, help='show binary dependencies')
+    parser_depends.add_argument('-B', '--builddeb', action="store_true", \
+        default=False, help='show show build dependencies')
     parser_depends.add_argument('node_module', \
         help='node module available via npm')
     parser_depends.set_defaults(func=show_dependencies)
@@ -110,21 +118,33 @@ def print_license(args, prefix=""):
                 args.list = True
                 print_license(args)
 
-def check_module_name(args):
-    if not args.node_module or len(args.node_module) is 0:
-        print('please specify a node_module.')
-        exit(1)
-    return args.node_module
-
-def get_npm2deb_instance(args):
-    node_module = check_module_name(args)
-    return Npm2Deb(node_module, vars(args))
-
 def show_dependencies(args):
-    get_npm2deb_instance(args).show_dependencies()
+    # enable all by default
+    if not args.binary and not args.builddeb:
+        args.binary = True
+        args.builddeb = True
+
+    module_name = get_npm2deb_instance(args).name
+
+    if args.builddeb:
+        print "Build dependencies:"
+        helper.print_formatted_dependency("NPM", "Debian")
+        dep = helper.search_for_builddep(module_name)
+        if not dep:
+            print("Module %s has no build dependencies." % module_name)
+        print("")
+
+    if args.binary:
+        print "Dependencies:"
+        helper.print_formatted_dependency("NPM", "Debian")
+        dep = helper.search_for_dependencies(module_name,
+            args.recursive, args.force)
+        if not dep:
+            print("Module %s has no dependencies." % module_name)
+        print("")
 
 def show_reverse_dependencies(args):
-    node_module = check_module_name(args)
+    node_module = get_npm2deb_instance(args).name
     helper.search_for_reverse_dependencies(node_module)
 
 def create(args):
@@ -144,6 +164,17 @@ You may want fix first these issues:\n""")
     call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
     print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
             \n\n$ uscan --download-current-version\n")
+
+
+def check_module_name(args):
+    if not args.node_module or len(args.node_module) is 0:
+        print('please specify a node_module.')
+        exit(1)
+    return args.node_module
+
+def get_npm2deb_instance(args):
+    node_module = check_module_name(args)
+    return Npm2Deb(node_module, vars(args))
 
 
 if __name__ == '__main__':

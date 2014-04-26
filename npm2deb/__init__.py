@@ -63,23 +63,6 @@ class Npm2Deb(object):
     def show_itp(self):
         print self._get_ITP()
 
-    def show_dependencies(self):
-        if 'devDependencies' in self.json and self.json['devDependencies']:
-            print "Build dependencies:"
-            self._get_formatted_comparision_npm_deb(\
-                    self.json['devDependencies'])
-            print("")
-        else:
-            print("Module %s has no build dependencies." % self.name)
-
-        if 'dependencies' in self.json and self.json['dependencies']:
-            print "Dependencies:"
-            self._get_formatted_comparision_npm_deb(\
-                    self.json['dependencies'])
-            print("")
-        else:
-            print("Module %s has no dependencies." % self.name)
-
     def start(self):
         self.download()
         utils.change_dir(self.debian_name)
@@ -381,15 +364,6 @@ class Npm2Deb(object):
 
     def _debianize_name(self, name):
         return name.replace('_', '-')
-
-    def _get_formatted_comparision_npm_deb(self, module_list):
-        formatted = "{0:40}{1}"
-        print(formatted.format("NPM", "Debian"))
-        for module_name in module_list:
-            npmver = utils.get_npm_version(module_name)
-            npminfo = "%s (%s)" % (module_name, npmver)
-            debinfo = utils.get_debian_package(module_name)
-            print(formatted.format(npminfo, debinfo))
 
     def _get_github_url_from_git(self, url):
         result = getstatusoutput("nodejs -e "

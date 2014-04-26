@@ -1,4 +1,8 @@
-from utils import debug
+from commands import getstatusoutput
+from json import loads as parseJSON
+from urllib2 import urlopen
+from xml.dom import minidom
+from utils import debug, get_debian_package
 
 DO_PRINT=False
 
@@ -7,8 +11,6 @@ def my_print(what):
         print(what)
 
 def search_for_repository(module_name, do_print=True):
-    from urllib2 import urlopen
-    from xml.dom import minidom
     global DO_PRINT
     DO_PRINT = do_print
     repositories = ['collab-maint', 'pkg-javascript']
@@ -38,8 +40,6 @@ def search_for_repository(module_name, do_print=True):
     return result
 
 def search_for_bug(module_name, do_print=True):
-    from urllib2 import urlopen
-    from xml.dom import minidom
     global DO_PRINT
     DO_PRINT = do_print
     url = 'http://wnpp.debian.net/' \
@@ -78,8 +78,6 @@ def search_for_bug(module_name, do_print=True):
     return result
 
 def search_for_reverse_dependencies(module_name, do_print=True):
-    from urllib2 import urlopen
-    from json import loads as parseJSON
     global DO_PRINT
     DO_PRINT = do_print
     url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
@@ -98,3 +96,55 @@ def search_for_reverse_dependencies(module_name, do_print=True):
     else:
         my_print("Module %s has no reverse dependencies" % module_name)
     return result
+
+def search_for_dependencies(module_name, recursive=False,
+        force=False, do_print=True, prefix=''):
+    global DO_PRINT
+    DO_PRINT = do_print
+    result = {}
+    try:
+        dependencies = parseJSON(getstatusoutput('npm view %s '
+            'dependencies --json 2>/dev/null' % module_name)[1])
+    except ValueError:
+        return result
+
+    for dep in dependencies:
+        result[dep] = {}
+        result[dep]['version'] = dependencies[dep]
+        result[dep]['debian'] = get_debian_package(dep)
+        print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
+            result[dep]['debian'], do_print, prefix)
+        if recursive:
+            if (result[dep]['debian'] and force) or \
+                    result[dep]['debian'] is None:
+                result[dep]['dependencies'] = search_for_dependencies(dep, \
+                    recursive, force, do_print, prefix + " - ")
+        else:
+            result[dep]['dependencies'] = None
+
+    return result
+
+def search_for_builddep(module_name, do_print=True):
+    global DO_PRINT
+    DO_PRINT = do_print
+    result = {}
+    try:
+        builddeb = parseJSON(getstatusoutput('npm view %s '
+            'devDependencies --json 2>/dev/null' % module_name)[1])
+    except ValueError:
+        return result
+
+    for dep in builddeb:
+        result[dep] = {}
+        result[dep]['version'] = builddeb[dep]
+        result[dep]['debian'] = get_debian_package(dep)
+        print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
+            result[dep]['debian'], do_print)
+
+    return result
+
+def print_formatted_dependency(npm, debian, do_print=True, prefix=''):
+    global DO_PRINT
+    DO_PRINT = do_print
+    formatted = "{0:40}{1}"
+    my_print(formatted.format("%s%s" % (prefix, npm), debian))
