@@ -295,6 +295,8 @@ class Npm2Deb(object):
     def _get_json_license(self):
         if 'license' in self.json:
             license_name = self.json['license']
+            if isinstance(license_name, dict):
+                license_name = license_name['type']
             if license_name.lower() == "mit":
                 license_name = "Expat"
             self.upstream_license = license_name
