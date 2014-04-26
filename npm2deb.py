@@ -38,11 +38,17 @@ def main():
         help='node module available via npm')
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
-    parser_check = subparsers.add_parser('search', \
+    parser_search = subparsers.add_parser('search', \
         help="look if module is already in debian")
-    parser_check.add_argument('node_module', \
+    parser_search.add_argument('-b', '--bug', action="store_true", \
+        default=False, help='search for existing bug in wnpp')
+    parser_search.add_argument('-d', '--debian', action="store_true", \
+        default=False, help='search for existing package in debian')
+    parser_search.add_argument('-r', '--repository', action="store_true", \
+        default=False, help='search for existing repository in alioth')
+    parser_search.add_argument('node_module', \
         help='node module available via npm')
-    parser_check.set_defaults(func=search_for_module)
+    parser_search.set_defaults(func=search_for_module)
 
     parser_itp = subparsers.add_parser('itp', \
         help="print a itp bug template")
@@ -66,13 +72,22 @@ def main():
     args.func(args)
 
 def search_for_module(args):
-    node_module = check_module_name(args)
-    print("\nLooking for similiar package:")
-    print("  %s" % utils.get_debian_package(node_module))
+    # enable all by default
+    if not args.bug and not args.debian and not args.repository:
+        args.bug = True
+        args.debian = True
+        args.repository = True
+    node_module = get_npm2deb_instance(args).name
+    if args.debian:
+        print("\nLooking for similiar package:")
+        print("  %s" % utils.get_debian_package(node_module))
+    if args.repository:
+        print("")
+        helper.search_for_repository(node_module)
+    if args.bug:
+        print("")
+        helper.search_for_bug(node_module)
     print("")
-    helper.search_for_repository(node_module)
-    print("")
-    helper.search_for_bug(node_module)
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()
