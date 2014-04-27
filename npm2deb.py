@@ -129,24 +129,28 @@ def show_dependencies(args):
         args.binary = True
         args.builddeb = True
 
-    module_name = get_npm2deb_instance(args).name
+    npm2deb_instance = get_npm2deb_instance(args)
+    module_name = npm2deb_instance.name
+    json = npm2deb_instance.json
 
     if args.builddeb:
-        print "Build dependencies:"
-        helper.print_formatted_dependency("NPM", "Debian")
-        dep = helper.search_for_builddep(module_name)
-        if not dep:
+        if 'devDependencies' in json and json['devDependencies']:
+            print "Build dependencies:"
+            helper.print_formatted_dependency("NPM", "Debian")
+            helper.search_for_builddep(module_name)
+            print("")
+        else:
             print("Module %s has no build dependencies." % module_name)
-        print("")
 
     if args.binary:
-        print "Dependencies:"
-        helper.print_formatted_dependency("NPM", "Debian")
-        dep = helper.search_for_dependencies(module_name,
-            args.recursive, args.force)
-        if not dep:
+        if 'dependencies' in json and json['dependencies']:
+            print "Dependencies:"
+            helper.print_formatted_dependency("NPM", "Debian")
+            helper.search_for_dependencies(module_name,
+                args.recursive, args.force)
+            print("")
+        else:
             print("Module %s has no dependencies." % module_name)
-        print("")
 
     show_mapper_warnings()
 
