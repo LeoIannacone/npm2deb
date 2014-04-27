@@ -10,9 +10,7 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
-def search_for_repository(module_name, do_print=True):
-    global DO_PRINT
-    DO_PRINT = do_print
+def search_for_repository(module_name):
     repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
@@ -39,9 +37,7 @@ def search_for_repository(module_name, do_print=True):
         my_print("  None")
     return result
 
-def search_for_bug(module_name, do_print=True):
-    global DO_PRINT
-    DO_PRINT = do_print
+def search_for_bug(module_name):
     url = 'http://wnpp.debian.net/' \
     '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
     '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
@@ -77,9 +73,7 @@ def search_for_bug(module_name, do_print=True):
         my_print('  None')
     return result
 
-def search_for_reverse_dependencies(module_name, do_print=True):
-    global DO_PRINT
-    DO_PRINT = do_print
+def search_for_reverse_dependencies(module_name):
     url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
     + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
     url = url % {'name': module_name}
@@ -98,9 +92,7 @@ def search_for_reverse_dependencies(module_name, do_print=True):
     return result
 
 def search_for_dependencies(module_name, recursive=False,
-        force=False, do_print=True, prefix=''):
-    global DO_PRINT
-    DO_PRINT = do_print
+        force=False, prefix=''):
     result = {}
     try:
         dependencies = parseJSON(getstatusoutput('npm view %s '
@@ -113,20 +105,18 @@ def search_for_dependencies(module_name, recursive=False,
         result[dep]['version'] = dependencies[dep]
         result[dep]['debian'] = get_debian_package(dep)
         print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
-            result[dep]['debian'], do_print, prefix)
+            result[dep]['debian'], prefix)
         if recursive:
             if (result[dep]['debian'] and force) or \
                     result[dep]['debian'] is None:
                 result[dep]['dependencies'] = search_for_dependencies(dep, \
-                    recursive, force, do_print, prefix + " - ")
+                    recursive, force, prefix + " - ")
         else:
             result[dep]['dependencies'] = None
 
     return result
 
-def search_for_builddep(module_name, do_print=True):
-    global DO_PRINT
-    DO_PRINT = do_print
+def search_for_builddep(module_name):
     result = {}
     try:
         builddeb = parseJSON(getstatusoutput('npm view %s '
@@ -139,12 +129,10 @@ def search_for_builddep(module_name, do_print=True):
         result[dep]['version'] = builddeb[dep]
         result[dep]['debian'] = get_debian_package(dep)
         print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
-            result[dep]['debian'], do_print)
+            result[dep]['debian'])
 
     return result
 
-def print_formatted_dependency(npm, debian, do_print=True, prefix=''):
-    global DO_PRINT
-    DO_PRINT = do_print
+def print_formatted_dependency(npm, debian, prefix=''):
     formatted = "{0:40}{1}"
     my_print(formatted.format("%s%s" % (prefix, npm), debian))
