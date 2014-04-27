@@ -12,28 +12,9 @@ except ImportError:
 
 DEBUG_LEVEL = 0
 
-map_npm_debian = {
-    'uglify-js': 'node-uglify'
-  , 'coffee-script': 'coffeescript'
-}
-
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
         print(" debug [%s] - %s" % (level, msg))
-
-def get_debian_package(module_name):
-    name = "node-%s" % module_name
-    if module_name in map_npm_debian:
-        name = map_npm_debian[module_name]
-    debtmp = getstatusoutput( \
-            "apt-cache madison %s | grep Source" % name)
-    if debtmp[0] == 0:
-        tmp = debtmp[1].split('|')
-        if len(tmp) >= 2:
-            debinfo = tmp[0].strip()
-            debinfo += " (%s)" % tmp[1].strip()
-            return debinfo
-    return None
 
 def get_npm_version(module_name):
     return getstatusoutput( \

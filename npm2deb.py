@@ -3,6 +3,7 @@
 from argparse import ArgumentParser
 from npm2deb import Npm2Deb, utils, templates, helper, \
     DEBHELPER, STANDARDS_VERSION
+from npm2deb.mapper import Mapper
 from subprocess import call
 import os
 
@@ -77,6 +78,7 @@ def main():
     if args.debug:
         utils.DEBUG_LEVEL = args.debug
 
+    helper.DO_PRINT = True
     args.func(args)
 
 def search_for_module(args):
@@ -88,7 +90,8 @@ def search_for_module(args):
     node_module = get_npm2deb_instance(args).name
     if args.debian:
         print("\nLooking for similiar package:")
-        print("  %s" % utils.get_debian_package(node_module))
+        mapper = Mapper.get_instance()
+        print("  %s" % mapper.get_debian_package(node_module)['repr'])
     if args.repository:
         print("")
         helper.search_for_repository(node_module)
@@ -96,6 +99,8 @@ def search_for_module(args):
         print("")
         helper.search_for_bug(node_module)
     print("")
+
+    show_mapper_warnings()
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()
@@ -143,6 +148,8 @@ def show_dependencies(args):
             print("Module %s has no dependencies." % module_name)
         print("")
 
+    show_mapper_warnings()
+
 def show_reverse_dependencies(args):
     node_module = get_npm2deb_instance(args).name
     helper.search_for_reverse_dependencies(node_module)
@@ -163,7 +170,9 @@ This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
     call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
     print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
-            \n\n$ uscan --download-current-version\n")
+            \n$ uscan --download-current-version\n")
+
+    show_mapper_warnings()
 
 
 def check_module_name(args):
@@ -176,6 +185,12 @@ def get_npm2deb_instance(args):
     node_module = check_module_name(args)
     return Npm2Deb(node_module, vars(args))
 
+def show_mapper_warnings():
+    mapper = Mapper.get_instance()
+    if mapper.has_warnings():
+        print("Warnings occured:")
+        mapper.show_warnings()
+        print("")
 
 if __name__ == '__main__':
     main()

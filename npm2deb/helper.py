@@ -2,9 +2,10 @@ from commands import getstatusoutput
 from json import loads as parseJSON
 from urllib2 import urlopen
 from xml.dom import minidom
-from utils import debug, get_debian_package
+from npm2deb.utils import debug
+from npm2deb.mapper import Mapper
 
-DO_PRINT=False
+DO_PRINT = False
 
 def my_print(what):
     if DO_PRINT:
@@ -93,6 +94,7 @@ def search_for_reverse_dependencies(module_name):
 
 def search_for_dependencies(module_name, recursive=False,
         force=False, prefix=''):
+    mapper = Mapper.get_instance()
     result = {}
     try:
         dependencies = parseJSON(getstatusoutput('npm view %s '
@@ -103,7 +105,7 @@ def search_for_dependencies(module_name, recursive=False,
     for dep in dependencies:
         result[dep] = {}
         result[dep]['version'] = dependencies[dep]
-        result[dep]['debian'] = get_debian_package(dep)
+        result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
             result[dep]['debian'], prefix)
         if recursive:
@@ -117,6 +119,7 @@ def search_for_dependencies(module_name, recursive=False,
     return result
 
 def search_for_builddep(module_name):
+    mapper = Mapper.get_instance()
     result = {}
     try:
         builddeb = parseJSON(getstatusoutput('npm view %s '
@@ -127,7 +130,7 @@ def search_for_builddep(module_name):
     for dep in builddeb:
         result[dep] = {}
         result[dep]['version'] = builddeb[dep]
-        result[dep]['debian'] = get_debian_package(dep)
+        result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
             result[dep]['debian'])
 

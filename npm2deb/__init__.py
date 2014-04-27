@@ -15,6 +15,7 @@ except ImportError:
     from subprocess import getstatusoutput
 
 from npm2deb import utils, templates
+from npm2deb.mapper import Mapper
 
 VERSION = '0.1.0'
 DEBHELPER = 9
@@ -345,10 +346,15 @@ class Npm2Deb(object):
 
     def _get_Depends(self):
         depends = ['nodejs']
+        mapper = Mapper.get_instance()
         if 'dependencies' in self.json:
             dependencies = self.json['dependencies']
             for dep in dependencies:
-                name = 'node-%s' % self._debianize_name(dep)
+                name = mapper.get_debian_package(dep)['name']
+                if not name:
+                    name = 'node-%s' % dep
+                    mapper.append_warning('error', dep, 'dependency %s '\
+                        'not in debian' % (name))
                 version = dependencies[dep].replace('~', '')
                 if version[0].isdigit():
                     version = '>= %s' % version
