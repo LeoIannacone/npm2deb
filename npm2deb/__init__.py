@@ -111,7 +111,7 @@ class Npm2Deb(object):
 
     def create_examples(self):
         if os.path.isdir('examples'):
-            content = 'examples/*\n'
+            content = 'examples/*'
             utils.create_debian_file('examples', content)
 
     def create_dirs(self):
@@ -164,7 +164,7 @@ class Npm2Deb(object):
                     docs.append(name)
                     break
         if len(docs) > 0:
-            content = '\n'.join(docs) + '\n'
+            content = '\n'.join(docs)
             utils.create_debian_file('docs', content)
 
     def create_control(self):
@@ -236,7 +236,7 @@ class Npm2Deb(object):
         utils.create_dir("debian")
         utils.create_dir("debian/source")
         utils.create_debian_file("source/format", "3.0 (quilt)\n")
-        utils.create_debian_file("compat", "%s\n" % self.debian_debhelper)
+        utils.create_debian_file("compat", self.debian_debhelper)
 
     def read_package_info(self):
         utils.debug(1, "reading package info using npm view")
