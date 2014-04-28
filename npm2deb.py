@@ -137,12 +137,12 @@ def show_dependencies(args):
         if 'dependencies' in json and json['dependencies']:
             print "Dependencies:"
             helper.print_formatted_dependency("NPM", "Debian")
-            module_ver = utils.get_npm_version(module_name)
+            module_ver = npm2deb_instance.upstream_version
             module_deb = Mapper.get_instance()\
                 .get_debian_package(module_name)["repr"]
             helper.print_formatted_dependency("%s (%s)" % \
                 (module_name, module_ver), module_deb)
-            helper.search_for_dependencies(module_name,
+            helper.search_for_dependencies(npm2deb_instance,
                 args.recursive, args.force)
             print("")
         else:

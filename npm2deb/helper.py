@@ -3,6 +3,7 @@ from commands import getstatusoutput
 from json import loads as parseJSON
 from urllib2 import urlopen
 from xml.dom import minidom
+from npm2deb import Npm2Deb
 from npm2deb.utils import debug
 from npm2deb.mapper import Mapper
 
@@ -12,17 +13,19 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
-def search_for_repository(module_name):
+def search_for_repository(module):
+    if isinstance(module, Npm2Deb):
+        module = module.name
     repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
     result = {}
     my_print("Looking for existing repositories:")
     for repo in repositories:
-        debug(1, "search for %s in %s" % (module_name, repo))
+        debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
         data = urlopen("%s/?a=project_list&pf=%s&s=%s" %
-            (url_base, repo, module_name)).read()
+            (url_base, repo, module)).read()
         dom = minidom.parseString(data)
         for row in dom.getElementsByTagName('tr')[1:]:
             try:
@@ -39,7 +42,9 @@ def search_for_repository(module_name):
         my_print("  None")
     return result
 
-def search_for_bug(module_name):
+def search_for_bug(module):
+    if isinstance(module, Npm2Deb):
+        module = module.name
     url = 'http://wnpp.debian.net/' \
     '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
     '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
@@ -63,8 +68,8 @@ def search_for_bug(module_name):
                 tmp = dom.getElementsByTagName('td')[-1]
                 bug["type"] = tmp.getAttribute('class')
                 bug["description"] = tmp.childNodes[0].childNodes[0].data
-                if bug["package"].find(module_name) >= 0 or \
-                        bug["description"].find(module_name) >= 0:
+                if bug["package"].find(module) >= 0 or \
+                        bug["description"].find(module) >= 0:
                     found = True
                     result.append(bug)
                     my_print(formatted.format(bug["num"], \
@@ -75,10 +80,12 @@ def search_for_bug(module_name):
         my_print('  None')
     return result
 
-def search_for_reverse_dependencies(module_name):
+def search_for_reverse_dependencies(module):
+    if isinstance(module, Npm2Deb):
+        module = module.name
     url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
     + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
-    url = url % {'name': module_name}
+    url = url % {'name': module}
     debug(1, "opening url %s" % url)
     data = urlopen(url).read()
     data = parseJSON(data)
@@ -90,18 +97,23 @@ def search_for_reverse_dependencies(module_name):
             result.append(dependency)
             my_print("  %s" % dependency)
     else:
-        my_print("Module %s has no reverse dependencies" % module_name)
+        my_print("Module %s has no reverse dependencies" % module)
     return result
 
-def search_for_dependencies(module_name, recursive=False,
+def search_for_dependencies(module, recursive=False,
         force=False, prefix=u''):
+    try:
+        if not isinstance(module, Npm2Deb):
+            dependencies = parseJSON(getstatusoutput('npm view %s '
+                'dependencies --json 2>/dev/null' % module)[1])
+        else:
+            dependencies = module.json['dependencies']
+            module = module.name
+    except ValueError:
+        return None
+
     mapper = Mapper.get_instance()
     result = {}
-    try:
-        dependencies = parseJSON(getstatusoutput('npm view %s '
-            'dependencies --json 2>/dev/null' % module_name)[1])
-    except ValueError:
-        return result
 
     keys = dependencies.keys()
     last_dep = False
@@ -125,14 +137,19 @@ def search_for_dependencies(module_name, recursive=False,
 
     return result
 
-def search_for_builddep(module_name):
+def search_for_builddep(module):
+    try:
+        if not isinstance(module, Npm2Deb):
+            builddeb = parseJSON(getstatusoutput('npm view %s '
+                'devDependencies --json 2>/dev/null' % module)[1])
+        else:
+            builddeb = module.json['devDependencies']
+            module = module.name
+    except ValueError:
+        return None
+
     mapper = Mapper.get_instance()
     result = {}
-    try:
-        builddeb = parseJSON(getstatusoutput('npm view %s '
-            'devDependencies --json 2>/dev/null' % module_name)[1])
-    except ValueError:
-        return result
 
     for dep in builddeb:
         result[dep] = {}

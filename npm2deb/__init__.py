@@ -244,6 +244,7 @@ class Npm2Deb(object):
             print(info[1])
             exit(1)
         self.json = parseJSON(info[1])
+        self.name = self.json['name']
         self._get_json_author()
         self._get_json_repo_url()
         self._get_json_homepage()
