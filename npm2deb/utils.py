@@ -62,9 +62,8 @@ def change_dir(dir):
     try:
         os.chdir(dir)
     except OSError as oserror:
-        print ("OSError [%d]: %s at %s" % \
+        raise OSError("OSError [%d]: %s at %s" % \
           (oserror.errno, oserror.strerror, oserror.filename))
-        exit(1)
 
 def create_debian_file(filename, content):
     create_file("debian/%s" % filename, content)
@@ -79,5 +78,5 @@ def create_dir(dir):
     try:
         os.mkdir(dir)
     except OSError as oserror:
-        print ("Error: directory %s already exists." % (oserror.filename))
-        exit(1)
+        raise OSError("Error: directory %s already exists." % \
+            (oserror.filename))

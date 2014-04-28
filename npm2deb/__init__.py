@@ -238,12 +238,29 @@ class Npm2Deb(object):
     def read_package_info(self):
         utils.debug(1, "reading package info using npm view")
         info = getstatusoutput('npm view %s --json 2>/dev/null' % self.name)
-        # if not status 0, exit
+        # if not status 0, raise expection
         if info[0] != 0:
             info = getstatusoutput('npm view %s --json' % self.name)
-            print(info[1])
-            exit(1)
-        self.json = parseJSON(info[1])
+            result = 'npm reports error about %s module:\n' % self.name
+            result += info[1]
+            raise ValueError(result)
+        try:
+            self.json = parseJSON(info[1])
+        except ValueError as value_error:
+            # if error during parse, try to fail graceful
+            if str(value_error) == 'No JSON object could be decoded':
+                versions = []
+                for line in info[1].split('\n'):
+                    if re.match("^[a-zA-Z]+@[0-9]", line):
+                        version = line.split('@')[1]
+                        versions.append(version)
+                if len(versions) > 0:
+                    result = "More than one version found. "\
+                        "Please specify one of:\n %s" % '\n '.join(versions)
+                    raise ValueError(result)
+            else:
+                raise value_error
+
         self.name = self.json['name']
         self._get_json_author()
         self._get_json_repo_url()
@@ -256,9 +273,9 @@ class Npm2Deb(object):
         utils.debug(1, "downloading %s via npm" % self.name)
         info = getstatusoutput('npm install %s' % self.name)
         if info[0] is not 0:
-            print("Error downloading package %s", self.name)
-            print(info[1])
-            exit(1)
+            result = "Error downloading package %s\n" % self.name
+            result += info[1]
+            raise ValueError(result)
         # move dir from node_modules
         os.rename('node_modules/%s' % self.name, self.name)
         rmtree('node_modules')

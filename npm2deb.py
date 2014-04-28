@@ -165,12 +165,15 @@ def show_reverse_dependencies(args):
 
 def create(args):
     npm2deb = get_npm2deb_instance(args)
-    saved_path = os.getcwd()
-    utils.create_dir(npm2deb.name)
-    utils.change_dir(npm2deb.name)
-    npm2deb.start()
-
-    utils.change_dir(saved_path)
+    try:
+        saved_path = os.getcwd()
+        utils.create_dir(npm2deb.name)
+        utils.change_dir(npm2deb.name)
+        npm2deb.start()
+        utils.change_dir(saved_path)
+    except OSError as os_error:
+        print(str(os_error))
+        exit(1)
 
     debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
 
@@ -192,7 +195,11 @@ def check_module_name(args):
 
 def get_npm2deb_instance(args):
     node_module = check_module_name(args)
-    return Npm2Deb(node_module, vars(args))
+    try:
+        return Npm2Deb(node_module, vars(args))
+    except ValueError as value_error:
+        print value_error
+        exit(0)
 
 def show_mapper_warnings():
     mapper = Mapper.get_instance()
