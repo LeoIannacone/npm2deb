@@ -223,7 +223,7 @@ def get_npm2deb_instance(args):
         return Npm2Deb(node_module, vars(args))
     except ValueError as value_error:
         print value_error
-        exit(0)
+        exit(1)
 
 def _check_module_name(args):
     if not args.node_module or len(args.node_module) is 0:
