@@ -87,10 +87,10 @@ def main(argv=None):
     if args.debug:
         utils.DEBUG_LEVEL = args.debug
 
-    helper.DO_PRINT = True
     args.func(args)
 
 def search_for_module(args):
+    helper.DO_PRINT = True
     # enable all by default
     if not args.bug and not args.debian and not args.repository:
         args.bug = True
@@ -152,6 +152,7 @@ def print_license(args, prefix=""):
                 print_license(args)
 
 def show_dependencies(args):
+    helper.DO_PRINT = True
     # enable all by default
     if not args.binary and not args.builddeb:
         args.binary = True
@@ -188,6 +189,7 @@ def show_dependencies(args):
     _show_mapper_warnings()
 
 def show_reverse_dependencies(args):
+    helper.DO_PRINT = True
     node_module = get_npm2deb_instance(args).name
     helper.search_for_reverse_dependencies(node_module)
 
