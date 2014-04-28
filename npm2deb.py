@@ -20,7 +20,7 @@ def main():
     parser_create.add_argument('-d', '--debhelper', default=DEBHELPER, \
         help='specify debhelper version [default: %(default)s]')
     parser_create.add_argument('-l', '--license', default=None, \
-        help='license used for debian files [default: the same for upstream]')
+        help='license used for debian files [default: the same of upstream]')
     parser_create.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
         help='set standards-version [default: %(default)s]')
     parser_create.add_argument('node_module', \
@@ -36,7 +36,7 @@ def main():
     parser_depends.add_argument('-b', '--binary', action="store_true", \
         default=False, help='show binary dependencies')
     parser_depends.add_argument('-B', '--builddeb', action="store_true", \
-        default=False, help='show show build dependencies')
+        default=False, help='show build dependencies')
     parser_depends.add_argument('node_module', \
         help='node module available via npm')
     parser_depends.set_defaults(func=show_dependencies)
@@ -133,6 +133,21 @@ def show_dependencies(args):
     module_name = npm2deb_instance.name
     json = npm2deb_instance.json
 
+    if args.binary:
+        if 'dependencies' in json and json['dependencies']:
+            print "Dependencies:"
+            helper.print_formatted_dependency("NPM", "Debian")
+            module_ver = utils.get_npm_version(module_name)
+            module_deb = Mapper.get_instance()\
+                .get_debian_package(module_name)["repr"]
+            helper.print_formatted_dependency("%s (%s)" % \
+                (module_name, module_ver), module_deb)
+            helper.search_for_dependencies(module_name,
+                args.recursive, args.force)
+            print("")
+        else:
+            print("Module %s has no dependencies." % module_name)
+
     if args.builddeb:
         if 'devDependencies' in json and json['devDependencies']:
             print "Build dependencies:"
@@ -141,16 +156,6 @@ def show_dependencies(args):
             print("")
         else:
             print("Module %s has no build dependencies." % module_name)
-
-    if args.binary:
-        if 'dependencies' in json and json['dependencies']:
-            print "Dependencies:"
-            helper.print_formatted_dependency("NPM", "Debian")
-            helper.search_for_dependencies(module_name,
-                args.recursive, args.force)
-            print("")
-        else:
-            print("Module %s has no dependencies." % module_name)
 
     show_mapper_warnings()
 

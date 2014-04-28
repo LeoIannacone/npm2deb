@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from commands import getstatusoutput
 from json import loads as parseJSON
 from urllib2 import urlopen
@@ -93,7 +94,7 @@ def search_for_reverse_dependencies(module_name):
     return result
 
 def search_for_dependencies(module_name, recursive=False,
-        force=False, prefix=''):
+        force=False, prefix=u''):
     mapper = Mapper.get_instance()
     result = {}
     try:
@@ -102,17 +103,23 @@ def search_for_dependencies(module_name, recursive=False,
     except ValueError:
         return result
 
-    for dep in dependencies:
+    keys = dependencies.keys()
+    last_dep = False
+    for dep in keys:
+        if dep == keys[-1]:
+            last_dep = True
         result[dep] = {}
         result[dep]['version'] = dependencies[dep]
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
-        print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
-            result[dep]['debian'], prefix)
+        dep_prefix = u'└─' if last_dep else u'├─'
+        print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
+            result[dep]['version']), result[dep]['debian'], prefix)
         if recursive:
             if (result[dep]['debian'] and force) or \
                     result[dep]['debian'] is None:
+                new_prefix = "%s%s " % (prefix, u"  " if last_dep else u"│ ")
                 result[dep]['dependencies'] = search_for_dependencies(dep, \
-                    recursive, force, prefix + " - ")
+                    recursive, force, new_prefix)
         else:
             result[dep]['dependencies'] = None
 
@@ -136,6 +143,6 @@ def search_for_builddep(module_name):
 
     return result
 
-def print_formatted_dependency(npm, debian, prefix=''):
-    formatted = "{0:40}{1}"
-    my_print(formatted.format("%s%s" % (prefix, npm), debian))
+def print_formatted_dependency(npm, debian, prefix=u''):
+    formatted = u"{0:50}{1}"
+    my_print(formatted.format(u"%s%s" % (prefix, npm), debian))
