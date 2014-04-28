@@ -191,6 +191,9 @@ class Npm2Deb(object):
         args['source'] = self.homepage
         args['upstream_date'] = self.date.year
         args['upstream_author'] = self.upstream_author
+        args['upstream_contact'] = self.upstream_author
+        if 'bugs' in self.json and 'url' in self.json['bugs']:
+            args['upstream_contact'] = self.json['bugs']['url']
         args['upstream_license_name'] = self.upstream_license
         if self.debian_license and \
                 self.upstream_license != self.debian_license:
