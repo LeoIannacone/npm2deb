@@ -27,6 +27,12 @@ def main():
         help='node module available via npm')
     parser_create.set_defaults(func=create)
 
+    parser_view = subparsers.add_parser('view', \
+        help="a summary view of a node module")
+    parser_view.add_argument('node_module', \
+        help='node module available via npm')
+    parser_view.set_defaults(func=print_view)
+
     parser_depends = subparsers.add_parser('depends', \
         help='show module dependencies in npm and debian')
     parser_depends.add_argument('-r', '--recursive', action="store_true", \
@@ -48,7 +54,7 @@ def main():
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
     parser_search = subparsers.add_parser('search', \
-        help="look if module is already in debian")
+        help="look for module in debian project")
     parser_search.add_argument('-b', '--bug', action="store_true", \
         default=False, help='search for existing bug in wnpp')
     parser_search.add_argument('-d', '--debian', action="store_true", \
@@ -101,6 +107,25 @@ def search_for_module(args):
     print("")
 
     show_mapper_warnings()
+
+def print_view(args):
+    npm2deb_instance = get_npm2deb_instance(args)
+    formatted = "{0:40}{1}"
+    for key in ['name', 'version', 'description', 'homepage', 'license']:
+        attr_key = key
+        if key == 'license' or key == 'version':
+            attr_key = 'upstream_%s' % key
+        print(formatted.format("%s:" % key.capitalize(),
+            getattr(npm2deb_instance, attr_key, None)))
+
+    mapper = Mapper.get_instance()
+    print(formatted.format("Debian:", mapper
+        .get_debian_package(npm2deb_instance.name)['repr']))
+
+    if mapper.has_warnings():
+        print("")
+        show_mapper_warnings()
+
 
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()
