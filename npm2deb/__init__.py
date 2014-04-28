@@ -241,9 +241,13 @@ class Npm2Deb(object):
         # if not status 0, raise expection
         if info[0] != 0:
             info = getstatusoutput('npm view %s --json' % self.name)
-            result = 'npm reports error about %s module:\n' % self.name
-            result += info[1]
-            raise ValueError(result)
+            exception = 'npm reports errors about %s module:\n' % self.name
+            exception += info[1]
+            raise ValueError(exception)
+        if not info[1]:
+            exception = 'npm returns empty json for %s module' % self.name
+            raise ValueError(exception)
+
         try:
             self.json = parseJSON(info[1])
         except ValueError as value_error:
@@ -255,9 +259,9 @@ class Npm2Deb(object):
                         version = line.split('@')[1]
                         versions.append(version)
                 if len(versions) > 0:
-                    result = "More than one version found. "\
+                    exception = "More than one version found. "\
                         "Please specify one of:\n %s" % '\n '.join(versions)
-                    raise ValueError(result)
+                    raise ValueError(exception)
             else:
                 raise value_error
 
@@ -273,9 +277,9 @@ class Npm2Deb(object):
         utils.debug(1, "downloading %s via npm" % self.name)
         info = getstatusoutput('npm install %s' % self.name)
         if info[0] is not 0:
-            result = "Error downloading package %s\n" % self.name
-            result += info[1]
-            raise ValueError(result)
+            exception = "Error downloading package %s\n" % self.name
+            exception += info[1]
+            raise ValueError(exception)
         # move dir from node_modules
         os.rename('node_modules/%s' % self.name, self.name)
         rmtree('node_modules')
