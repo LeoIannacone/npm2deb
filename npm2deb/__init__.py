@@ -306,8 +306,15 @@ class Npm2Deb(object):
         return content % args
 
     def _get_json_license(self):
-        if 'license' in self.json:
+        self.upstream_license = "FIX_ME upstream license"
+        license_name = None
+        if 'licenses' in self.json:
+            license_name = self.json['licenses']
+        elif 'license' in self.json:
             license_name = self.json['license']
+        if license_name:
+            if isinstance(license_name, list):
+                license_name = license_name[0]
             if isinstance(license_name, dict):
                 license_name = license_name['type']
             if license_name.lower() == "mit":
@@ -316,8 +323,6 @@ class Npm2Deb(object):
             if self.debian_license is None or \
                 self.debian_license.find('FIX_ME') >= 0:
                 self.debian_license = self.upstream_license
-        else:
-            self.upstream_license = "FIX_ME upstream license"
 
     def _get_json_version(self):
         if 'version' in self.json:
