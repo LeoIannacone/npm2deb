@@ -20,12 +20,15 @@ def main(argv=None):
         help='create the debian files')
     parser_create.add_argument('-n', '--noclean', action="store_true", \
         default=False, help='do not remove files downloaded with npm')
-    parser_create.add_argument('-d', '--debhelper', default=DEBHELPER, \
+    parser_create.add_argument('--debhelper', default=DEBHELPER, \
         help='specify debhelper version [default: %(default)s]')
-    parser_create.add_argument('-l', '--license', default=None, \
-        help='license used for debian files [default: the same of upstream]')
-    parser_create.add_argument('-s', '--standards', default=STANDARDS_VERSION, \
+    parser_create.add_argument('--standards-version',
+        default=STANDARDS_VERSION, \
         help='set standards-version [default: %(default)s]')
+    parser_create.add_argument('--upstream-license', default=None, \
+        help='set upstream license if not automatically recognized')
+    parser_create.add_argument('--debian-license', default=None, \
+        help='license used for debian files [default: the same of upstream]')
     parser_create.add_argument('node_module', \
         help='node module available via npm')
     parser_create.set_defaults(func=create)

@@ -43,10 +43,12 @@ class Npm2Deb(object):
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         if args:
-            if 'license' in args and args['license']:
-                self.debian_license = args['license']
-            if 'standards' in args:
-                self.debian_standards = args['standards']
+            if 'upstream_license' in args and args['upstream_license']:
+                self.upstream_license = args['upstream_license']
+            if 'debian_license' in args and args['debian_license']:
+                self.debian_license = args['debian_license']
+            if 'standards_version' in args and args['standards_version']:
+                self.debian_standards = args['standards_version']
             if 'debhelper' in args:
                 self.debian_debhelper = args['debhelper']
             if 'noclean' in args:
@@ -311,23 +313,24 @@ class Npm2Deb(object):
         return content % args
 
     def _get_json_license(self):
-        self.upstream_license = "FIX_ME upstream license"
-        license_name = None
-        if 'licenses' in self.json:
-            license_name = self.json['licenses']
-        elif 'license' in self.json:
-            license_name = self.json['license']
-        if license_name:
-            if isinstance(license_name, list):
-                license_name = license_name[0]
-            if isinstance(license_name, dict):
-                license_name = license_name['type']
-            if license_name.lower() == "mit":
-                license_name = "Expat"
-            self.upstream_license = license_name
-            if self.debian_license is None or \
-                self.debian_license.find('FIX_ME') >= 0:
-                self.debian_license = self.upstream_license
+        if not self.upstream_license:
+            self.upstream_license = "FIX_ME upstream license"
+            license_name = None
+            if 'licenses' in self.json:
+                license_name = self.json['licenses']
+            elif 'license' in self.json:
+                license_name = self.json['license']
+            if license_name:
+                if isinstance(license_name, list):
+                    license_name = license_name[0]
+                if isinstance(license_name, dict):
+                    license_name = license_name['type']
+                if license_name.lower() == "mit":
+                    license_name = "Expat"
+                self.upstream_license = license_name
+        if self.debian_license is None or \
+            self.debian_license.find('FIX_ME') >= 0:
+            self.debian_license = self.upstream_license
 
     def _get_json_version(self):
         if 'version' in self.json:
