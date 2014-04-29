@@ -1,24 +1,24 @@
 have npm2deb &&
 _npm2deb()
 {
-	local cur prev options
+    local cur prev options
 
-	COMPREPLY=()
-	cur=${COMP_WORDS[COMP_CWORD]}
-	prev=${COMP_WORDS[COMP_CWORD-1]}
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
 
-	case "$prev" in
-	    license)
-        options="apache artistic bsd expat gpl-2 gpl-3 lgpl-2 lgpl-3 mit"
-	    ;;
-      npm2deb)
-        options="create view search depends rdepends itp license"
+    case "$prev" in
+        license)
+            options="apache artistic bsd expat gpl-2 gpl-3 lgpl-2 lgpl-3 mit"
         ;;
-	esac
+        npm2deb)
+            options="create view search depends rdepends itp license"
+        ;;
+    esac
 
-	COMPREPLY=( $( compgen -W "$options" -- $cur ) )
+    COMPREPLY=( $( compgen -W "$options" -- $cur ) )
 
-	return 0
+    return 0
 
 }
 
