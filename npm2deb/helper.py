@@ -11,7 +11,7 @@ DO_PRINT = False
 
 def my_print(what):
     if DO_PRINT:
-        print(what)
+        print(what.encode('utf-8'))
 
 def search_for_repository(module):
     if isinstance(module, Npm2Deb):
