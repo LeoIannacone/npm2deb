@@ -23,8 +23,13 @@ STANDARDS_VERSION = '3.9.5'
 
 class Npm2Deb(object):
 
-    def __init__(self, package_name, args={}):
-        self.name = package_name
+    def __init__(self, module_name=None, args={}):
+        if not module_name and not 'node_module' in args:
+            raise ValueError('You must specify a module_name')
+        if module_name:
+            self.name = module_name
+        elif 'node_module' in args:
+            self.name = args['node_module']
         self.args = args
         self.json = None
         self.homepage = None

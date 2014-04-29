@@ -218,18 +218,14 @@ You may want fix first these issues:\n""")
 
 
 def get_npm2deb_instance(args):
-    node_module = _check_module_name(args)
-    try:
-        return Npm2Deb(node_module, vars(args))
-    except ValueError as value_error:
-        print value_error
-        exit(1)
-
-def _check_module_name(args):
     if not args.node_module or len(args.node_module) is 0:
         print('please specify a node_module.')
         exit(1)
-    return args.node_module
+    try:
+        return Npm2Deb(args=vars(args))
+    except ValueError as value_error:
+        print value_error
+        exit(1)
 
 def _show_mapper_warnings():
     mapper = Mapper.get_instance()
