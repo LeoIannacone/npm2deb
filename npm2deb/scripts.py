@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 from npm2deb import Npm2Deb, utils, templates, helper, \
-    DEBHELPER, STANDARDS_VERSION
+    DEBHELPER, STANDARDS_VERSION, VERSION
 from npm2deb.mapper import Mapper
 from subprocess import call
 import os
@@ -13,6 +13,8 @@ def main(argv=None):
         argv = sys.argv
     parser = ArgumentParser(prog='npm2deb')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
+    parser.add_argument('-v', '--version', action='version', \
+        version='%(prog)s ' + VERSION)
 
     subparsers = parser.add_subparsers(title='commands')
 
