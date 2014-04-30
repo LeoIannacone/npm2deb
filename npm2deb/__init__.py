@@ -178,9 +178,7 @@ class Npm2Deb(object):
         args = {}
         args['Source'] = self.debian_name
         args['Uploaders'] = self.debian_author
-        args['debhelper_version'] = ''
-        if self.debian_debhelper != DEBHELPER:
-            args['debhelper_version'] = " (>= %s)" % self.debian_debhelper
+        args['debhelper'] = self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
         args['Vcs-Git'] = 'git://anonscm.debian.org/pkg-javascript/%s.git' \

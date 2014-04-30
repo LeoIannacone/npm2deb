@@ -49,7 +49,7 @@ class debian(unittest.TestCase):
                 if line.find('debhelper') >= 0:
                     debhelper = line.strip('\n')
                     break
-        self.assertEqual(debhelper, ' debhelper')
+        self.assertEqual(debhelper, ' debhelper (>= %s)' % DEBHELPER)
 
         compat = None
         with open('debian/compat', 'r') as compat_fd:
@@ -59,7 +59,8 @@ class debian(unittest.TestCase):
         rmtree('debian')
 
     def test_debhelper_as_argument(self):
-        n = Npm2Deb('parse-url', {'debhelper': '9'})
+        MY_DEBHELPER = DEBHELPER + 1
+        n = Npm2Deb('parse-url', {'debhelper': MY_DEBHELPER})
         n.create_base_debian()
         n.create_control()
         debhelper = None
@@ -68,12 +69,12 @@ class debian(unittest.TestCase):
                 if line.find('debhelper') >= 0:
                     debhelper = line.strip('\n')
                     break
-        self.assertEqual(debhelper, ' debhelper (>= 9)')
+        self.assertEqual(debhelper, ' debhelper (>= %s)' % MY_DEBHELPER)
 
         compat = None
         with open('debian/compat', 'r') as compat_fd:
             compat = compat_fd.read().strip('\n')
-        self.assertEqual(compat, '9')
+        self.assertEqual(compat, str(MY_DEBHELPER))
 
     def tearDown(self):
         if os.path.isdir('debian'):
