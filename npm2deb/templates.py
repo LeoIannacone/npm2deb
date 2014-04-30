@@ -14,7 +14,7 @@ Priority: extra
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: %(Uploaders)s
 Build-Depends:
- debhelper (>= %(debhelper)s)
+ debhelper%(debhelper_version)s
  , dh-buildinfo
  , nodejs
 Standards-Version: %(Standards-Version)s

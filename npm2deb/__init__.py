@@ -18,7 +18,7 @@ from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
 VERSION = '0.1.0'
-DEBHELPER = 9
+DEBHELPER = 8
 STANDARDS_VERSION = '3.9.5'
 
 class Npm2Deb(object):
@@ -178,7 +178,9 @@ class Npm2Deb(object):
         args = {}
         args['Source'] = self.debian_name
         args['Uploaders'] = self.debian_author
-        args['debhelper'] = self.debian_debhelper
+        args['debhelper_version'] = ''
+        if self.debian_debhelper != DEBHELPER:
+            args['debhelper_version'] = " (>= %s)" % self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
         args['Vcs-Git'] = 'git://anonscm.debian.org/pkg-javascript/%s.git' \
