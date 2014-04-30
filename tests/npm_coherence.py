@@ -10,6 +10,26 @@ from commands import getstatusoutput
 from shutil import rmtree
 from npm2deb import Npm2Deb, DEBHELPER
 
+class npm2deb_fails(unittest.TestCase):
+    def test_init_no_npm_module(self):
+        try:
+            n = Npm2Deb('MODULE_NOT_IN_NPM')
+            raise Exception
+        except Exception as err:
+            self.assertTrue(isinstance(err, ValueError))
+            # must suggest type of failure
+            self.assertTrue(str(err).find('npm reports errors about') >= 0)
+
+    def test_init_module_multiple_version(self):
+        try:
+            n = Npm2Deb('socket.io@0.x')
+            raise Exception
+        except Exception as err:
+            self.assertTrue(isinstance(err, ValueError))
+            # must suggest type of failure
+            self.assertTrue(str(err).find(\
+                'More than one version found. Please specify one of:') >= 0)
+
 class npm_coherences_license(unittest.TestCase):
 
     def test_upstream_license_as_str(self):

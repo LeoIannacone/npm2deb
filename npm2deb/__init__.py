@@ -265,13 +265,15 @@ class Npm2Deb(object):
             if str(value_error) == 'No JSON object could be decoded':
                 versions = []
                 for line in info[1].split('\n'):
-                    if re.match("^[a-zA-Z]+@[0-9]", line):
+                    if re.match(r"^[a-z](.*)@[0-9]", line):
                         version = line.split('@')[1]
                         versions.append(version)
                 if len(versions) > 0:
                     exception = "More than one version found. "\
                         "Please specify one of:\n %s" % '\n '.join(versions)
                     raise ValueError(exception)
+                else:
+                    raise value_error
             else:
                 raise value_error
 
