@@ -247,10 +247,10 @@ class Npm2Deb(object):
 
     def read_package_info(self):
         utils.debug(1, "reading package info using npm view")
-        info = getstatusoutput('npm view %s --json 2>/dev/null' % self.name)
+        info = getstatusoutput('npm view "%s" --json 2>/dev/null' % self.name)
         # if not status 0, raise expection
         if info[0] != 0:
-            info = getstatusoutput('npm view %s --json' % self.name)
+            info = getstatusoutput('npm view "%s" --json' % self.name)
             exception = 'npm reports errors about %s module:\n' % self.name
             exception += info[1]
             raise ValueError(exception)
@@ -287,7 +287,7 @@ class Npm2Deb(object):
 
     def download(self):
         utils.debug(1, "downloading %s via npm" % self.name)
-        info = getstatusoutput('npm install %s' % self.name)
+        info = getstatusoutput('npm install "%s"' % self.name)
         if info[0] is not 0:
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]

@@ -18,7 +18,7 @@ def debug(level, msg):
 
 def get_npm_version(module_name):
     return getstatusoutput( \
-        "npm view %s version" % module_name)[1].split('\n')[-2].strip()
+        'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
 
 def get_template(filename):
     result = None

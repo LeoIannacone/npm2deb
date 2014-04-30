@@ -104,7 +104,7 @@ def search_for_dependencies(module, recursive=False,
         force=False, prefix=u''):
     try:
         if not isinstance(module, Npm2Deb):
-            dependencies = parseJSON(getstatusoutput('npm view %s '
+            dependencies = parseJSON(getstatusoutput('npm view "%s" '
                 'dependencies --json 2>/dev/null' % module)[1])
         else:
             dependencies = module.json['dependencies']
@@ -140,7 +140,7 @@ def search_for_dependencies(module, recursive=False,
 def search_for_builddep(module):
     try:
         if not isinstance(module, Npm2Deb):
-            builddeb = parseJSON(getstatusoutput('npm view %s '
+            builddeb = parseJSON(getstatusoutput('npm view "%s" '
                 'devDependencies --json 2>/dev/null' % module)[1])
         else:
             builddeb = module.json['devDependencies']
