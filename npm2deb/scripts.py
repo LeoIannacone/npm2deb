@@ -37,6 +37,8 @@ def main(argv=None):
 
     parser_view = subparsers.add_parser('view', \
         help="a summary view of a node module")
+    parser_view.add_argument('-j', '--json', action="store_true", \
+        default=False, help='print verbose information in json format')
     parser_view.add_argument('node_module', \
         help='node module available via npm')
     parser_view.set_defaults(func=print_view)
@@ -118,21 +120,33 @@ def search_for_module(args):
 
 def print_view(args):
     npm2deb_instance = get_npm2deb_instance(args)
-    formatted = "{0:40}{1}"
-    for key in ['name', 'version', 'description', 'homepage', 'license']:
-        attr_key = key
-        if key == 'license' or key == 'version':
-            attr_key = 'upstream_%s' % key
-        print(formatted.format("%s:" % key.capitalize(),
-            getattr(npm2deb_instance, attr_key, None)))
+    if args.json:
+        from json import dumps
+        # print a clean version of json module
+        json = npm2deb_instance.json
+        for key in ['time', 'versions', 'dist-tags', 'component', \
+            'users', 'time', 'maintainers', 'readmeFilename', 'contributors', \
+            'keywords']:
+            if key in json:
+                del json[key]
+        print(dumps(json, indent=4, sort_keys=True))
 
-    mapper = Mapper.get_instance()
-    print(formatted.format("Debian:", mapper
-        .get_debian_package(npm2deb_instance.name)['repr']))
+    else:
+        formatted = "{0:40}{1}"
+        for key in ['name', 'version', 'description', 'homepage', 'license']:
+            attr_key = key
+            if key == 'license' or key == 'version':
+                attr_key = 'upstream_%s' % key
+            print(formatted.format("%s:" % key.capitalize(),
+                getattr(npm2deb_instance, attr_key, None)))
 
-    if mapper.has_warnings():
-        print("")
-        _show_mapper_warnings()
+        mapper = Mapper.get_instance()
+        print(formatted.format("Debian:", mapper
+            .get_debian_package(npm2deb_instance.name)['repr']))
+
+        if mapper.has_warnings():
+            print("")
+            _show_mapper_warnings()
 
 
 def print_itp(args):
