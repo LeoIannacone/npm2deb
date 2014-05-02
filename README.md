@@ -8,7 +8,7 @@ You need **npm** installed on your system:
 ```
 sudo apt-get install npm
 ```
-Please, take care to have defined **DEBEMAIL** (or **EMAIL** and **DEBFULLNAME**) environment variables correctly.
+Please, take care to have defined **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** environment variables correctly.
 
 ## Install
 ```
@@ -20,28 +20,29 @@ Simply take a look at help option:
 ```
 $ npm2deb -h
 
-usage: npm2deb [options] node_module | -p [license]
-
-positional arguments:
-  node_module           node module available via npm
+usage: npm2deb [-h] [-D DEBUG] [-v]
+               {create,view,depends,rdepends,search,itp,license} ...
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d DEBHELPER, --debhelper DEBHELPER
-                        specify debhelper version [default: 9]
-  -l LICENSE, --license LICENSE
-                        license used for debian files [default: GPL-3]
-  -n, --noclean         do not remove files downloaded with npm
-  -p [PRINTLICENSE], --printlicense [PRINTLICENSE]
-                        print license template and exit
-  -s STANDARDS, --standards STANDARDS
-                        set standards-version [default: 3.9.5]
   -D DEBUG, --debug DEBUG
                         set debug level
+  -v, --version         show program's version number and exit
+
+commands:
+  {create,view,depends,rdepends,search,itp,license}
+    create              create the debian files
+    view                a summary view of a node module
+    depends             show module dependencies in npm and debian
+    rdepends            show the reverse dependencies for module
+    search              look for module in debian project
+    itp                 print a itp bug template
+    license             print license template and exit
+
 ```
 
 ### Example
 In the most of cases a simple command like this is enough:
 ```
-$ npm2deb bytes
+$ npm2deb create bytes
 ```

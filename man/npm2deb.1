@@ -4,43 +4,50 @@
 - npm package.json to debian files
 
 .SH SYNOPSIS
-.B npm2deb\fR [\fB--debhelper\fR \fIdebhelper\fR] [\fB--license\fR \fIlicense\fR] [\fB-n\fR] [\fB--standards\fR \fIstandards-version\fR] [\fB-D\fR \fIdebug\fR] \fInode_module\fR
+.B npm2deb\fR [\fB-D\fR \fIdebug\fR] { create | view | depends | rdepends | search | itp } \fInode_module\fR
 .br
-.B npm2deb\fR [\fB-s\fR] [\fB-r\fR] \fInode_module\fR
-.br
-.B npm2deb\fR \fB-p\fR \fIlicense\fR
+.B npm2deb\fR license {-l | license }
 
 .SH DESCRIPTION
 A script to make faster and easier packaging \fInodejs\fR modules already provided by \fInpm\fR.
 
-Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR and \fBDEBFULLNAME\fR) environment variables correctly.
+Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR) and \fBDEBFULLNAME\fR environment variables correctly.
 
 .SH OPTIONS
+.IP
+.SS "optional arguments:"
 .TP
-.B -s --show\fR
-show package \fBdependencies\fR in npm and Debian. Useful to know which packages are already in Debian.
+\fB\-h\fR, \fB\-\-help\fR
+show this help message and exit
 .TP
-.B -r --rdepends\fR
-show the \fBreverse dependencies\fR of module in npm.
+\fB\-D\fR DEBUG, \fB\-\-debug\fR DEBUG
+set debug level
 .TP
-.B -n --noclean\fR
-do not remove files downloaded via npm.
+\fB\-v\fR, \fB\-\-version\fR
+show program's version number and exit
+.SS "commands:"
 .TP
-.B -p --printlicense\fR \fIname\fR
-prints license \fIname\fR and exit. If license does not valid, prints
-all licenses available and exit. Licenses names are ignore case.
+\fIcreate
+create the debian files
 .TP
-.B --debhelper\fR \fIversion\fR
-set debhelper \fIversion\fR in debian/control file.
+\fIview
+a summary view of a node module
 .TP
-.B --license\fR \fIname\fR
-set debian files license \fIname\fR in debian/copyright.
+\fIdepends
+show module dependencies in npm and debian
 .TP
-.B --standards\fR \fIstandards-version\fR
-set \fIStandards-Version\fR in debian/control.
+\fIrdepends
+show the reverse dependencies for module
 .TP
-.B -D --debug\fR \fIlevel\fR
-set debug \fIlevel\fR.
+\fIsearch
+look for module in debian project
+.TP
+\fIitp
+print a itp bug template
+.TP
+\fIlicense
+print license template and exit
+
 
 .SH AUTHOR
 Leo Iannacone <l3on@ubuntu.com>
