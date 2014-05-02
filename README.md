@@ -6,7 +6,7 @@ a script to make faster and easier packaging nodejs modules
 ## Requirements
 You need **npm** installed on your system:
 ```
-sudo apt-get install nmp
+sudo apt-get install npm
 ```
 Please, take care to have defined **DEBEMAIL** (or **EMAIL** and **DEBFULLNAME**) environment variables correctly.
 
