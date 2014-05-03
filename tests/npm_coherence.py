@@ -61,25 +61,33 @@ class npm_coherences_license(unittest.TestCase):
 
 class debian(unittest.TestCase):
 
+    def tearDown(self):
+        if os.path.isdir('debian'):
+            rmtree('debian')
+
+
     def _get_compat(self):
         with open('debian/compat', 'r') as compat_fd:
             return compat_fd.read().strip('\n')
 
-    def _get_control_field(self, what):
+    def _get_file_line(self, filename, what):
         result = None
-        with open('debian/control', 'r') as control:
-            for line in control.readlines():
+        with open(filename, 'r') as file_fd:
+            for line in file_fd.readlines():
                 if line.find(what) >= 0:
                     result = line.strip('\n')
                     break
         return result
+
+    def _get_debfile_line(self, debian_filename, what):
+        return self._get_file_line('debian/%s' % debian_filename, what)
 
     def test_debhelper(self):
         n = Npm2Deb('parse-url')
         n.create_base_debian()
         n.create_control()
         self.assertEqual(self._get_compat(), str(DEBHELPER))
-        self.assertEqual(self._get_control_field(" debhelper ("),\
+        self.assertEqual(self._get_debfile_line("control", " debhelper ("),\
             ' debhelper (>= %s)' % DEBHELPER)
 
     def test_debhelper_as_argument(self):
@@ -88,12 +96,14 @@ class debian(unittest.TestCase):
         n.create_base_debian()
         n.create_control()
         self.assertEqual(self._get_compat(), str(MY_DEBHELPER))
-        self.assertEqual(self._get_control_field(" debhelper ("),\
+        self.assertEqual(self._get_debfile_line("control", " debhelper ("),\
             ' debhelper (>= %s)' % MY_DEBHELPER)
 
-    def tearDown(self):
-        if os.path.isdir('debian'):
-            rmtree('debian')
+    def test_manpages(self):
+        n = Npm2Deb('jade')
+        n.create_base_debian()
+        n.create_manpages()
+        self.assertEqual(self._get_debfile_line('manpages', 'jade.1'), "jade.1")
 
 if __name__ == '__main__':
     unittest.main()

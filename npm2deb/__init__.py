@@ -85,6 +85,7 @@ class Npm2Deb(object):
         self.create_dirs()
         self.create_examples()
         self.create_watch()
+        self.create_manpages()
         if not self.noclean:
             self.clean()
         utils.change_dir('..')
@@ -102,6 +103,11 @@ class Npm2Deb(object):
                     rmtree(filename)
                 else:
                     os.remove(filename)
+
+    def create_manpages(self):
+        if 'man' in self.json:
+            content = os.path.normpath(self.json['man'])
+            utils.create_debian_file('manpages', content)
 
     def create_watch(self):
         args = {}
