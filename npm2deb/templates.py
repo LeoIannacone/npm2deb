@@ -152,7 +152,7 @@ LICENSES['Artistic'] = """Artistic-1.0
  can be found in "/usr/share/common-licenses/Artistic".
 """
 
-LICENSES['BSD'] = """BSD-3-Clause
+LICENSES['BSD'] = """BSD-3-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -176,9 +176,6 @@ LICENSES['BSD'] = """BSD-3-Clause
  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- .
- On Debian systems, the complete text of the BSD License
- can be found in "/usr/share/common-licenses/BSD".
 """
 
 LICENSES['LGPL-2'] = """LGPL-2
