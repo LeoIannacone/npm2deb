@@ -5,7 +5,6 @@ from datetime import datetime
 from dateutil import tz
 from shutil import rmtree
 import os
-import stat
 import re
 
 # python 3 import
@@ -20,6 +19,7 @@ from npm2deb.mapper import Mapper
 VERSION = '0.1.0'
 DEBHELPER = 8
 STANDARDS_VERSION = '3.9.5'
+
 
 class Npm2Deb(object):
 
@@ -58,8 +58,8 @@ class Npm2Deb(object):
         self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
-                (os.environ['DEBFULLNAME'].decode('utf-8')
-                    , os.environ['DEBEMAIL'].decode('utf-8'))
+                (os.environ['DEBFULLNAME'].decode('utf-8'),
+                    os.environ['DEBEMAIL'].decode('utf-8'))
         elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
             self.debian_author = "%s <%s>" % \
                 (os.environ['DEBFULLNAME'].decode('utf-8'),
@@ -137,8 +137,8 @@ class Npm2Deb(object):
         dest = self.debian_dest
         if os.path.isdir('bin'):
             for script in os.listdir('bin'):
-                links.append("%s/bin/%s usr/bin/%s" % \
-                    (dest, script, script.replace('.js', '')))
+                links.append("%s/bin/%s usr/bin/%s" %
+                            (dest, script, script.replace('.js', '')))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
@@ -188,9 +188,10 @@ class Npm2Deb(object):
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
         args['Vcs-Git'] = 'git://anonscm.debian.org/pkg-javascript/%s.git' \
-           % self.debian_name
+                          % self.debian_name
         args['Vcs-Browser'] = 'http://anonscm.debian.org/' + \
-          'gitweb/?p=pkg-javascript/%s.git' % self.debian_name
+                              'gitweb/?p=pkg-javascript/%s.git' \
+                              % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
         args['Description'] = self.description
@@ -213,7 +214,7 @@ class Npm2Deb(object):
             args['upstream_license'] = "\nLicense: %s" % \
                 utils.get_license(self.upstream_license)
         else:
-            args['upstream_license'] = '' # do not insert same license twice
+            args['upstream_license'] = ''  # do not insert same license twice
         args['debian_date'] = self.date.year
         args['debian_author'] = self.debian_author
         args['debian_license_name'] = self.debian_license
@@ -236,9 +237,8 @@ class Npm2Deb(object):
         args['overrides'] = ''
         for filename in os.listdir('.'):
             if filename.lower().startswith('history'):
-                args['overrides'] += \
-                "override_dh_installchangelogs:\n" + \
-                "\tdh_installchangelogs -k %s\n" % filename
+                args['overrides'] += "override_dh_installchangelogs:\n" + \
+                                     "\tdh_installchangelogs -k %s\n" % filename
                 break
         content = utils.get_template('rules') % args
         utils.create_debian_file("rules", content)
@@ -337,7 +337,7 @@ class Npm2Deb(object):
                     license_name = "Expat"
                 self.upstream_license = license_name
         if self.debian_license is None or \
-            self.debian_license.find('FIX_ME') >= 0:
+           self.debian_license.find('FIX_ME') >= 0:
             self.debian_license = self.upstream_license
 
     def _get_json_version(self):
@@ -403,8 +403,8 @@ class Npm2Deb(object):
                 name = mapper.get_debian_package(dep)['name']
                 if not name:
                     name = 'node-%s' % dep
-                    mapper.append_warning('error', dep, 'dependency %s '\
-                        'not in debian' % (name))
+                    mapper.append_warning('error', dep, 'dependency %s '
+                                          'not in debian' % (name))
                 version = dependencies[dep].replace('~', '')
                 if version[0].isdigit():
                     version = '>= %s' % version
@@ -422,7 +422,8 @@ class Npm2Deb(object):
         return name.replace('_', '-')
 
     def _get_github_url_from_git(self, url):
-        result = getstatusoutput("nodejs -e "
+        result = getstatusoutput(
+            "nodejs -e "
             "\"console.log(require('github-url-from-git')"
             "('%s'));\"" % url)[1]
         if result == 'undefined':

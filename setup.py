@@ -4,6 +4,7 @@ from distutils.command.install_scripts import install_scripts
 from npm2deb import VERSION
 import shutil
 
+
 class remove_extension(install_scripts):
     def run(self):
         install_scripts.run(self)
@@ -22,9 +23,9 @@ setup(name='npm2deb',
       packages=['npm2deb'],
       dependencies=['dateutil'],
       data_files=[
-        ('share/man/man1', ['man/npm2deb.1']),
-        ('share/doc/npm2deb', ['README.md', 'AUTHORS']),
-        ('/etc/bash_completion.d', ['etc/bash_completion.d/npm2deb'])
+          ('share/man/man1', ['man/npm2deb.1']),
+          ('share/doc/npm2deb', ['README.md', 'AUTHORS']),
+          ('/etc/bash_completion.d', ['etc/bash_completion.d/npm2deb'])
       ],
       cmdclass={"install_scripts": remove_extension},
-)
+      )

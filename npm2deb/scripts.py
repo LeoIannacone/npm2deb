@@ -18,74 +18,101 @@ def main(argv=None):
 
     subparsers = parser.add_subparsers(title='commands')
 
-    parser_create = subparsers.add_parser('create', \
+    parser_create = subparsers.add_parser(
+        'create',
         help='create the debian files')
-    parser_create.add_argument('-n', '--noclean', action="store_true", \
+    parser_create.add_argument(
+        '-n', '--noclean', action="store_true",
         default=False, help='do not remove files downloaded with npm')
-    parser_create.add_argument('--debhelper', default=DEBHELPER, \
+    parser_create.add_argument(
+        '--debhelper', default=DEBHELPER,
         help='specify debhelper version [default: %(default)s]')
-    parser_create.add_argument('--standards-version',
-        default=STANDARDS_VERSION, \
+    parser_create.add_argument(
+        '--standards-version', default=STANDARDS_VERSION,
         help='set standards-version [default: %(default)s]')
-    parser_create.add_argument('--upstream-license', default=None, \
+    parser_create.add_argument(
+        '--upstream-license', default=None,
         help='set upstream license if not automatically recognized')
-    parser_create.add_argument('--debian-license', default=None, \
+    parser_create.add_argument(
+        '--debian-license', default=None,
         help='license used for debian files [default: the same of upstream]')
-    parser_create.add_argument('node_module', \
+    parser_create.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_create.set_defaults(func=create)
 
-    parser_view = subparsers.add_parser('view', \
+    parser_view = subparsers.add_parser(
+        'view',
         help="a summary view of a node module")
-    parser_view.add_argument('-j', '--json', action="store_true", \
+    parser_view.add_argument(
+        '-j', '--json', action="store_true",
         default=False, help='print verbose information in json format')
-    parser_view.add_argument('node_module', \
+    parser_view.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_view.set_defaults(func=print_view)
 
-    parser_depends = subparsers.add_parser('depends', \
+    parser_depends = subparsers.add_parser(
+        'depends',
         help='show module dependencies in npm and debian')
-    parser_depends.add_argument('-r', '--recursive', action="store_true", \
+    parser_depends.add_argument(
+        '-r', '--recursive', action="store_true",
         default=False, help='look for binary dependencies recursively')
-    parser_depends.add_argument('-f', '--force', action="store_true", \
+    parser_depends.add_argument(
+        '-f', '--force', action="store_true",
         default=False, help='force inspection for modules already in debian')
-    parser_depends.add_argument('-b', '--binary', action="store_true", \
+    parser_depends.add_argument(
+        '-b', '--binary', action="store_true",
         default=False, help='show binary dependencies')
-    parser_depends.add_argument('-B', '--builddeb', action="store_true", \
+    parser_depends.add_argument(
+        '-B', '--builddeb', action="store_true",
         default=False, help='show build dependencies')
-    parser_depends.add_argument('node_module', \
+    parser_depends.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_depends.set_defaults(func=show_dependencies)
 
-    parser_rdepends = subparsers.add_parser('rdepends', \
+    parser_rdepends = subparsers.add_parser(
+        'rdepends',
         help='show the reverse dependencies for module')
-    parser_rdepends.add_argument('node_module', \
+    parser_rdepends.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_rdepends.set_defaults(func=show_reverse_dependencies)
 
-    parser_search = subparsers.add_parser('search', \
+    parser_search = subparsers.add_parser(
+        'search',
         help="look for module in debian project")
-    parser_search.add_argument('-b', '--bug', action="store_true", \
+    parser_search.add_argument(
+        '-b', '--bug', action="store_true",
         default=False, help='search for existing bug in wnpp')
-    parser_search.add_argument('-d', '--debian', action="store_true", \
+    parser_search.add_argument(
+        '-d', '--debian', action="store_true",
         default=False, help='search for existing package in debian')
-    parser_search.add_argument('-r', '--repository', action="store_true", \
+    parser_search.add_argument(
+        '-r', '--repository', action="store_true",
         default=False, help='search for existing repository in alioth')
-    parser_search.add_argument('node_module', \
+    parser_search.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_search.set_defaults(func=search_for_module)
 
-    parser_itp = subparsers.add_parser('itp', \
+    parser_itp = subparsers.add_parser(
+        'itp',
         help="print a itp bug template")
-    parser_itp.add_argument('node_module', \
+    parser_itp.add_argument(
+        'node_module',
         help='node module available via npm')
     parser_itp.set_defaults(func=print_itp)
 
-    parser_license = subparsers.add_parser('license', \
+    parser_license = subparsers.add_parser(
+        'license',
         help='print license template and exit')
-    parser_license.add_argument('-l', '--list', action="store_true", \
+    parser_license.add_argument(
+        '-l', '--list', action="store_true",
         default=False, help='show the available licenses')
-    parser_license.add_argument('name', nargs='?', \
+    parser_license.add_argument(
+        'name', nargs='?',
         help='the license name to show')
     parser_license.set_defaults(func=print_license)
 
@@ -95,6 +122,7 @@ def main(argv=None):
         utils.DEBUG_LEVEL = args.debug
 
     args.func(args)
+
 
 def search_for_module(args):
     helper.DO_PRINT = True
@@ -118,15 +146,16 @@ def search_for_module(args):
 
     _show_mapper_warnings()
 
+
 def print_view(args):
     npm2deb_instance = get_npm2deb_instance(args)
     if args.json:
         from json import dumps
         # print a clean version of json module
         json = npm2deb_instance.json
-        for key in ['time', 'versions', 'dist-tags', 'component', \
-            'users', 'time', 'maintainers', 'readmeFilename', 'contributors', \
-            'keywords']:
+        for key in ['time', 'versions', 'dist-tags', 'component',
+                    'users', 'time', 'maintainers', 'readmeFilename',
+                    'contributors', 'keywords']:
             if key in json:
                 del json[key]
         print(dumps(json, indent=4, sort_keys=True))
@@ -138,11 +167,11 @@ def print_view(args):
             if key == 'license' or key == 'version':
                 attr_key = 'upstream_%s' % key
             print(formatted.format("%s:" % key.capitalize(),
-                getattr(npm2deb_instance, attr_key, None)))
+                  getattr(npm2deb_instance, attr_key, None)))
 
         mapper = Mapper.get_instance()
         print(formatted.format("Debian:", mapper
-            .get_debian_package(npm2deb_instance.name)['repr']))
+              .get_debian_package(npm2deb_instance.name)['repr']))
 
         if mapper.has_warnings():
             print("")
@@ -152,10 +181,11 @@ def print_view(args):
 def print_itp(args):
     get_npm2deb_instance(args).show_itp()
 
+
 def print_license(args, prefix=""):
     if args.list:
-        print("%s Available licenses are: %s." % \
-                (prefix, ', '.join(sorted(templates.LICENSES.keys())).lower()))
+        print("%s Available licenses are: %s." %
+              (prefix, ', '.join(sorted(templates.LICENSES.keys())).lower()))
     else:
         if args.name is None:
             print("You have to specify a license name")
@@ -169,6 +199,7 @@ def print_license(args, prefix=""):
                 print("Wrong license name.")
                 args.list = True
                 print_license(args)
+
 
 def show_dependencies(args):
     helper.DO_PRINT = True
@@ -188,10 +219,12 @@ def show_dependencies(args):
             module_ver = npm2deb_instance.upstream_version
             module_deb = Mapper.get_instance()\
                 .get_debian_package(module_name)["repr"]
-            helper.print_formatted_dependency("%s (%s)" % \
-                (module_name, module_ver), module_deb)
+            helper.print_formatted_dependency("%s (%s)" %
+                                              (module_name, module_ver),
+                                              module_deb)
             helper.search_for_dependencies(npm2deb_instance,
-                args.recursive, args.force)
+                                           args.recursive,
+                                           args.force)
             print("")
         else:
             print("Module %s has no dependencies." % module_name)
@@ -207,10 +240,12 @@ def show_dependencies(args):
 
     _show_mapper_warnings()
 
+
 def show_reverse_dependencies(args):
     helper.DO_PRINT = True
     node_module = get_npm2deb_instance(args).name
     helper.search_for_reverse_dependencies(node_module)
+
 
 def create(args):
     npm2deb = get_npm2deb_instance(args)
@@ -245,6 +280,7 @@ def get_npm2deb_instance(args):
     except ValueError as value_error:
         print value_error
         exit(1)
+
 
 def _show_mapper_warnings():
     mapper = Mapper.get_instance()

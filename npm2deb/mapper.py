@@ -6,16 +6,17 @@ from npm2deb.utils import debug
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 
+
 class Mapper(object):
     INSTANCE = None
 
     def __init__(self):
         if self.INSTANCE is not None:
-            raise ValueError("Mapper is a Singleton. " \
-                "Please use get_instance method.")
+            raise ValueError("Mapper is a Singleton. "
+                             "Please use get_instance method.")
         debug(2, 'loading database from %s' % DB_URL)
-        data = findall('{{{(.*)}}}', \
-            urlopen("%s?action=raw" % DB_URL).read().replace('\n', ''))[0]
+        data = findall('{{{(.*)}}}', urlopen("%s?action=raw"
+                       % DB_URL).read().replace('\n', ''))[0]
         self.json = parseJSON(data)
         self._warnings = {}
         self.reset_warnings()
@@ -42,8 +43,8 @@ class Mapper(object):
                 self.append_warning('info', node_module, db_package['info'])
             elif 'warning' in db_package:
                 result['info'] = ('warning', db_package['warning'])
-                self.append_warning('warning', node_module, \
-                    db_package['warning'])
+                self.append_warning('warning', node_module,
+                                    db_package['warning'])
             elif 'error' in db_package:
                 result['info'] = ('error', db_package['error'])
                 self.append_warning('error', node_module, db_package['error'])
@@ -53,7 +54,7 @@ class Mapper(object):
         if not result['name']:
             return result
 
-        madison = getstatusoutput( \
+        madison = getstatusoutput(
             'apt-cache madison "%s" | grep Sources' % result['name'])
 
         if madison[0] != 0:

@@ -9,9 +9,11 @@ from npm2deb.mapper import Mapper
 
 DO_PRINT = False
 
+
 def my_print(what):
     if DO_PRINT:
         print(what.encode('utf-8'))
+
 
 def search_for_repository(module):
     if isinstance(module, Npm2Deb):
@@ -25,7 +27,7 @@ def search_for_repository(module):
         debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
         data = urlopen("%s/?a=project_list&pf=%s&s=%s" %
-            (url_base, repo, module)).read()
+                      (url_base, repo, module)).read()
         dom = minidom.parseString(data)
         for row in dom.getElementsByTagName('tr')[1:]:
             try:
@@ -42,10 +44,11 @@ def search_for_repository(module):
         my_print("  None")
     return result
 
+
 def search_for_bug(module):
     if isinstance(module, Npm2Deb):
         module = module.name
-    url = 'http://wnpp.debian.net/' \
+    url = 'http://wnpp.debian.net/'
     '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
     '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
     '&owner%5B%5D=no&col%5B%5D=type&col%5B%5D=description&sort=project'
@@ -72,19 +75,22 @@ def search_for_bug(module):
                         bug["description"].find(module) >= 0:
                     found = True
                     result.append(bug)
-                    my_print(formatted.format(bug["num"], \
-                        bug["type"], bug["package"], bug["description"]))
+                    my_print(formatted.format(bug["num"],
+                                              bug["type"],
+                                              bug["package"],
+                                              bug["description"]))
             except:
                 continue
     if not found:
         my_print('  None')
     return result
 
+
 def search_for_reverse_dependencies(module):
     if isinstance(module, Npm2Deb):
         module = module.name
     url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
-    + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
+        + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
     url = url % {'name': module}
     debug(1, "opening url %s" % url)
     data = urlopen(url).read()
@@ -100,12 +106,15 @@ def search_for_reverse_dependencies(module):
         my_print("Module %s has no reverse dependencies" % module)
     return result
 
-def search_for_dependencies(module, recursive=False,
-        force=False, prefix=u'', expanded_dependencies=[]):
+
+def search_for_dependencies(module, recursive=False, force=False,
+                            prefix=u'', expanded_dependencies=[]):
     try:
         if not isinstance(module, Npm2Deb):
-            dependencies = parseJSON(getstatusoutput('npm view "%s" '
-                'dependencies --json 2>/dev/null' % module)[1])
+            npm_out = getstatusoutput('npm view "%s" '
+                                      'dependencies --json 2>/dev/null'
+                                      % module)[1]
+            dependencies = parseJSON(npm_out)
         else:
             dependencies = module.json['dependencies']
             module = module.name
@@ -125,24 +134,29 @@ def search_for_dependencies(module, recursive=False,
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         dep_prefix = u'└─' if last_dep else u'├─'
         print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
-            result[dep]['version']), result[dep]['debian'], prefix)
+                                   result[dep]['version']),
+                                   result[dep]['debian'], prefix)
         if recursive and not dep in expanded_dependencies:
             expanded_dependencies.append(dep)
             if (result[dep]['debian'] and force) or \
                     result[dep]['debian'] is None:
                 new_prefix = "%s%s " % (prefix, u"  " if last_dep else u"│ ")
-                result[dep]['dependencies'] = search_for_dependencies(dep, \
-                    recursive, force, new_prefix, expanded_dependencies)
+                result[dep]['dependencies'] = \
+                    search_for_dependencies(dep, recursive, force, new_prefix,
+                                            expanded_dependencies)
         else:
             result[dep]['dependencies'] = None
 
     return result
 
+
 def search_for_builddep(module):
     try:
         if not isinstance(module, Npm2Deb):
-            builddeb = parseJSON(getstatusoutput('npm view "%s" '
-                'devDependencies --json 2>/dev/null' % module)[1])
+            npm_out = getstatusoutput('npm view "%s" '
+                                      'devDependencies --json 2>/dev/null'
+                                      % module)[1]
+            builddeb = parseJSON(npm_out)
         else:
             builddeb = module.json['devDependencies']
             module = module.name
@@ -157,9 +171,10 @@ def search_for_builddep(module):
         result[dep]['version'] = builddeb[dep]
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         print_formatted_dependency("%s (%s)" % (dep, result[dep]['version']),
-            result[dep]['debian'])
+                                   result[dep]['debian'])
 
     return result
+
 
 def print_formatted_dependency(npm, debian, prefix=u''):
     formatted = u"{0:50}{1}"

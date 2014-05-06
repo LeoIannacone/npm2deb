@@ -2,11 +2,11 @@ import sys
 import os
 import inspect
 current = os.path.dirname(os.path.abspath(
-            inspect.getfile(inspect.currentframe()) + '/..'))
+                          inspect.getfile(
+                          inspect.currentframe()) + '/..'))
 sys.path.append(current)
 
 import unittest
-from commands import getstatusoutput
 from shutil import rmtree
 from npm2deb import Npm2Deb, DEBHELPER
 
@@ -14,7 +14,7 @@ from npm2deb import Npm2Deb, DEBHELPER
 class npm2deb_fails(unittest.TestCase):
     def test_init_no_npm_module(self):
         try:
-            n = Npm2Deb('MODULE_NOT_IN_NPM')
+            Npm2Deb('MODULE_NOT_IN_NPM')
             raise Exception
         except Exception as err:
             self.assertTrue(isinstance(err, ValueError))
@@ -23,13 +23,14 @@ class npm2deb_fails(unittest.TestCase):
 
     def test_init_module_multiple_version(self):
         try:
-            n = Npm2Deb('socket.io@0.9.x')
+            Npm2Deb('socket.io@0.9.x')
             raise Exception
         except Exception as err:
             self.assertTrue(isinstance(err, ValueError))
             # must suggest type of failure
-            self.assertTrue(str(err).find(\
-                'More than one version found. Please specify one of:') >= 0)
+            self.assertTrue(str(err)
+                .find('More than one version found. '
+                      'Please specify one of:') >= 0)
 
 
 class npm_coherences_license(unittest.TestCase):
@@ -65,7 +66,6 @@ class debian(unittest.TestCase):
         if os.path.isdir('debian'):
             rmtree('debian')
 
-
     def _get_compat(self):
         with open('debian/compat', 'r') as compat_fd:
             return compat_fd.read().strip('\n')
@@ -87,8 +87,8 @@ class debian(unittest.TestCase):
         n.create_base_debian()
         n.create_control()
         self.assertEqual(self._get_compat(), str(DEBHELPER))
-        self.assertEqual(self._get_debfile_line("control", " debhelper ("),\
-            ' debhelper (>= %s)' % DEBHELPER)
+        self.assertEqual(self._get_debfile_line("control",
+                         " debhelper ("), ' debhelper (>= %s)' % DEBHELPER)
 
     def test_debhelper_as_argument(self):
         MY_DEBHELPER = DEBHELPER + 1
@@ -96,8 +96,8 @@ class debian(unittest.TestCase):
         n.create_base_debian()
         n.create_control()
         self.assertEqual(self._get_compat(), str(MY_DEBHELPER))
-        self.assertEqual(self._get_debfile_line("control", " debhelper ("),\
-            ' debhelper (>= %s)' % MY_DEBHELPER)
+        self.assertEqual(self._get_debfile_line("control", " debhelper ("),
+                         ' debhelper (>= %s)' % MY_DEBHELPER)
 
     def test_manpages(self):
         n = Npm2Deb('jade')

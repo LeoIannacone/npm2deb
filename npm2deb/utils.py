@@ -12,13 +12,16 @@ except ImportError:
 
 DEBUG_LEVEL = 0
 
+
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
         print(" debug [%s] - %s" % (level, msg))
 
+
 def get_npm_version(module_name):
-    return getstatusoutput( \
+    return getstatusoutput(
         'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
+
 
 def get_template(filename):
     result = None
@@ -31,6 +34,7 @@ def get_template(filename):
     elif filename is 'wnpp':
         result = templates.WNPP
     return result
+
 
 def get_license(license):
     result = None
@@ -57,16 +61,19 @@ def get_license(license):
         result = 'FIX_ME please specify a license description'
     return result
 
+
 def change_dir(dir):
     debug(2, "moving to directory %s" % dir)
     try:
         os.chdir(dir)
     except OSError as oserror:
-        raise OSError("OSError [%d]: %s at %s" % \
-          (oserror.errno, oserror.strerror, oserror.filename))
+        raise OSError("OSError [%d]: %s at %s" %
+                      (oserror.errno, oserror.strerror, oserror.filename))
+
 
 def create_debian_file(filename, content):
     create_file("debian/%s" % filename, content)
+
 
 def create_file(filename, content):
     debug(2, "creating file %s" % filename)
@@ -76,10 +83,11 @@ def create_file(filename, content):
     with codecs.open(filename, 'w', 'utf-8') as writer:
         writer.write(content)
 
+
 def create_dir(dir):
     debug(2, "creating directory %s" % dir)
     try:
         os.mkdir(dir)
     except OSError as oserror:
-        raise OSError("Error: directory %s already exists." % \
-            (oserror.filename))
+        raise OSError("Error: directory %s already exists." %
+                      oserror.filename)
