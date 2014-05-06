@@ -101,7 +101,7 @@ def search_for_reverse_dependencies(module):
     return result
 
 def search_for_dependencies(module, recursive=False,
-        force=False, prefix=u''):
+        force=False, prefix=u'', expanded_dependencies=[]):
     try:
         if not isinstance(module, Npm2Deb):
             dependencies = parseJSON(getstatusoutput('npm view "%s" '
@@ -126,12 +126,13 @@ def search_for_dependencies(module, recursive=False,
         dep_prefix = u'└─' if last_dep else u'├─'
         print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
             result[dep]['version']), result[dep]['debian'], prefix)
-        if recursive:
+        if recursive and not dep in expanded_dependencies:
+            expanded_dependencies.append(dep)
             if (result[dep]['debian'] and force) or \
                     result[dep]['debian'] is None:
                 new_prefix = "%s%s " % (prefix, u"  " if last_dep else u"│ ")
                 result[dep]['dependencies'] = search_for_dependencies(dep, \
-                    recursive, force, new_prefix)
+                    recursive, force, new_prefix, expanded_dependencies)
         else:
             result[dep]['dependencies'] = None
 
