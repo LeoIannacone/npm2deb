@@ -111,6 +111,7 @@ def search_for_dependencies(module, recursive=False, force=False,
                             prefix=u'', expanded_dependencies=[]):
     try:
         if not isinstance(module, Npm2Deb):
+            debug(1, 'getting dependencies - calling npm view %s' % module)
             npm_out = getstatusoutput('npm view "%s" '
                                       'dependencies --json 2>/dev/null'
                                       % module)[1]
@@ -153,6 +154,7 @@ def search_for_dependencies(module, recursive=False, force=False,
 def search_for_builddep(module):
     try:
         if not isinstance(module, Npm2Deb):
+            debug(1, 'getting builddep - calling npm view %s' % module)
             npm_out = getstatusoutput('npm view "%s" '
                                       'devDependencies --json 2>/dev/null'
                                       % module)[1]

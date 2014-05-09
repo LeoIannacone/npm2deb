@@ -8,12 +8,14 @@ from subprocess import call
 import os
 import sys
 
+
 def main(argv=None):
     if not argv:
         argv = sys.argv
     parser = ArgumentParser(prog='npm2deb')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
-    parser.add_argument('-v', '--version', action='version', \
+    parser.add_argument(
+        '-v', '--version', action='version',
         version='%(prog)s ' + VERSION)
 
     subparsers = parser.add_subparsers(title='commands')
@@ -233,7 +235,7 @@ def show_dependencies(args):
         if 'devDependencies' in json and json['devDependencies']:
             print "Build dependencies:"
             helper.print_formatted_dependency("NPM", "Debian")
-            helper.search_for_builddep(module_name)
+            helper.search_for_builddep(npm2deb_instance)
             print("")
         else:
             print("Module %s has no build dependencies." % module_name)

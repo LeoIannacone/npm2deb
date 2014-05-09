@@ -252,7 +252,7 @@ class Npm2Deb(object):
         utils.create_debian_file("compat", self.debian_debhelper)
 
     def read_package_info(self):
-        utils.debug(1, "reading package info using npm view")
+        utils.debug(1, "reading json - calling npm view %s" % self.name)
         info = getstatusoutput('npm view "%s" --json 2>/dev/null' % self.name)
         # if not status 0, raise expection
         if info[0] != 0:
