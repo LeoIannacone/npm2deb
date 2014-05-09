@@ -257,6 +257,8 @@ LICENSES['Expat'] = """Expat
 """
 
 WATCH_GITHUB = """version=3
-opts=filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
+opts=\\
+dversionmangle=s/\?(debian|dfsg|ds|deb)\d*$//,\\
+filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(homepage)s/tags .*/archive/v?([\d\.]+).tar.gz
 """
