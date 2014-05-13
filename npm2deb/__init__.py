@@ -111,16 +111,29 @@ class Npm2Deb(object):
 
     def create_watch(self):
         args = {}
-        if self.upstream_repo_url and \
-                self.upstream_repo_url.find('github') >= 0:
-            args['homepage'] = self.upstream_repo_url
-            args['debian_name'] = self.debian_name
-            content = templates.WATCH_GITHUB % args
-        else:
-            content = "# FIX_ME Please take a look " \
-                "at https://wiki.debian.org/debian/watch/\n" \
-                "Homepage is %s\n" % self.homepage
-        utils.create_debian_file('watch', content)
+        args['debian_name'] = self.debian_name
+        args['dversionmangle'] = 's/\?(debian|dfsg|ds|deb)\d*$//'
+        args['url'] = self.upstream_repo_url
+        args['module'] = self.name
+        try:
+            if self.upstream_repo_url.find('github') >= 0:
+                content = utils.get_watch('github') % args
+            else:
+                # if not supported, got to fakeupstream
+                raise ValueError
+
+            utils.create_debian_file('watch', content)
+            # test watch with uscan, raise exception if status is not 0
+            info = getstatusoutput('uscan --watchfile "debian/watch" '
+                                   '--package "{}" '
+                                   '--upstream-version 0 --no-download'
+                                   .format(self.debian_name))
+            if info[0] != 0:
+                raise ValueError
+
+        except ValueError:
+            content = utils.get_watch('fakeupstream') % args
+            utils.create_debian_file('watch', content)
 
     def create_examples(self):
         if os.path.isdir('examples'):

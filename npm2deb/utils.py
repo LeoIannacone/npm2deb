@@ -35,6 +35,14 @@ def get_template(filename):
         result = templates.WNPP
     return result
 
+def get_watch(which):
+    if which == 'github':
+        return templates.WATCH['github']
+    elif which == 'bitbucket':
+        return templates.WATCH['bitbucket']
+    else:
+        return templates.WATCH['fakeupstream']
+
 
 def get_license(license):
     result = None
