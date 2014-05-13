@@ -68,9 +68,6 @@ class Npm2Deb(object):
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
 
-    def show_itp(self):
-        print self._get_ITP()
-
     def start(self):
         self.download()
         utils.change_dir(self.debian_name)
@@ -93,7 +90,7 @@ class Npm2Deb(object):
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
-        utils.create_file('%s_itp.mail' % self.debian_name, self._get_ITP())
+        utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
 
     def clean(self):
         utils.debug(1, "cleaning directory")
@@ -321,7 +318,7 @@ class Npm2Deb(object):
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             os.rename(self.name, self.debian_name)
 
-    def _get_ITP(self):
+    def get_ITP(self):
         args = {}
         args['debian_author'] = self.debian_author
         args['debian_name'] = self.debian_name

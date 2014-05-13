@@ -1,8 +1,14 @@
-from urllib2 import urlopen
 from json import loads as parseJSON
-from commands import getstatusoutput
 from re import findall
 from npm2deb.utils import debug
+
+try:
+    from urllib.request import urlopen
+    from subprocess import getstatusoutput
+except ImportError:
+    from commands import getstatusoutput
+    from urllib2 import urlopen
+
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 

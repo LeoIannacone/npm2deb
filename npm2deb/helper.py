@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-from commands import getstatusoutput
 from json import loads as parseJSON
-from urllib2 import urlopen
 from xml.dom import minidom
 from npm2deb import Npm2Deb
 from npm2deb.utils import debug
 from npm2deb.mapper import Mapper
+
+try:
+    from urllib.request import urlopen
+    from subprocess import getstatusoutput
+except ImportError:
+    from commands import getstatusoutput
+    from urllib2 import urlopen
 
 DO_PRINT = False
 

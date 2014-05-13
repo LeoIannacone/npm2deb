@@ -181,7 +181,7 @@ def print_view(args):
 
 
 def print_itp(args):
-    get_npm2deb_instance(args).show_itp()
+    print(get_npm2deb_instance(args).get_ITP())
 
 
 def print_license(args, prefix=""):
@@ -216,7 +216,7 @@ def show_dependencies(args):
 
     if args.binary:
         if 'dependencies' in json and json['dependencies']:
-            print "Dependencies:"
+            print("Dependencies:")
             helper.print_formatted_dependency("NPM", "Debian")
             module_ver = npm2deb_instance.upstream_version
             module_deb = Mapper.get_instance()\
@@ -233,7 +233,7 @@ def show_dependencies(args):
 
     if args.builddeb:
         if 'devDependencies' in json and json['devDependencies']:
-            print "Build dependencies:"
+            print("Build dependencies:")
             helper.print_formatted_dependency("NPM", "Debian")
             helper.search_for_builddep(npm2deb_instance)
             print("")
@@ -280,7 +280,7 @@ def get_npm2deb_instance(args):
     try:
         return Npm2Deb(args=vars(args))
     except ValueError as value_error:
-        print value_error
+        print(value_error)
         exit(1)
 
 
