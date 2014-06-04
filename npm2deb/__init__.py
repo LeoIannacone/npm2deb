@@ -145,10 +145,11 @@ class Npm2Deb(object):
     def create_links(self):
         links = []
         dest = self.debian_dest
-        if os.path.isdir('bin'):
-            for script in os.listdir('bin'):
-                links.append("%s/bin/%s usr/bin/%s" %
-                            (dest, script, script.replace('.js', '')))
+        if 'bin' in self.json:
+            for script in self.json['bin']:
+                orig = os.path.normpath(self.json['bin'][script])
+                links.append("%s/%s usr/bin/%s" %
+                            (dest, orig, script))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)

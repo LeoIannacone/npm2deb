@@ -128,6 +128,13 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('watch', '/fakeupstream')
         self.assertTrue(line is not None and len(line) > 0)
 
+    def test_install_bin(self):
+        n = Npm2Deb('mocha')
+        n.create_base_debian()
+        n.create_links()
+        line = self._get_debfile_line('links', 'mocha')
+        self.assertTrue(line == 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
+
 
 if __name__ == '__main__':
     unittest.main()
