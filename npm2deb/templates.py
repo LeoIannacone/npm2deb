@@ -72,6 +72,7 @@ Subject: ITP: %(debian_name)s -- %(description)s
 Package: wnpp
 Severity: wishlist
 Owner: %(debian_author)s
+X-Debbugs-CC: debian-devel@lists.debian.org
 
 * Package name    : %(debian_name)s
   Version         : %(version)s
