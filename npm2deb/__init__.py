@@ -180,7 +180,7 @@ class Npm2Deb(object):
 
     def create_docs(self):
         docs = []
-        if 'readmeFilename' in self.json:
+        if 'readmeFilename' in self.json and self.json['readmeFilename']:
             docs.append(self.json['readmeFilename'])
         else:
             for name in os.listdir('.'):
