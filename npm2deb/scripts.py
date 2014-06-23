@@ -36,6 +36,9 @@ def main(argv=None):
         '--upstream-author', default=None,
         help='set upstream author if not automatically recognized')
     parser_create.add_argument(
+        '--upstream-homepage', default=None,
+        help='set upstream homepage if not automatically recognized')
+    parser_create.add_argument(
         '--upstream-license', default=None,
         help='set upstream license if not automatically recognized')
     parser_create.add_argument(

@@ -47,6 +47,8 @@ class Npm2Deb(object):
                 self.upstream_license = args['upstream_license']
             if 'upstream_author' in args and args['upstream_author']:
                 self.upstream_author = args['upstream_author']
+            if 'upstream_homepage' in args and args['upstream_homepage']:
+                self.homepage = args['upstream_homepage']
             if 'debian_license' in args and args['debian_license']:
                 self.debian_license = args['debian_license']
             if 'standards_version' in args and args['standards_version']:
@@ -401,6 +403,8 @@ class Npm2Deb(object):
         self.upstream_repo_url = result
 
     def _get_json_homepage(self):
+        if self.homepage:
+            return
         result = 'FIX_ME homepage'
         if 'homepage' in self.json:
             result = self.json['homepage']
