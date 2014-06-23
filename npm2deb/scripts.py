@@ -33,6 +33,9 @@ def main(argv=None):
         '--standards-version', default=STANDARDS_VERSION,
         help='set standards-version [default: %(default)s]')
     parser_create.add_argument(
+        '--upstream-author', default=None,
+        help='set upstream author if not automatically recognized')
+    parser_create.add_argument(
         '--upstream-license', default=None,
         help='set upstream license if not automatically recognized')
     parser_create.add_argument(

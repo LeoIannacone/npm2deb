@@ -45,6 +45,8 @@ class Npm2Deb(object):
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
+            if 'upstream_author' in args and args['upstream_author']:
+                self.upstream_author = args['upstream_author']
             if 'debian_license' in args and args['debian_license']:
                 self.debian_license = args['debian_license']
             if 'standards_version' in args and args['standards_version']:
@@ -364,6 +366,8 @@ class Npm2Deb(object):
             self.description = 'FIX_ME description'
 
     def _get_json_author(self):
+        if self.upstream_author:
+            return
         result = 'FIX_ME upstream author'
         if 'author' in self.json:
             author = self.json['author']
