@@ -35,6 +35,7 @@ def get_template(filename):
         result = templates.WNPP
     return result
 
+
 def get_watch(which):
     if which == 'github':
         return templates.WATCH['github']
@@ -86,7 +87,7 @@ def create_debian_file(filename, content):
 def create_file(filename, content):
     debug(2, "creating file %s" % filename)
     content = u'%s' % content
-    if content[-1] != '\n':
+    if len(content) > 0 and content[-1] != '\n':
         content += '\n'
     with codecs.open(filename, 'w', 'utf-8') as writer:
         writer.write(content)
