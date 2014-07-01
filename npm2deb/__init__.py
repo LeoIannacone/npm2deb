@@ -273,7 +273,7 @@ class Npm2Deb(object):
         if info[0] != 0:
             info = getstatusoutput('npm view "%s" --json' % self.name)
             exception = 'npm reports errors about %s module:\n' % self.name
-            exception += info[1]
+            exception += info[1].decode('utf-8')
             raise ValueError(exception)
         if not info[1]:
             exception = 'npm returns empty json for %s module' % self.name
