@@ -135,6 +135,11 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('links', 'mocha')
         self.assertTrue(line == 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
 
+    def issue_10(self):
+        n = Npm2Deb('lastfm')
+        n.create_base_debian()
+        n.create_control()
+
 
 if __name__ == '__main__':
     unittest.main()
