@@ -386,20 +386,24 @@ class Npm2Deb(object):
         result = 'FIX_ME repo url'
         if 'repository' in self.json:
             repository = self.json['repository']
-            if 'type' in repository and 'url' in repository:
+            if isinstance(repository, str):
+                url = repository
+            elif isinstance(repository, dict) and 'url' in repository:
                 url = repository['url']
-                if repository['type'] == 'git':
-                    if url.find('github') >= 0:
-                        tmp = self._get_github_url_from_git(url)
-                        if tmp:
-                            result = tmp
-                    else:
-                        url = re.sub(r'^git@(.*):', r'http://\1/', url)
-                        url = re.sub(r'^git://', 'http://', url)
-                        url = re.sub(r'\.git$', '', url)
-                        result = url
+            if url.startswith('git') or (isinstance(repository, dict) and
+                                         'type' in repository and
+                                         repository['type'] == 'git'):
+                if url.find('github') >= 0:
+                    tmp = self._get_github_url_from_git(url)
+                    if tmp:
+                        result = tmp
                 else:
+                    url = re.sub(r'^git@(.*):', r'http://\1/', url)
+                    url = re.sub(r'^git://', 'http://', url)
+                    url = re.sub(r'\.git$', '', url)
                     result = url
+            else:
+                result = url
         self.upstream_repo_url = result
 
     def _get_json_homepage(self):

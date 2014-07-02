@@ -128,6 +128,11 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('watch', '/fakeupstream')
         self.assertTrue(line is not None and len(line) > 0)
 
+    def test_repository_defined_as_string(self):
+        n = Npm2Deb('ipaddr.js')
+        self.assertEqual(n.upstream_repo_url,
+                         'https://github.com/whitequark/ipaddr.js')
+
     def test_install_bin(self):
         n = Npm2Deb('mocha')
         n.create_base_debian()
