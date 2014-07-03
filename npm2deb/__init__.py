@@ -76,6 +76,7 @@ class Npm2Deb(object):
         self.download()
         utils.change_dir(self.debian_name)
         self.create_base_debian()
+        self.create_tests()
         self.create_rules()
         self.create_changelog()
         self.create_copyright()
@@ -258,6 +259,16 @@ class Npm2Deb(object):
         content = utils.get_template('rules') % args
         utils.create_debian_file("rules", content)
         os.system('chmod +x debian/rules')
+
+    def create_tests(self):
+        utils.create_dir("debian/tests")
+        args = {}
+        args['name'] = self.name
+        args['debian_name'] = self.debian_name
+        control = utils.get_template('tests/control') % args
+        utils.create_debian_file("tests/control", control)
+        require = utils.get_template("tests/require") % args
+        utils.create_debian_file("tests/require", require)
 
     def create_base_debian(self):
         utils.debug(1, "creating debian files")

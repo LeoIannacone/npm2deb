@@ -21,6 +21,7 @@ Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
 Vcs-Browser: %(Vcs-Browser)s
+XS-Testsuite: autopkgtest
 
 Package: %(Package)s
 Architecture: all
@@ -276,4 +277,15 @@ WATCH['fakeupstream'] = """version=3
 opts=\\
 dversionmangle=%(dversionmangle)s \\
  http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
+"""
+
+TESTS = {}
+
+TESTS['control'] = """Tests: require
+Depends: %(debian_name)s
+"""
+
+TESTS['require'] = """#!/bin/sh
+set -e
+nodejs -e "require('%(name)s');"
 """

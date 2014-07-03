@@ -25,14 +25,18 @@ def get_npm_version(module_name):
 
 def get_template(filename):
     result = None
-    if filename is 'control':
+    if filename == 'control':
         result = templates.CONTROL
-    elif filename is 'copyright':
+    elif filename == 'copyright':
         result = templates.COPYRIGHT
-    elif filename is 'rules':
+    elif filename == 'rules':
         result = templates.RULES
-    elif filename is 'wnpp':
+    elif filename == 'wnpp':
         result = templates.WNPP
+    elif filename == 'tests/control':
+        result = templates.TESTS['control']
+    elif filename == 'tests/require':
+        result = templates.TESTS['require']
     return result
 
 

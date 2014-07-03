@@ -138,9 +138,19 @@ class debian(unittest.TestCase):
         n.create_base_debian()
         n.create_links()
         line = self._get_debfile_line('links', 'mocha')
-        self.assertTrue(line == 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
+        self.assertEqual(line, 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
 
-    def issue_10(self):
+    def test_write_tests(self):
+        n = Npm2Deb('debug')
+        n.create_base_debian()
+        n.create_tests()
+        line = self._get_debfile_line('tests/control', 'node-debug')
+        self.assertEqual(line, 'Depends: node-debug')
+        line = self._get_debfile_line('tests/require', 'debug')
+        self.assertEqual(line, """nodejs -e "require('debug');\"""")
+
+    ## Issues fixed
+    def test_issue_10(self):
         n = Npm2Deb('lastfm')
         n.create_base_debian()
         n.create_control()
