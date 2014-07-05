@@ -275,7 +275,8 @@ WATCH['fakeupstream'] = """version=3
 # Take a look at https://wiki.debian.org/debian/watch/
 # See also fakeupstream: http://anonscm.debian.org/viewvc/qa/trunk/cgi-bin/fakeupstream.cgi?view=markup
 opts=\\
-dversionmangle=%(dversionmangle)s \\
+dversionmangle=%(dversionmangle)s,\\
+filenamemangle=s/.*=// \\
  http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 """
 
