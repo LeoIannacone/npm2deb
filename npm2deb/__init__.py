@@ -114,7 +114,7 @@ class Npm2Deb(object):
     def create_watch(self):
         args = {}
         args['debian_name'] = self.debian_name
-        args['dversionmangle'] = 's/\?(debian|dfsg|ds|deb)\d*$//'
+        args['dversionmangle'] = 's/\+(debian|dfsg|ds|deb)(\.\d+)?$//'
         args['url'] = self.upstream_repo_url
         args['module'] = self.name
         try:
