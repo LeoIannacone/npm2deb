@@ -324,9 +324,13 @@ class Npm2Deb(object):
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]
             raise ValueError(exception)
-        # move dir from node_modules
-        _os.rename('node_modules/%s' % self.name, self.name)
-        _rmtree('node_modules')
+        # move dir from npm root
+        root = _getstatusoutput('npm root')[1].strip('\n')
+        _os.rename(_os.path.join(root, self.name), self.name)
+        try:
+            _os.rmdir(root)  # remove only if empty
+        except OSError:
+            pass
         # remove any dependency downloaded via npm
         if _os.path.isdir("%s/node_modules" % self.name):
             _rmtree("%s/node_modules" % self.name)
