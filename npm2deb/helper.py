@@ -67,10 +67,11 @@ def search_for_bug(module):
         for line in lines:
             try:
                 bug = {}
-                bug['num'] = re.match('.*#(\d+).*\)', line).group(1)
-                bug['type'] = re.match('\((\w+) .*', line).group(1)
-                bug['package'] = re.match('.* (.*)$', line).group(1)
-                bug['url'] = re.match('.* (.*) .*$', line).group(1)
+                match = re.match('\((.*) - #(\d+).*\) (.*) (.*)$', line)
+                bug['num'] = match.group(2)
+                bug['type'] = match.group(1)
+                bug['package'] = match.group(4)
+                bug['url'] = match.group(3)
                 result.append(bug)
                 my_print(formatted.format(bug["num"],
                                           bug["type"],
