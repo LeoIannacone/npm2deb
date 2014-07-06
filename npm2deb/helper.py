@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 from json import loads as _parseJSON
 from xml.dom import minidom as _minidom
+from urllib.request import urlopen as _urlopen
+from subprocess import getstatusoutput as _getstatusoutput
+import re as _re
+
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb.utils import debug as _debug
 from npm2deb.mapper import Mapper as _Mapper
-import re as _re
 
-try:
-    from urllib.request import urlopen as _urlopen
-    from subprocess import getstatusoutput as _getstatusoutput
-except ImportError:
-    from urllib2 import urlopen as _urlopen
-    from commands import getstatusoutput as _getstatusoutput
 
 DO_PRINT = False
 
 
 def my_print(what):
     if DO_PRINT:
-        print(what.encode('utf-8'))
+        print(what)
 
 
 def search_for_repository(module):
@@ -89,7 +86,7 @@ def search_for_reverse_dependencies(module):
         + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
     url = url % {'name': module}
     _debug(1, "opening url %s" % url)
-    data = _urlopen(url).read()
+    data = _urlopen(url).read().decode('utf-8')
     data = _parseJSON(data)
     result = []
     if 'rows' in data and len(data['rows']) > 0:
@@ -121,7 +118,7 @@ def search_for_dependencies(module, recursive=False, force=False,
     mapper = _Mapper.get_instance()
     result = {}
 
-    keys = dependencies.keys()
+    keys = list(dependencies.keys())
     last_dep = False
     for dep in keys:
         if dep == keys[-1]:

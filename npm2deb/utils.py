@@ -1,14 +1,9 @@
-#!/usr/bin/python
-
-from npm2deb import templates as _templates
+from subprocess import getstatusoutput as _getstatusoutput
 import codecs as _codecs
 import os as _os
 
-# python 3 import
-try:
-    from commands import getstatusoutput as _getstatusoutput
-except ImportError:
-    from subprocess import getstatusoutput as _getstatusoutput
+from npm2deb import templates as _templates
+
 
 DEBUG_LEVEL = 0
 

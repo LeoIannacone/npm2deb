@@ -1,17 +1,10 @@
-#!/usr/bin/python
-
 from json import loads as _parseJSON
 from datetime import datetime as _datetime
 from dateutil import tz as _tz
 from shutil import rmtree as _rmtree
+from subprocess import getstatusoutput as _getstatusoutput
 import os as _os
 import re as _re
-
-# python 3 import
-try:
-    from commands import getstatusoutput as _getstatusoutput
-except ImportError:
-    from subprocess import getstatusoutput as _getstatusoutput
 
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
@@ -62,12 +55,10 @@ class Npm2Deb(object):
         self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in _os.environ and 'DEBEMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
-                (_os.environ['DEBFULLNAME'].decode('utf-8'),
-                    _os.environ['DEBEMAIL'].decode('utf-8'))
+                (_os.environ['DEBFULLNAME'], _os.environ['DEBEMAIL'])
         elif 'DEBFULLNAME' in _os.environ and 'EMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
-                (_os.environ['DEBFULLNAME'].decode('utf-8'),
-                    _os.environ['EMAIL'].decode('utf-8'))
+                (_os.environ['DEBFULLNAME'], _os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = _datetime.now(_tz.tzlocal())
         self.read_package_info()
@@ -284,7 +275,7 @@ class Npm2Deb(object):
         if info[0] != 0:
             info = _getstatusoutput('npm view "%s" --json' % self.name)
             exception = 'npm reports errors about %s module:\n' % self.name
-            exception += info[1].decode('utf-8')
+            exception += info[1]
             raise ValueError(exception)
         if not info[1]:
             exception = 'npm returns empty json for %s module' % self.name
@@ -294,7 +285,7 @@ class Npm2Deb(object):
             self.json = _parseJSON(info[1])
         except ValueError as value_error:
             # if error during parse, try to fail graceful
-            if str(value_error) == 'No JSON object could be decoded':
+            if str(value_error) == 'Expecting value: line 1 column 1 (char 0)':
                 versions = []
                 for line in info[1].split('\n'):
                     if _re.match(r"^[a-z](.*)@[0-9]", line):
@@ -388,7 +379,7 @@ class Npm2Deb(object):
         result = 'FIX_ME upstream author'
         if 'author' in self.json:
             author = self.json['author']
-            if isinstance(author, (str, unicode)):
+            if isinstance(author, str):
                 result = author
             elif isinstance(author, dict):
                 if 'name' in author and 'email' in author:

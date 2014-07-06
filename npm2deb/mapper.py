@@ -1,14 +1,9 @@
 from json import loads as _parseJSON
 from re import findall as _findall
+from urllib.request import urlopen as _urlopen
+from subprocess import getstatusoutput as _getstatusoutput
+
 from npm2deb.utils import debug as _debug
-
-try:
-    from urllib.request import urlopen as _urlopen
-    from subprocess import getstatusoutput as _getstatusoutput
-except ImportError:
-    from urllib2 import urlopen as _urlopen
-    from commands import getstatusoutput as _getstatusoutput
-
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 
@@ -22,7 +17,7 @@ class Mapper(object):
                              "Please use get_instance method.")
         _debug(2, 'loading database from %s' % DB_URL)
         data = _findall('{{{(.*)}}}', _urlopen("%s?action=raw"
-                        % DB_URL).read().replace('\n', ''))[0]
+                        % DB_URL).read().decode('utf-8').replace('\n', ''))[0]
         self.json = _parseJSON(data)
         self._warnings = {}
         self.reset_warnings()

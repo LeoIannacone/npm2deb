@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 CHANGELOG = """%(debian_name)s (%(version)s-1) unstable; urgency=low
 
   * Initial release (Closes: #nnnn)

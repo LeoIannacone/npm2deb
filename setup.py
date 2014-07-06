@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
+
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
 from npm2deb import VERSION
@@ -21,7 +22,6 @@ setup(name='npm2deb',
       license='GNU GPL-3',
       scripts=['npm2deb.py'],
       packages=['npm2deb'],
-      dependencies=['dateutil'],
       data_files=[
           ('share/man/man1', ['man/npm2deb.1']),
           ('share/doc/npm2deb', ['README.md', 'AUTHORS']),

@@ -1,15 +1,14 @@
-#!/usr/bin/python
-
 from argparse import ArgumentParser as _ArgumentParser
+from subprocess import call as _call
+import os as _os
+import sys as _sys
+
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb import utils as _utils
 from npm2deb import templates as _templates
 from npm2deb import helper as _helper
-from npm2deb.mapper import Mapper as _Mapper
-from subprocess import call as _call
+from npm2deb import Mapper as _Mapper
 import npm2deb as _
-import os as _os
-import sys as _sys
 
 
 def main(argv=None):
@@ -127,12 +126,14 @@ def main(argv=None):
         help='the license name to show')
     parser_license.set_defaults(func=print_license)
 
-    args = parser.parse_args(argv[1:])
+    if len(argv) == 1:
+        parser.error("Please specify an option.")
+    else:
+        args = parser.parse_args(argv[1:])
+        if args.debug:
+            _utils.DEBUG_LEVEL = args.debug
 
-    if args.debug:
-        _utils.DEBUG_LEVEL = args.debug
-
-    args.func(args)
+        args.func(args)
 
 
 def search_for_module(args):

@@ -6,13 +6,13 @@ a script to make faster and easier packaging nodejs modules
 ## Requirements
 You need to install these dependencies on your system:
 ```
-sudo apt-get install devscripts npm python-dateutil node-github-url-from-git
+sudo apt-get install devscripts npm python3-dateutil node-github-url-from-git
 ```
 Please, take care to have defined **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** environment variables correctly.
 
 ## Install
 ```
-sudo python setup.py install
+sudo python3 setup.py install
 ```
 
 ## Usage
