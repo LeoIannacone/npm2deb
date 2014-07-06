@@ -4,7 +4,7 @@ from xml.dom import minidom as _minidom
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb.utils import debug as _debug
 from npm2deb.mapper import Mapper as _Mapper
-import re
+import re as _re
 
 try:
     from urllib.request import urlopen as _urlopen
@@ -67,7 +67,7 @@ def search_for_bug(module):
         for line in lines:
             try:
                 bug = {}
-                match = re.match('\((.*) - #(\d+).*\) (.*) (.*)$', line)
+                match = _re.match('\((.*) - #(\d+).*\) (.*) (.*)$', line)
                 bug['num'] = match.group(2)
                 bug['type'] = match.group(1)
                 bug['package'] = match.group(4)

@@ -5,16 +5,16 @@ from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb import utils as _utils
 from npm2deb import templates as _templates
 from npm2deb import helper as _helper
-from npm2deb.mapper import Mapper
-from subprocess import call
+from npm2deb.mapper import Mapper as _Mapper
+from subprocess import call as _call
 import npm2deb as _
-import os
-import sys
+import os as _os
+import sys as _sys
 
 
 def main(argv=None):
     if not argv:
-        argv = sys.argv
+        argv = _sys.argv
     parser = _ArgumentParser(prog='npm2deb')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
     parser.add_argument(
@@ -145,7 +145,7 @@ def search_for_module(args):
     node_module = get_npm2deb_instance(args).name
     if args.debian:
         print("\nLooking for similiar package:")
-        mapper = Mapper.get_instance()
+        mapper = _Mapper.get_instance()
         print("  %s" % mapper.get_debian_package(node_module)['repr'])
     if args.repository:
         print("")
@@ -180,7 +180,7 @@ def print_view(args):
             print(formatted.format("%s:" % key.capitalize(),
                   getattr(npm2deb_instance, attr_key, None)))
 
-        mapper = Mapper.get_instance()
+        mapper = _Mapper.get_instance()
         print(formatted.format("Debian:", mapper
               .get_debian_package(npm2deb_instance.name)['repr']))
 
@@ -229,7 +229,7 @@ def show_dependencies(args):
             print("Dependencies:")
             _helper.print_formatted_dependency("NPM", "Debian")
             module_ver = npm2deb_instance.upstream_version
-            module_deb = Mapper.get_instance()\
+            module_deb = _Mapper.get_instance()\
                 .get_debian_package(module_name)["repr"]
             _helper.print_formatted_dependency("%s (%s)" %
                                               (module_name, module_ver),
@@ -262,7 +262,7 @@ def show_reverse_dependencies(args):
 def create(args):
     npm2deb = get_npm2deb_instance(args)
     try:
-        saved_path = os.getcwd()
+        saved_path = _os.getcwd()
         _utils.create_dir(npm2deb.name)
         _utils.change_dir(npm2deb.name)
         npm2deb.start()
@@ -276,7 +276,7 @@ def create(args):
     print("""
 This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
-    call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+    _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
     print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
             \n$ uscan --download-current-version\n")
 
@@ -295,7 +295,7 @@ def get_npm2deb_instance(args):
 
 
 def _show_mapper_warnings():
-    mapper = Mapper.get_instance()
+    mapper = _Mapper.get_instance()
     if mapper.has_warnings():
         print("Warnings occured:")
         mapper.show_warnings()
