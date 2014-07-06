@@ -4,6 +4,7 @@ from xml.dom import minidom
 from npm2deb import Npm2Deb
 from npm2deb.utils import debug
 from npm2deb.mapper import Mapper
+import re
 
 try:
     from urllib.request import urlopen
@@ -53,42 +54,31 @@ def search_for_repository(module):
 def search_for_bug(module):
     if isinstance(module, Npm2Deb):
         module = module.name
-    url = 'http://wnpp.debian.net/'
-    '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
-    '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
-    '&owner%5B%5D=no&col%5B%5D=type&col%5B%5D=description&sort=project'
     my_print('Looking for wnpp bugs:')
-    debug(1, "getting bugs from http://wnpp.debian.net")
-    data = urlopen(url).read()
-    rows = data.split('class="data_table">')[1].split('</table>')[0].split('\n')
-    found = False
-    formatted = "  #{0}  {1:>3}:  {2:25} -- {3}"
-    result = []
-    for row in rows:
-        row = row.replace('&nbsp;', '')
-        if len(row) > 0:
+    debug(1, "calling wnpp-check")
+    info = getstatusoutput('wnpp-check %s' % module)
+    if info[0] == 0:
+        my_print('  None')
+        return []
+    else:
+        lines = info[1].split('\n')
+        formatted = "  #{0}  {1:>3}:  {2:25} -- {3}"
+        result = []
+        for line in lines:
             try:
                 bug = {}
-                dom = minidom.parseString(row)
-                tmp = dom.getElementsByTagName('a')[0]
-                bug["num"] = tmp.getAttribute('href').split('?bug=')[1]
-                bug["package"] = tmp.childNodes[0].data
-                tmp = dom.getElementsByTagName('td')[-1]
-                bug["type"] = tmp.getAttribute('class')
-                bug["description"] = tmp.childNodes[0].childNodes[0].data
-                if bug["package"].find(module) >= 0 or \
-                        bug["description"].find(module) >= 0:
-                    found = True
-                    result.append(bug)
-                    my_print(formatted.format(bug["num"],
-                                              bug["type"],
-                                              bug["package"],
-                                              bug["description"]))
+                bug['num'] = re.match('.*#(\d+).*\)', line).group(1)
+                bug['type'] = re.match('\((\w+) .*', line).group(1)
+                bug['package'] = re.match('.* (.*)$', line).group(1)
+                bug['url'] = re.match('.* (.*) .*$', line).group(1)
+                result.append(bug)
+                my_print(formatted.format(bug["num"],
+                                          bug["type"],
+                                          bug["package"],
+                                          bug["url"]))
             except:
-                continue
-    if not found:
-        my_print('  None')
-    return result
+                    continue
+        return result
 
 
 def search_for_reverse_dependencies(module):
