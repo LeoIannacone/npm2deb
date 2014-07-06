@@ -1,17 +1,17 @@
 #!/usr/bin/python
 
-from json import loads as parseJSON
-from datetime import datetime
-from dateutil import tz
-from shutil import rmtree
-import os
-import re
+from json import loads as _parseJSON
+from datetime import datetime as _datetime
+from dateutil import tz as _tz
+from shutil import rmtree as _rmtree
+import os as _os
+import re as _re
 
 # python 3 import
 try:
-    from commands import getstatusoutput
+    from commands import getstatusoutput as _getstatusoutput
 except ImportError:
-    from subprocess import getstatusoutput
+    from subprocess import getstatusoutput as _getstatusoutput
 
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
@@ -60,16 +60,16 @@ class Npm2Deb(object):
 
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME debian author'
-        if 'DEBFULLNAME' in os.environ and 'DEBEMAIL' in os.environ:
+        if 'DEBFULLNAME' in _os.environ and 'DEBEMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
-                (os.environ['DEBFULLNAME'].decode('utf-8'),
-                    os.environ['DEBEMAIL'].decode('utf-8'))
-        elif 'DEBFULLNAME' in os.environ and 'EMAIL' in os.environ:
+                (_os.environ['DEBFULLNAME'].decode('utf-8'),
+                    _os.environ['DEBEMAIL'].decode('utf-8'))
+        elif 'DEBFULLNAME' in _os.environ and 'EMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
-                (os.environ['DEBFULLNAME'].decode('utf-8'),
-                    os.environ['EMAIL'].decode('utf-8'))
+                (_os.environ['DEBFULLNAME'].decode('utf-8'),
+                    _os.environ['EMAIL'].decode('utf-8'))
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
-        self.date = datetime.now(tz.tzlocal())
+        self.date = _datetime.now(_tz.tzlocal())
         self.read_package_info()
 
     def start(self):
@@ -99,16 +99,16 @@ class Npm2Deb(object):
 
     def clean(self):
         utils.debug(1, "cleaning directory")
-        for filename in os.listdir('.'):
+        for filename in _os.listdir('.'):
             if filename != 'debian':
-                if os.path.isdir(filename):
-                    rmtree(filename)
+                if _os.path.isdir(filename):
+                    _rmtree(filename)
                 else:
-                    os.remove(filename)
+                    _os.remove(filename)
 
     def create_manpages(self):
         if 'man' in self.json:
-            content = os.path.normpath(self.json['man'])
+            content = _os.path.normpath(self.json['man'])
             utils.create_debian_file('manpages', content)
 
     def create_watch(self):
@@ -126,10 +126,10 @@ class Npm2Deb(object):
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            info = getstatusoutput('uscan --watchfile "debian/watch" '
-                                   '--package "{}" '
-                                   '--upstream-version 0 --no-download'
-                                   .format(self.debian_name))
+            info = _getstatusoutput('uscan --watchfile "debian/watch" '
+                                    '--package "{}" '
+                                    '--upstream-version 0 --no-download'
+                                    .format(self.debian_name))
             if info[0] != 0:
                 raise ValueError
 
@@ -138,12 +138,12 @@ class Npm2Deb(object):
             utils.create_debian_file('watch', content)
 
     def create_examples(self):
-        if os.path.isdir('examples'):
+        if _os.path.isdir('examples'):
             content = 'examples/*'
             utils.create_debian_file('examples', content)
 
     def create_dirs(self):
-        if os.path.isdir('bin'):
+        if _os.path.isdir('bin'):
             content = 'usr/bin'
             utils.create_debian_file('dirs', content)
 
@@ -152,7 +152,7 @@ class Npm2Deb(object):
         dest = self.debian_dest
         if 'bin' in self.json:
             for script in self.json['bin']:
-                orig = os.path.normpath(self.json['bin'][script])
+                orig = _os.path.normpath(self.json['bin'][script])
                 links.append("%s/%s usr/bin/%s" %
                             (dest, orig, script))
         if len(links) > 0:
@@ -162,20 +162,20 @@ class Npm2Deb(object):
     def create_install(self):
         content = ''
         libs = ['package.json']
-        if os.path.isdir('bin'):
+        if _os.path.isdir('bin'):
             libs.append('bin')
-        if os.path.isdir('lib'):
+        if _os.path.isdir('lib'):
             libs.append('lib')
         # install main if not in a subpath
         if 'main' in self.json:
             main = self.json['main']
-            main = os.path.normpath(main)
+            main = _os.path.normpath(main)
             if main == 'index':
                 main = 'index.js'
             if not main.find('/') > 0:
-                libs.append(os.path.normpath(main))
+                libs.append(_os.path.normpath(main))
         else:
-            if os.path.exists('index.js'):
+            if _os.path.exists('index.js'):
                 libs.append('index.js')
             else:
                 libs.append('*.js')
@@ -188,7 +188,7 @@ class Npm2Deb(object):
         if 'readmeFilename' in self.json and self.json['readmeFilename']:
             docs.append(self.json['readmeFilename'])
         else:
-            for name in os.listdir('.'):
+            for name in _os.listdir('.'):
                 if name.lower().startswith('readme'):
                     docs.append(name)
                     break
@@ -251,14 +251,14 @@ class Npm2Deb(object):
     def create_rules(self):
         args = {}
         args['overrides'] = ''
-        for filename in os.listdir('.'):
+        for filename in _os.listdir('.'):
             if filename.lower().startswith('history'):
                 args['overrides'] += "override_dh_installchangelogs:\n" + \
                                      "\tdh_installchangelogs -k %s\n" % filename
                 break
         content = utils.get_template('rules') % args
         utils.create_debian_file("rules", content)
-        os.system('chmod +x debian/rules')
+        _os.system('chmod +x debian/rules')
 
     def create_tests(self):
         utils.create_dir("debian/tests")
@@ -279,10 +279,10 @@ class Npm2Deb(object):
 
     def read_package_info(self):
         utils.debug(1, "reading json - calling npm view %s" % self.name)
-        info = getstatusoutput('npm view "%s" --json 2>/dev/null' % self.name)
+        info = _getstatusoutput('npm view "%s" --json 2>/dev/null' % self.name)
         # if not status 0, raise expection
         if info[0] != 0:
-            info = getstatusoutput('npm view "%s" --json' % self.name)
+            info = _getstatusoutput('npm view "%s" --json' % self.name)
             exception = 'npm reports errors about %s module:\n' % self.name
             exception += info[1].decode('utf-8')
             raise ValueError(exception)
@@ -291,13 +291,13 @@ class Npm2Deb(object):
             raise ValueError(exception)
 
         try:
-            self.json = parseJSON(info[1])
+            self.json = _parseJSON(info[1])
         except ValueError as value_error:
             # if error during parse, try to fail graceful
             if str(value_error) == 'No JSON object could be decoded':
                 versions = []
                 for line in info[1].split('\n'):
-                    if re.match(r"^[a-z](.*)@[0-9]", line):
+                    if _re.match(r"^[a-z](.*)@[0-9]", line):
                         version = line.split('@')[1]
                         versions.append(version)
                 if len(versions) > 0:
@@ -319,20 +319,20 @@ class Npm2Deb(object):
 
     def download(self):
         utils.debug(1, "downloading %s via npm" % self.name)
-        info = getstatusoutput('npm install "%s"' % self.name)
+        info = _getstatusoutput('npm install "%s"' % self.name)
         if info[0] is not 0:
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]
             raise ValueError(exception)
         # move dir from node_modules
-        os.rename('node_modules/%s' % self.name, self.name)
-        rmtree('node_modules')
+        _os.rename('node_modules/%s' % self.name, self.name)
+        _rmtree('node_modules')
         # remove any dependency downloaded via npm
-        if os.path.isdir("%s/node_modules" % self.name):
-            rmtree("%s/node_modules" % self.name)
+        if _os.path.isdir("%s/node_modules" % self.name):
+            _rmtree("%s/node_modules" % self.name)
         if self.name is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
-            os.rename(self.name, self.debian_name)
+            _os.rename(self.name, self.debian_name)
 
     def get_ITP(self):
         args = {}
@@ -409,9 +409,9 @@ class Npm2Deb(object):
                     if tmp:
                         result = tmp
                 else:
-                    url = re.sub(r'^git@(.*):', r'http://\1/', url)
-                    url = re.sub(r'^git://', 'http://', url)
-                    url = re.sub(r'\.git$', '', url)
+                    url = _re.sub(r'^git@(.*):', r'http://\1/', url)
+                    url = _re.sub(r'^git://', 'http://', url)
+                    url = _re.sub(r'\.git$', '', url)
                     result = url
             else:
                 result = url
@@ -457,7 +457,7 @@ class Npm2Deb(object):
         return name.replace('_', '-')
 
     def _get_github_url_from_git(self, url):
-        result = getstatusoutput(
+        result = _getstatusoutput(
             "nodejs -e "
             "\"console.log(require('github-url-from-git')"
             "('%s'));\"" % url)[1]

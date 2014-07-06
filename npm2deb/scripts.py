@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
-from argparse import ArgumentParser
-from npm2deb import Npm2Deb, utils, templates, helper, \
-    DEBHELPER, STANDARDS_VERSION, VERSION
+from argparse import ArgumentParser as _ArgumentParser
+from npm2deb import Npm2Deb as _Npm2Deb
+from npm2deb import utils as _utils
+from npm2deb import templates as _templates
+from npm2deb import helper as _helper
 from npm2deb.mapper import Mapper
 from subprocess import call
+import npm2deb as _
 import os
 import sys
 
@@ -12,11 +15,11 @@ import sys
 def main(argv=None):
     if not argv:
         argv = sys.argv
-    parser = ArgumentParser(prog='npm2deb')
+    parser = _ArgumentParser(prog='npm2deb')
     parser.add_argument('-D', '--debug', type=int, help='set debug level')
     parser.add_argument(
         '-v', '--version', action='version',
-        version='%(prog)s ' + VERSION)
+        version='%(prog)s ' + _.VERSION)
 
     subparsers = parser.add_subparsers(title='commands')
 
@@ -27,10 +30,10 @@ def main(argv=None):
         '-n', '--noclean', action="store_true",
         default=False, help='do not remove files downloaded with npm')
     parser_create.add_argument(
-        '--debhelper', default=DEBHELPER,
+        '--debhelper', default=_.DEBHELPER,
         help='specify debhelper version [default: %(default)s]')
     parser_create.add_argument(
-        '--standards-version', default=STANDARDS_VERSION,
+        '--standards-version', default=_.STANDARDS_VERSION,
         help='set standards-version [default: %(default)s]')
     parser_create.add_argument(
         '--upstream-author', default=None,
@@ -127,13 +130,13 @@ def main(argv=None):
     args = parser.parse_args(argv[1:])
 
     if args.debug:
-        utils.DEBUG_LEVEL = args.debug
+        _utils.DEBUG_LEVEL = args.debug
 
     args.func(args)
 
 
 def search_for_module(args):
-    helper.DO_PRINT = True
+    _helper.DO_PRINT = True
     # enable all by default
     if not args.bug and not args.debian and not args.repository:
         args.bug = True
@@ -146,10 +149,10 @@ def search_for_module(args):
         print("  %s" % mapper.get_debian_package(node_module)['repr'])
     if args.repository:
         print("")
-        helper.search_for_repository(node_module)
+        _helper.search_for_repository(node_module)
     if args.bug:
         print("")
-        helper.search_for_bug(node_module)
+        _helper.search_for_bug(node_module)
     print("")
 
     _show_mapper_warnings()
@@ -192,15 +195,16 @@ def print_itp(args):
 
 def print_license(args, prefix=""):
     if args.list:
+        licenses = sorted(_templates.LICENSES.keys())
         print("%s Available licenses are: %s." %
-              (prefix, ', '.join(sorted(templates.LICENSES.keys())).lower()))
+              (prefix, ', '.join(licenses).lower()))
     else:
         if args.name is None:
             print("You have to specify a license name")
             args.list = True
             print_license(args)
         else:
-            template_license = utils.get_license(args.name)
+            template_license = _utils.get_license(args.name)
             if not template_license.startswith('FIX_ME'):
                 print(template_license)
             else:
@@ -210,7 +214,7 @@ def print_license(args, prefix=""):
 
 
 def show_dependencies(args):
-    helper.DO_PRINT = True
+    _helper.DO_PRINT = True
     # enable all by default
     if not args.binary and not args.builddeb:
         args.binary = True
@@ -223,16 +227,16 @@ def show_dependencies(args):
     if args.binary:
         if 'dependencies' in json and json['dependencies']:
             print("Dependencies:")
-            helper.print_formatted_dependency("NPM", "Debian")
+            _helper.print_formatted_dependency("NPM", "Debian")
             module_ver = npm2deb_instance.upstream_version
             module_deb = Mapper.get_instance()\
                 .get_debian_package(module_name)["repr"]
-            helper.print_formatted_dependency("%s (%s)" %
+            _helper.print_formatted_dependency("%s (%s)" %
                                               (module_name, module_ver),
-                                              module_deb)
-            helper.search_for_dependencies(npm2deb_instance,
-                                           args.recursive,
-                                           args.force)
+                                               module_deb)
+            _helper.search_for_dependencies(npm2deb_instance,
+                                            args.recursive,
+                                            args.force)
             print("")
         else:
             print("Module %s has no dependencies." % module_name)
@@ -240,8 +244,8 @@ def show_dependencies(args):
     if args.builddeb:
         if 'devDependencies' in json and json['devDependencies']:
             print("Build dependencies:")
-            helper.print_formatted_dependency("NPM", "Debian")
-            helper.search_for_builddep(npm2deb_instance)
+            _helper.print_formatted_dependency("NPM", "Debian")
+            _helper.search_for_builddep(npm2deb_instance)
             print("")
         else:
             print("Module %s has no build dependencies." % module_name)
@@ -250,19 +254,19 @@ def show_dependencies(args):
 
 
 def show_reverse_dependencies(args):
-    helper.DO_PRINT = True
+    _helper.DO_PRINT = True
     node_module = get_npm2deb_instance(args).name
-    helper.search_for_reverse_dependencies(node_module)
+    _helper.search_for_reverse_dependencies(node_module)
 
 
 def create(args):
     npm2deb = get_npm2deb_instance(args)
     try:
         saved_path = os.getcwd()
-        utils.create_dir(npm2deb.name)
-        utils.change_dir(npm2deb.name)
+        _utils.create_dir(npm2deb.name)
+        _utils.change_dir(npm2deb.name)
         npm2deb.start()
-        utils.change_dir(saved_path)
+        _utils.change_dir(saved_path)
     except OSError as os_error:
         print(str(os_error))
         exit(1)
@@ -284,7 +288,7 @@ def get_npm2deb_instance(args):
         print('please specify a node_module.')
         exit(1)
     try:
-        return Npm2Deb(args=vars(args))
+        return _Npm2Deb(args=vars(args))
     except ValueError as value_error:
         print(value_error)
         exit(1)
