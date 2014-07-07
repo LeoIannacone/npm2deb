@@ -1,4 +1,4 @@
-CHANGELOG = """%(debian_name)s (%(version)s-1) unstable; urgency=low
+CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
 
   * Initial release (Closes: #nnnn)
 
