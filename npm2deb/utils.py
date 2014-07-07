@@ -72,7 +72,8 @@ def get_license(license):
     elif name.startswith('isc'):
         result = _templates.LICENSES['ISC']
     else:
-        result = 'FIX_ME please specify a license description'
+        result = 'FIX_ME specify a license, see: ' \
+                 'http://dep.debian.net/deps/dep5/#license-specification'
     return result
 
 
