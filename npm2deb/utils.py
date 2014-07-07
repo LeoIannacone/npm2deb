@@ -65,6 +65,8 @@ def get_license(license):
         result = _templates.LICENSES['Artistic']
     elif name.startswith('apache'):
         result = _templates.LICENSES['Apache']
+    elif name.startswith('isc'):
+        result = _templates.LICENSES['ISC']
     else:
         result = 'FIX_ME please specify a license description'
     return result
