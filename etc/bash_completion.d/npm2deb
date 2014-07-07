@@ -9,7 +9,7 @@ _npm2deb()
 
     case "$prev" in
         license)
-            options="apache artistic bsd expat gpl-2 gpl-3 lgpl-2 lgpl-3 mit"
+            options="`npm2deb license -l | awk -F': ' '{print $2}' | sed s/[\,,\.]//g`"
         ;;
         npm2deb)
             options="create view search depends rdepends itp license"
