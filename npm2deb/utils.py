@@ -73,7 +73,8 @@ def get_license(license):
         result = _templates.LICENSES['ISC']
     else:
         result = 'FIX_ME specify a license, see: ' \
-                 'http://dep.debian.net/deps/dep5/#license-specification'
+                 'https://www.debian.org/doc/packaging-manuals/' \
+                 'copyright-format/1.0/#license-specification'
     return result
 
 
