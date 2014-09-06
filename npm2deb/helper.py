@@ -118,7 +118,7 @@ def search_for_dependencies(module, recursive=False, force=False,
     mapper = _Mapper.get_instance()
     result = {}
 
-    keys = list(dependencies.keys())
+    keys = sorted(list(dependencies.keys()))
     last_dep = False
     for dep in keys:
         if dep == keys[-1]:
@@ -161,7 +161,7 @@ def search_for_builddep(module):
     mapper = _Mapper.get_instance()
     result = {}
 
-    for dep in builddeb:
+    for dep in sorted(builddeb.keys()):
         result[dep] = {}
         result[dep]['version'] = builddeb[dep]
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
