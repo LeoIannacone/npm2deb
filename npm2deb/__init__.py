@@ -2,6 +2,7 @@ from json import loads as _parseJSON
 from datetime import datetime as _datetime
 from dateutil import tz as _tz
 from shutil import rmtree as _rmtree
+from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 import os as _os
 import re as _re
@@ -23,8 +24,8 @@ class Npm2Deb(object):
             self.name = module_name
         elif 'node_module' in args:
             self.name = args['node_module']
-        self.args = args
         self.json = None
+        self.args = args
         self.homepage = None
         self.description = None
         self.upstream_author = None
@@ -51,6 +52,7 @@ class Npm2Deb(object):
             if 'noclean' in args:
                 self.noclean = args['noclean']
 
+        self.read_package_info()
         self.debian_name = 'node-%s' % self._debianize_name(self.name)
         self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in _os.environ and 'DEBEMAIL' in _os.environ:
@@ -61,7 +63,6 @@ class Npm2Deb(object):
                 (_os.environ['DEBFULLNAME'], _os.environ['EMAIL'])
         self.debian_dest = "usr/lib/nodejs/%s" % self.name
         self.date = _datetime.now(_tz.tzlocal())
-        self.read_package_info()
 
     def start(self):
         self.download()
@@ -269,20 +270,33 @@ class Npm2Deb(object):
         utils.create_debian_file("compat", self.debian_debhelper)
 
     def read_package_info(self):
-        utils.debug(1, "reading json - calling npm view %s" % self.name)
-        info = _getstatusoutput('npm view "%s" --json 2>/dev/null' % self.name)
-        # if not status 0, raise expection
-        if info[0] != 0:
-            info = _getstatusoutput('npm view "%s" --json' % self.name)
-            exception = 'npm reports errors about %s module:\n' % self.name
-            exception += info[1]
-            raise ValueError(exception)
-        if not info[1]:
-            exception = 'npm returns empty json for %s module' % self.name
-            raise ValueError(exception)
+        data = None
+        if _re.match("^(http:\/\/|https:\/\/)", self.name):
+            utils.debug(1, "reading json - opening url %s" % self.name)
+            data = _urlopen(self.name).read().decode('utf-8')
+
+        elif _os.path.isfile(self.name):
+            utils.debug(1, "reading json - opening file %s" % self.name)
+            with open(self.name, 'r') as fd:
+                data = fd.read()
+
+        else:
+            utils.debug(1, "reading json - calling npm view %s" % self.name)
+            info = _getstatusoutput('npm view "%s" --json 2>/dev/null' %
+                                    self.name)
+            # if not status 0, raise expection
+            if info[0] != 0:
+                info = _getstatusoutput('npm view "%s" --json' % self.name)
+                exception = 'npm reports errors about %s module:\n' % self.name
+                exception += info[1]
+                raise ValueError(exception)
+            if not info[1]:
+                exception = 'npm returns empty json for %s module' % self.name
+                raise ValueError(exception)
+            data = info[1]
 
         try:
-            self.json = _parseJSON(info[1])
+            self.json = _parseJSON(data)
         except ValueError as value_error:
             # if error during parse, try to fail graceful
             if str(value_error) == 'Expecting value: line 1 column 1 (char 0)':

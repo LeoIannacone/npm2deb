@@ -62,6 +62,27 @@ class npm_coherences_license(unittest.TestCase):
         self.assertEqual(n.debian_license, 'GPL-3')
 
 
+class read_json(unittest.TestCase):
+
+    def test_json_via_npm(self):
+        n = Npm2Deb('serve-index')
+        self.assertEqual(n.name, 'serve-index')
+
+    def test_json_via_url(self):
+        n = Npm2Deb('https://raw.githubusercontent.com/' +
+                    'expressjs/serve-index/master/package.json')
+        self.assertEqual(n.name, 'serve-index')
+
+    def test_json_via_file(self):
+        file_name = '/tmp/test_json_via_file'
+        test_name = "test_name"
+        with open(file_name, 'w') as fd:
+            fd.write('{"name":"%s"}' % test_name)
+        n = Npm2Deb(file_name)
+        os.remove(file_name)
+        self.assertEqual(n.name, test_name)
+
+
 class debian(unittest.TestCase):
 
     def tearDown(self):
@@ -156,6 +177,7 @@ class debian(unittest.TestCase):
         n = Npm2Deb('lastfm')
         n.create_base_debian()
         n.create_control()
+
 
 
 if __name__ == '__main__':
