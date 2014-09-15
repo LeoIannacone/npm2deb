@@ -179,6 +179,5 @@ class debian(unittest.TestCase):
         n.create_control()
 
 
-
 if __name__ == '__main__':
     unittest.main()

@@ -271,16 +271,20 @@ class Npm2Deb(object):
 
     def read_package_info(self):
         data = None
+        name_is = None
         if _re.match("^(http:\/\/|https:\/\/)", self.name):
             utils.debug(1, "reading json - opening url %s" % self.name)
             data = _urlopen(self.name).read().decode('utf-8')
+            name_is = 'url'
 
         elif _os.path.isfile(self.name):
             utils.debug(1, "reading json - opening file %s" % self.name)
             with open(self.name, 'r') as fd:
                 data = fd.read()
+            name_is = 'file'
 
         else:
+            name_is = 'npm'
             utils.debug(1, "reading json - calling npm view %s" % self.name)
             info = _getstatusoutput('npm view "%s" --json 2>/dev/null' %
                                     self.name)
@@ -300,8 +304,11 @@ class Npm2Deb(object):
         except ValueError as value_error:
             # if error during parse, try to fail graceful
             if str(value_error) == 'Expecting value: line 1 column 1 (char 0)':
+                if name_is != 'npm':
+                    raise ValueError("Data read from %s "
+                                     "is not in a JSON format." % name_is)
                 versions = []
-                for line in info[1].split('\n'):
+                for line in data.split('\n'):
                     if _re.match(r"^[a-z](.*)@[0-9]", line):
                         version = line.split('@')[1]
                         versions.append(version)
