@@ -1,3 +1,6 @@
+## 0.2.2 (2014-10-10)
+ * [fix] bump Standards-Version to 3.9.6
+
 ## 0.2.1 (2014-08-23)
  * [new] add support to ISC and to other BSD licenses - closes #9
  * [fix] add URL to licence-specification if license not supported

@@ -10,7 +10,7 @@ import re as _re
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
-VERSION = '0.2.1'
+VERSION = '0.2.2'
 DEBHELPER = 8
 STANDARDS_VERSION = '3.9.6'
 
