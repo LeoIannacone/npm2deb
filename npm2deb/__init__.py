@@ -12,7 +12,7 @@ from npm2deb.mapper import Mapper
 
 VERSION = '0.2.1'
 DEBHELPER = 8
-STANDARDS_VERSION = '3.9.5'
+STANDARDS_VERSION = '3.9.6'
 
 
 class Npm2Deb(object):
