@@ -19,7 +19,6 @@ Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
 Vcs-Browser: %(Vcs-Browser)s
-XS-Testsuite: autopkgtest
 
 Package: %(Package)s
 Architecture: all
