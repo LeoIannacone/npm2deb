@@ -8,7 +8,7 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
 
 CONTROL = """Source: %(Source)s
 Section: web
-Priority: extra
+Priority: optional
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: %(Uploaders)s
 Build-Depends:
