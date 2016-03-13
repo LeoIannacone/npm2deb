@@ -100,6 +100,9 @@ def main(argv=None):
         '-d', '--debian', action="store_true",
         default=False, help='search for existing package in debian')
     parser_search.add_argument(
+        '-n', '--new', action="store_true",
+        default=False, help='search for existing package in NEW queue')
+    parser_search.add_argument(
         '-r', '--repository', action="store_true",
         default=False, help='search for existing repository in alioth')
     parser_search.add_argument(
@@ -139,10 +142,11 @@ def main(argv=None):
 def search_for_module(args):
     _helper.DO_PRINT = True
     # enable all by default
-    if not args.bug and not args.debian and not args.repository:
+    if not args.bug and not args.debian and not args.repository and not args.new:
         args.bug = True
         args.debian = True
         args.repository = True
+        args.new = True
     node_module = get_npm2deb_instance(args).name
     if args.debian:
         print("\nLooking for similiar package:")
@@ -154,6 +158,9 @@ def search_for_module(args):
     if args.bug:
         print("")
         _helper.search_for_bug(node_module)
+    if args.new:
+        print("")
+        _helper.search_in_new(node_module)
     print("")
 
     _show_mapper_warnings()
