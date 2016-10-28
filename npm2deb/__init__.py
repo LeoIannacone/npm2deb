@@ -471,7 +471,7 @@ class Npm2Deb(object):
         return '\n , '.join(depends)
 
     def _debianize_name(self, name):
-        return name.replace('_', '-')
+        return name.replace('_', '-').lower()
 
     def _get_github_url_from_git(self, url):
         result = _getstatusoutput(
