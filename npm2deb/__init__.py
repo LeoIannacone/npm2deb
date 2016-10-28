@@ -466,6 +466,7 @@ class Npm2Deb(object):
                     dep_debian = "%s (%s)" % (name, version)
                 else:
                     dep_debian = name
+                dep_debian = '>='.join(dep_debian.split('^'))
                 depends.append(dep_debian)
 
         return '\n , '.join(depends)
