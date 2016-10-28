@@ -53,7 +53,7 @@ class Npm2Deb(object):
                 self.noclean = args['noclean']
 
         self.read_package_info()
-        self.debian_name = 'node-%s' % self._debianize_name(self.name)
+        self.debian_name = 'node-%s' % utils.debianize_name(self.name)
         self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in _os.environ and 'DEBEMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
@@ -469,9 +469,6 @@ class Npm2Deb(object):
                 depends.append(dep_debian)
 
         return '\n , '.join(depends)
-
-    def _debianize_name(self, name):
-        return name.replace('_', '-').lower()
 
     def _get_github_url_from_git(self, url):
         result = _getstatusoutput(
