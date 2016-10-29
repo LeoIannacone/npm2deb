@@ -412,13 +412,17 @@ class Npm2Deb(object):
 
     def _get_json_repo_url(self):
         result = 'FIX_ME repo url'
+        url = None
         if 'repository' in self.json:
             repository = self.json['repository']
             if isinstance(repository, str):
                 url = repository
             elif isinstance(repository, dict) and 'url' in repository:
                 url = repository['url']
-            if url.startswith('git') or (isinstance(repository, dict) and
+
+            if not url:
+                pass            # repository field is not in expected format
+            elif url.startswith('git') or (isinstance(repository, dict) and
                                          'type' in repository and
                                          repository['type'] == 'git'):
                 if url.find('github') >= 0:
