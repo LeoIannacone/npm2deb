@@ -456,10 +456,9 @@ class Npm2Deb(object):
                     name = 'node-%s' % dep
                     mapper.append_warning('error', dep, 'dependency %s '
                                           'not in debian' % (name))
-                version = dependencies[dep].replace('~', '')
-                version = dependencies[dep].replace('^', '')
+                version = dependencies[dep]
                 if version:
-                    version = version.lower().replace('.x', '.0')
+                    version = version.lower().replace('~', '').replace('^', '').replace('.x', '.0')
                     if version[0].isdigit():
                         version = '>= %s' % version
                     elif version == '*' or version == 'latest':
