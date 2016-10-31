@@ -158,6 +158,19 @@ class Npm2Deb(object):
             libs.append('bin')
         if _os.path.isdir('lib'):
             libs.append('lib')
+
+        # install files from directories field
+        if 'directories' in self.json:
+            directories = self.json['directories']
+            if 'bin' in directories:
+                libs.append(directories['bin'])
+            if 'lib' in directories:
+                libs.append(directories['lib'])
+
+        # install files from files field
+        if 'files' in self.json:
+            libs += self.json['files']
+
         # install main if not in a subpath
         if 'main' in self.json:
             main = self.json['main']
@@ -171,6 +184,7 @@ class Npm2Deb(object):
                 libs.append('index.js')
             else:
                 libs.append('*.js')
+
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
