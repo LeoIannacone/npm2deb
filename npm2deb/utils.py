@@ -107,3 +107,6 @@ def create_dir(dir):
     except OSError as oserror:
         raise OSError("Error: directory %s already exists." %
                       oserror.filename)
+
+def debianize_name(name):
+    return name.replace('_', '-').lower()

@@ -4,6 +4,8 @@ from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 
 from npm2deb.utils import debug as _debug
+from npm2deb.utils import debianize_name as _debianize_name
+
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 
@@ -50,7 +52,7 @@ class Mapper(object):
                 result['info'] = ('error', db_package['error'])
                 self.append_warning('error', node_module, db_package['error'])
         else:
-            result['name'] = 'node-%s' % node_module
+            result['name'] = 'node-%s' % _debianize_name(node_module)
 
         if not result['name']:
             return result
