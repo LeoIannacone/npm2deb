@@ -56,7 +56,7 @@ class Mapper(object):
             return result
 
         madison = _getstatusoutput(
-            'apt-cache madison "%s" | grep Sources' % result['name'])
+            'rmadison -s sid "%s" | grep source' % result['name'])
 
         if madison[0] != 0:
             result['name'] = None
