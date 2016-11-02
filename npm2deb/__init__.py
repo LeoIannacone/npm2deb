@@ -104,6 +104,8 @@ class Npm2Deb(object):
             utils.change_dir('../%s' % new_dir_name)
             self.run_buildpackage()
 
+            self.edit_changelog()
+            
             debian_path = "%s/%s/debian" % (self.name, new_dir_name)
             print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir_name))
             
@@ -121,7 +123,23 @@ You may want fix first these issues:\n""")
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
-    
+
+    def edit_changelog(self):
+        """
+        This function is to remove extra line '* New upstream release' 
+        from debian/changelog 
+        """
+        with open('debian/changelog', 'r') as f:
+            data = f.read()
+        f.close()
+        
+        data_list = data.split('\n')
+        data_list.pop(3)
+
+        with open('debian/changelog', 'w') as f:
+            f.write('\n'.join(data_list))
+        f.close()
+        
     def run_buildpackage(self):
         print ("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
