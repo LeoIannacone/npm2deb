@@ -118,11 +118,9 @@ class Npm2Deb(object):
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            info = _getstatusoutput('uscan --watchfile "debian/watch" '
-                                    '--package "{}" '
-                                    '--upstream-version 0 --no-download'
-                                    .format(self.debian_name))
-            if info[0] != 0:
+            uscan_info = self.test_uscan()
+            
+            if uscan_info[0] != 0:
                 raise ValueError
 
         except ValueError:
@@ -343,6 +341,17 @@ class Npm2Deb(object):
         self._get_json_description()
         self._get_json_version()
         self._get_json_license()
+
+    def test_uscan(self):
+        info = _getstatusoutput('uscan --watchfile "debian/watch" '
+                                    '--package "{}" '
+                                    '--upstream-version 0 --no-download'
+                                    .format(self.debian_name))
+        return info
+
+    def run_uscan(self):
+        print ('\nDownloading source tarball file using debian/watch file...')
+        _os.system('uscan --download-current-version')    
 
     def download(self):
         utils.debug(1, "downloading %s via npm" % self.name)

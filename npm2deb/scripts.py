@@ -2,6 +2,7 @@ from argparse import ArgumentParser as _ArgumentParser
 from subprocess import call as _call
 import os as _os
 import sys as _sys
+import re as _re
 
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb import utils as _utils
@@ -274,19 +275,38 @@ def create(args):
         _utils.create_dir(npm2deb.name)
         _utils.change_dir(npm2deb.name)
         npm2deb.start()
+        _utils.change_dir(npm2deb.debian_name)
+
+        # run uscan if debian/watch is ok
+        uscan_info = npm2deb.test_uscan()
+
+        if uscan_info[0] == 0:
+            npm2deb.run_uscan()
+            remote_file_name = uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
+            tar_file = '%s-%s' % (npm2deb.debian_name, remote_file_name)
+            print ('\nCreating debian source package...')
+            _call('uupdate -b ../%s' % tar_file, shell=True)
+            compression_format = _re.search('\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))', tar_file).group(0)                                         
+            new_dir_name = tar_file.replace(compression_format, '')
+            debian_path = "%s/%s/debian" % (npm2deb.name, new_dir_name)
+            print ('\nRemember, your new source directory is ', debian_path, '\n')
+        else:
+            debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
+        
+        print("""
+This is not a crystal ball, so please take a look at auto-generated files.\n
+You may want fix first these issues:\n""")
+        
         _utils.change_dir(saved_path)
+        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+
+        if uscan_info[0] != 0:
+            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+                    \n$ uscan --download-current-version\n")    
+ 
     except OSError as os_error:
         print(str(os_error))
         exit(1)
-
-    debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
-
-    print("""
-This is not a crystal ball, so please take a look at auto-generated files.\n
-You may want fix first these issues:\n""")
-    _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
-    print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
-            \n$ uscan --download-current-version\n")
 
     _show_mapper_warnings()
 
