@@ -289,7 +289,7 @@ def create(args):
             compression_format = _re.search('\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))', tar_file).group(0)                                         
             new_dir_name = tar_file.replace(compression_format, '')
             debian_path = "%s/%s/debian" % (npm2deb.name, new_dir_name)
-            print ('\nRemember, your new source directory is ', debian_path, '\n')
+            print ('\nRemember, your new source directory is %s/%s' % (npm2deb.name, new_dir_name))
         else:
             debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
         
