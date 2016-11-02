@@ -4,6 +4,7 @@ from dateutil import tz as _tz
 from shutil import rmtree as _rmtree
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
+from subprocess import call as _call
 import os as _os
 import re as _re
 
@@ -85,6 +86,63 @@ class Npm2Deb(object):
         utils.change_dir('..')
         self.create_itp_bug()
 
+    def initiate_build(self ,saved_path):
+        """
+        Try building deb package after creating required files using start().
+        'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
+        """
+        uscan_info = self.test_uscan()
+        if uscan_info[0] == 0:
+            self.run_uscan()
+            
+            remote_file_name = uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
+            tar_file_name = '%s-%s' % (self.debian_name, remote_file_name)
+            self.run_uupdate(tar_file_name)
+            
+            compression_format = _re.search('\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))', tar_file_name).group(0)
+            new_dir_name = tar_file_name.replace(compression_format, '')
+            utils.change_dir('../%s' % new_dir_name)
+            self.run_buildpackage()
+
+            debian_path = "%s/%s/debian" % (self.name, new_dir_name)
+            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir_name))
+            
+        else:
+            debian_path = "%s/%s/debian" % (self.name, self.debian_name)
+        
+        print("""
+This is not a crystal ball, so please take a look at auto-generated files.\n
+You may want fix first these issues:\n""")
+        
+        utils.change_dir(saved_path)
+        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+
+        if uscan_info[0] != 0:
+            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+                    \n$ uscan --download-current-version\n")
+
+    
+    def run_buildpackage(self):
+        print ("\nBuilding the binary package")
+        _call('dpkg-source -b .', shell=True)
+        _call('dpkg-buildpackage', shell=True)
+
+    def run_uupdate(self, tar_file):
+        print ('\nCreating debian source package...')
+        _call('uupdate -b ../%s' % tar_file, shell=True)
+
+    def run_uscan(self):
+        print ('\nDownloading source tarball file using debian/watch file...')
+        _os.system('uscan --download-current-version')
+        
+    def test_uscan(self):
+        info = _getstatusoutput('uscan --watchfile "debian/watch" '
+                                    '--package "{}" '
+                                    '--upstream-version 0 --no-download'
+                                    .format(self.debian_name))
+        return info
+
+        
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
         utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
@@ -342,16 +400,6 @@ class Npm2Deb(object):
         self._get_json_version()
         self._get_json_license()
 
-    def test_uscan(self):
-        info = _getstatusoutput('uscan --watchfile "debian/watch" '
-                                    '--package "{}" '
-                                    '--upstream-version 0 --no-download'
-                                    .format(self.debian_name))
-        return info
-
-    def run_uscan(self):
-        print ('\nDownloading source tarball file using debian/watch file...')
-        _os.system('uscan --download-current-version')    
 
     def download(self):
         utils.debug(1, "downloading %s via npm" % self.name)
