@@ -288,6 +288,11 @@ def create(args):
             _call('uupdate -b ../%s' % tar_file, shell=True)
             compression_format = _re.search('\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))', tar_file).group(0)                                         
             new_dir_name = tar_file.replace(compression_format, '')
+            _utils.change_dir('../%s' % new_dir_name)
+            print ("\nBuilding the binary package")
+            _call('dpkg-source -b .', shell=True)
+            _call('dpkg-buildpackage', shell=True)
+
             debian_path = "%s/%s/debian" % (npm2deb.name, new_dir_name)
             print ('\nRemember, your new source directory is %s/%s' % (npm2deb.name, new_dir_name))
         else:
