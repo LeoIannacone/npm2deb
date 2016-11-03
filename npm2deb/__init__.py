@@ -144,6 +144,8 @@ You may want fix first these issues:\n""")
         print ("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
         _call('dpkg-buildpackage', shell=True)
+        # removing auto generated temporary files
+        _call('fakeroot debian/rules clean', shell=True)
 
     def run_uupdate(self, tar_file):
         print ('\nCreating debian source package...')
