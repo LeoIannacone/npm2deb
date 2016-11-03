@@ -37,6 +37,7 @@ class Npm2Deb(object):
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
+        self.uscan_info = ''
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -91,11 +92,10 @@ class Npm2Deb(object):
         Try building deb package after creating required files using start().
         'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
         """
-        uscan_info = self.test_uscan()
-        if uscan_info[0] == 0:
+        if self.uscan_info[0] == 0:
             self.run_uscan()
             
-            remote_file_name = uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
+            remote_file_name = self.uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
             tar_file_name = '%s-%s' % (self.debian_name, remote_file_name)
             self.run_uupdate(tar_file_name)
             
@@ -119,7 +119,7 @@ You may want fix first these issues:\n""")
         utils.change_dir(saved_path)
         _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
 
-        if uscan_info[0] != 0:
+        if self.uscan_info[0] != 0:
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
@@ -158,7 +158,7 @@ You may want fix first these issues:\n""")
                                     '--package "{}" '
                                     '--upstream-version 0 --no-download'
                                     .format(self.debian_name))
-        return info
+        self.uscan_info = info
 
         
     def create_itp_bug(self):
@@ -194,9 +194,9 @@ You may want fix first these issues:\n""")
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            uscan_info = self.test_uscan()
+            self.test_uscan()
             
-            if uscan_info[0] != 0:
+            if self.uscan_info[0] != 0:
                 raise ValueError
 
         except ValueError:
