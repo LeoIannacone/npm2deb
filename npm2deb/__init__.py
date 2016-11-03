@@ -169,7 +169,12 @@ class Npm2Deb(object):
 
         # install files from files field
         if 'files' in self.json:
-            libs = libs.union(self.json['files'])
+            files = self.json['files']
+            # npm v1.4 returns string if files field has only one entry
+            if isinstance(files, str):
+                libs.add(files)
+            else:
+                libs = libs.union(files)
 
         # install main if not in a subpath
         if 'main' in self.json:
