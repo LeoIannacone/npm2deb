@@ -37,7 +37,7 @@ class Npm2Deb(object):
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
-        self.uscan_info = ''
+        self.upstream_watch = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -92,54 +92,62 @@ class Npm2Deb(object):
         Try building deb package after creating required files using start().
         'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
         """
-        if self.uscan_info[0] == 0:
+        uscan_info = self.test_uscan()
+        if uscan_info[0] == 0:
             self.run_uscan()
-            
-            remote_file_name = self.uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
-            tar_file_name = '%s-%s' % (self.debian_name, remote_file_name)
-            self.run_uupdate(tar_file_name)
-            
-            compression_format = _re.search('\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))', tar_file_name).group(0)
-            new_dir_name = tar_file_name.replace(compression_format, '')
-            utils.change_dir('../%s' % new_dir_name)
-            self.run_buildpackage()
 
+            for name in _os.listdir('..'):
+                orig_file = _re.search('%s_(\d.*)\.orig\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))' % self.debian_name, name)
+                if orig_file:
+                    orig_file = orig_file.group(0)
+                    break
+            self.run_uupdate(orig_file)
+
+            new_dir = orig_file[:orig_file.find('.orig')].replace('_','-')
+            utils.change_dir('../%s' % new_dir)
+            self.run_buildpackage()
             self.edit_changelog()
-            
-            debian_path = "%s/%s/debian" % (self.name, new_dir_name)
-            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir_name))
-            
+
+            debian_path = "%s/%s/debian" % (self.name, new_dir)
+            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir))
+
         else:
             debian_path = "%s/%s/debian" % (self.name, self.debian_name)
-        
+
         print("""
 This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
-        
+
         utils.change_dir(saved_path)
         _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
 
-        if self.uscan_info[0] != 0:
+        if uscan_info[0] != 0:
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
+        if self.upstream_watch:
+            print ("""
+*** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
+git repo is missing tags. Its better to ask upstream to tag their releases
+instead of using npm dist tarballs as dist tarballs may contain pre built files
+and may not include tests.""")
 
     def edit_changelog(self):
         """
-        This function is to remove extra line '* New upstream release' 
-        from debian/changelog 
+        This function is to remove extra line '* New upstream release'
+        from debian/changelog
         """
         with open('debian/changelog', 'r') as f:
             data = f.read()
         f.close()
-        
+
         data_list = data.split('\n')
         data_list.pop(3)
 
         with open('debian/changelog', 'w') as f:
             f.write('\n'.join(data_list))
         f.close()
-        
+
     def run_buildpackage(self):
         print ("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
@@ -154,15 +162,15 @@ You may want fix first these issues:\n""")
     def run_uscan(self):
         print ('\nDownloading source tarball file using debian/watch file...')
         _os.system('uscan --download-current-version')
-        
+
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
                                     '--package "{}" '
                                     '--upstream-version 0 --no-download'
                                     .format(self.debian_name))
-        self.uscan_info = info
+        return info
 
-        
+
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
         utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
@@ -196,12 +204,13 @@ You may want fix first these issues:\n""")
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            self.test_uscan()
-            
-            if self.uscan_info[0] != 0:
+            uscan_info = self.test_uscan()
+
+            if uscan_info[0] != 0:
                 raise ValueError
 
         except ValueError:
+            self.upstream_watch = True
             content = utils.get_watch('fakeupstream') % args
             utils.create_debian_file('watch', content)
 

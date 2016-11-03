@@ -276,7 +276,7 @@ def create(args):
         npm2deb.start()
         _utils.change_dir(npm2deb.debian_name)
         npm2deb.initiate_build(saved_path)
- 
+
     except OSError as os_error:
         print(str(os_error))
         exit(1)
