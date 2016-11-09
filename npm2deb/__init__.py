@@ -97,13 +97,13 @@ class Npm2Deb(object):
             self.run_uscan()
 
             for name in _os.listdir('..'):
-                orig_file = _re.search('%s_(\d.*)\.orig\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))' % self.debian_name, name)
+                orig_file = _re.search('%s_(\d.*)\.orig\..*' % self.debian_name, name)
                 if orig_file:
                     orig_file = orig_file.group(0)
                     break
             self.run_uupdate(orig_file)
 
-            new_dir = orig_file[:orig_file.find('.orig')].replace('_','-')
+            new_dir = '%s-%s' % (self.debian_name, self.upstream_version)
             utils.change_dir('../%s' % new_dir)
             self.run_buildpackage()
             self.edit_changelog()
@@ -130,30 +130,21 @@ You may want fix first these issues:\n""")
 *** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
 git repo is missing tags. Its better to ask upstream to tag their releases
 instead of using npm dist tarballs as dist tarballs may contain pre built files
-and may not include tests.""")
+and may not include tests.\n""")
 
     def edit_changelog(self):
         """
-        This function is to remove extra line '* New upstream release'
+        To remove extra line '* New upstream release'
         from debian/changelog
         """
-        with open('debian/changelog', 'r') as f:
-            data = f.read()
-        f.close()
-
-        data_list = data.split('\n')
-        data_list.pop(3)
-
-        with open('debian/changelog', 'w') as f:
-            f.write('\n'.join(data_list))
-        f.close()
+        _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
 
     def run_buildpackage(self):
         print ("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
         _call('dpkg-buildpackage', shell=True)
         # removing auto generated temporary files
-        _call('fakeroot debian/rules clean', shell=True)
+        _call('debian/rules clean', shell=True)
 
     def run_uupdate(self, tar_file):
         print ('\nCreating debian source package...')
@@ -161,13 +152,14 @@ and may not include tests.""")
 
     def run_uscan(self):
         print ('\nDownloading source tarball file using debian/watch file...')
-        _os.system('uscan --download-current-version')
+        _call('uscan --download-version %s' % self.upstream_version, shell=True)
 
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
                                     '--package "{}" '
-                                    '--upstream-version 0 --no-download'
-                                    .format(self.debian_name))
+                                    '--upstream-version 0 '
+                                    '--download-version {} '
+                                    .format(self.debian_name, self.upstream_version))
         return info
 
 
