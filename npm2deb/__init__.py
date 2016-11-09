@@ -6,6 +6,7 @@ from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 import os as _os
 import re as _re
+import tarfile
 
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
@@ -350,22 +351,23 @@ class Npm2Deb(object):
         self._get_json_license()
 
     def download(self):
-        utils.debug(1, "downloading %s via npm" % self.name)
-        info = _getstatusoutput('npm install "%s"' % self.name)
+        utils.debug(1, "downloading %s tarball from npm registry" % self.name)
+        info = _getstatusoutput('npm pack "%s"' % self.name)
         if info[0] is not 0:
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]
             raise ValueError(exception)
-        # move dir from npm root
-        root = _getstatusoutput('npm root')[1].strip('\n')
-        _os.rename(_os.path.join(root, self.name), self.name)
-        try:
-            _os.rmdir(root)  # remove only if empty
-        except OSError:
-            pass
-        # remove any dependency downloaded via npm
-        if _os.path.isdir("%s/node_modules" % self.name):
-            _rmtree("%s/node_modules" % self.name)
+
+        tarball_file = info[1].strip('\n')
+        tarball = tarfile.open(tarball_file)
+        tarball.extractall()
+        tarball.close()
+
+        # rename extracted directory
+        _os.rename('package', self.name)
+        # remove tarball file
+        _os.remove(tarball_file)
+
         if self.name is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             _os.rename(self.name, self.debian_name)
