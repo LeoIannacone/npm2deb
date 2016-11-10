@@ -95,13 +95,7 @@ class Npm2Deb(object):
         uscan_info = self.test_uscan()
         if uscan_info[0] == 0:
             self.run_uscan()
-
-            for name in _os.listdir('..'):
-                orig_file = _re.search('%s_(\d.*)\.orig\..*' % self.debian_name, name)
-                if orig_file:
-                    orig_file = orig_file.group(0)
-                    break
-            self.run_uupdate(orig_file)
+            self.run_uupdate()
 
             new_dir = '%s-%s' % (self.debian_name, self.upstream_version)
             utils.change_dir('../%s' % new_dir)
@@ -146,9 +140,9 @@ and may not include tests.\n""")
         # removing auto generated temporary files
         _call('debian/rules clean', shell=True)
 
-    def run_uupdate(self, tar_file):
+    def run_uupdate(self):
         print ('\nCreating debian source package...')
-        _call('uupdate -b ../%s' % tar_file, shell=True)
+        _call('uupdate -b -f --upstream-version %s' % self.upstream_version, shell=True)
 
     def run_uscan(self):
         print ('\nDownloading source tarball file using debian/watch file...')
