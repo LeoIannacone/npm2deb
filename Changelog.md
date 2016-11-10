@@ -4,6 +4,7 @@
  * [fix] handle invalid repository field
  * [fix] bump standards version to 3.9.8
  * [fix] converting dependency packages version format
+ * [fix] for npm install overhead
  * [new] automating uscan, uupdate, dpkg-buildpackage
 
 ## 0.2.2 (2014-10-10)
