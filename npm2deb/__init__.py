@@ -156,10 +156,11 @@ and may not include tests.\n""")
 
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
-                                    '--package "{}" '
-                                    '--upstream-version 0 '
-                                    '--download-version {} '
-                                    .format(self.debian_name, self.upstream_version))
+                                '--package "{}" '
+                                '--upstream-version 0 '
+                                '--download-version {} '
+                                '--no-download'
+                                .format(self.debian_name, self.upstream_version))
         return info
 
 
