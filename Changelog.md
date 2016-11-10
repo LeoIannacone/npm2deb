@@ -1,3 +1,11 @@
+## 0.2.6 (2016-11-10)
+ * [fix] use rmadison to find available packages
+ * [fix] convert package name to lowercase
+ * [fix] handle invalid repository field
+ * [fix] bump standards version to 3.9.8
+ * [fix] converting dependency packages version format
+ * [new] automating uscan, uupdate, dpkg-buildpackage
+
 ## 0.2.2 (2014-10-10)
  * [fix] bump Standards-Version to 3.9.6
 
