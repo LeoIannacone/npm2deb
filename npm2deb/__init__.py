@@ -4,6 +4,7 @@ from dateutil import tz as _tz
 from shutil import rmtree as _rmtree
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
+from subprocess import call as _call
 import os as _os
 import re as _re
 import tarfile
@@ -37,6 +38,7 @@ class Npm2Deb(object):
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
+        self.upstream_watch = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -86,6 +88,77 @@ class Npm2Deb(object):
         utils.change_dir('..')
         self.create_itp_bug()
 
+    def initiate_build(self ,saved_path):
+        """
+        Try building deb package after creating required files using start().
+        'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
+        """
+        uscan_info = self.test_uscan()
+        if uscan_info[0] == 0:
+            self.run_uscan()
+            self.run_uupdate()
+
+            new_dir = '%s-%s' % (self.debian_name, self.upstream_version)
+            utils.change_dir('../%s' % new_dir)
+            self.run_buildpackage()
+            self.edit_changelog()
+
+            debian_path = "%s/%s/debian" % (self.name, new_dir)
+            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir))
+
+        else:
+            debian_path = "%s/%s/debian" % (self.name, self.debian_name)
+
+        print("""
+This is not a crystal ball, so please take a look at auto-generated files.\n
+You may want fix first these issues:\n""")
+
+        utils.change_dir(saved_path)
+        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+
+        if uscan_info[0] != 0:
+            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+                    \n$ uscan --download-current-version\n")
+
+        if self.upstream_watch:
+            print ("""
+*** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
+git repo is missing tags. Its better to ask upstream to tag their releases
+instead of using npm dist tarballs as dist tarballs may contain pre built files
+and may not include tests.\n""")
+
+    def edit_changelog(self):
+        """
+        To remove extra line '* New upstream release'
+        from debian/changelog
+        """
+        _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
+
+    def run_buildpackage(self):
+        print ("\nBuilding the binary package")
+        _call('dpkg-source -b .', shell=True)
+        _call('dpkg-buildpackage', shell=True)
+        # removing auto generated temporary files
+        _call('debian/rules clean', shell=True)
+
+    def run_uupdate(self):
+        print ('\nCreating debian source package...')
+        _call('uupdate -b -f --upstream-version %s' % self.upstream_version, shell=True)
+
+    def run_uscan(self):
+        print ('\nDownloading source tarball file using debian/watch file...')
+        _call('uscan --download-version %s' % self.upstream_version, shell=True)
+
+    def test_uscan(self):
+        info = _getstatusoutput('uscan --watchfile "debian/watch" '
+                                '--package "{}" '
+                                '--upstream-version 0 '
+                                '--download-version {} '
+                                '--no-download'
+                                .format(self.debian_name, self.upstream_version))
+        return info
+
+
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
         utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
@@ -119,14 +192,13 @@ class Npm2Deb(object):
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            info = _getstatusoutput('uscan --watchfile "debian/watch" '
-                                    '--package "{}" '
-                                    '--upstream-version 0 --no-download'
-                                    .format(self.debian_name))
-            if info[0] != 0:
+            uscan_info = self.test_uscan()
+
+            if uscan_info[0] != 0:
                 raise ValueError
 
         except ValueError:
+            self.upstream_watch = True
             content = utils.get_watch('fakeupstream') % args
             utils.create_debian_file('watch', content)
 
@@ -349,6 +421,7 @@ class Npm2Deb(object):
         self._get_json_description()
         self._get_json_version()
         self._get_json_license()
+
 
     def download(self):
         utils.debug(1, "downloading %s tarball from npm registry" % self.name)

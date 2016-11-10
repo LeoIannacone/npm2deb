@@ -274,19 +274,12 @@ def create(args):
         _utils.create_dir(npm2deb.name)
         _utils.change_dir(npm2deb.name)
         npm2deb.start()
-        _utils.change_dir(saved_path)
+        _utils.change_dir(npm2deb.debian_name)
+        npm2deb.initiate_build(saved_path)
+
     except OSError as os_error:
         print(str(os_error))
         exit(1)
-
-    debian_path = "%s/%s/debian" % (npm2deb.name, npm2deb.debian_name)
-
-    print("""
-This is not a crystal ball, so please take a look at auto-generated files.\n
-You may want fix first these issues:\n""")
-    _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
-    print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
-            \n$ uscan --download-current-version\n")
 
     _show_mapper_warnings()
 
