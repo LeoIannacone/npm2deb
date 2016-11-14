@@ -173,9 +173,13 @@ and may not include tests.\n""")
                     _os.remove(filename)
 
     def create_manpages(self):
-        if 'man' in self.json:
-            content = _os.path.normpath(self.json['man'])
-            utils.create_debian_file('manpages', content)
+        if not 'man' in self.json:
+            return
+        mans = self.json['man']
+        if not isinstance(mans, (list, tuple)):
+            mans = [mans]
+        paths = [_os.path.normpath(manpath) for manpath in mans]
+        utils.create_debian_file('manpages', "\n".join(paths))
 
     def create_watch(self):
         args = {}
