@@ -535,13 +535,14 @@ and may not include tests.\n""")
     def _get_json_homepage(self):
         if self.homepage:
             return
-        result = 'FIX_ME homepage'
+
         if 'homepage' in self.json:
-            result = self.json['homepage']
+            self.homepage = self.json['homepage']
         elif self.upstream_repo_url and not \
-                self.upstream_repo_url.find('FIX_ME') >= 0:
-            result = self.upstream_repo_url
-        self.homepage = result
+             self.upstream_repo_url.find('FIX_ME') >= 0:
+            self.homepage = self.upstream_repo_url
+        else:
+            self.homepage = utils.get_npmjs_homepage(self.name)
 
     def _get_Depends(self):
         depends = ['nodejs']
