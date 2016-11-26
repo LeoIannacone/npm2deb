@@ -110,3 +110,6 @@ def create_dir(dir):
 
 def debianize_name(name):
     return name.replace('_', '-').lower()
+
+def get_npmjs_homepage(name):
+    return 'https://npmjs.com/package/' + name
