@@ -27,7 +27,7 @@ def search_for_repository(module):
     found = False
     result = {}
     my_print("Looking for existing repositories:")
-    content = subprocess.check_output(["rmadison", "-u", "debian", "node-"+module], universal_newlines=False	)
+    content = subprocess.check_output(["rmadison", "-u", "debian", "node-"+module])
     if content :
     	print(content.decode("ascii")),
     	found = True
