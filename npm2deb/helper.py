@@ -26,6 +26,16 @@ def search_for_repository(module):
     found = False
     result = {}
     my_print("Looking for existing repositories:")
+    url_base = "https://tracker.debian.org"
+    data = _urlopen("%s/search?package_name=node-%s" %
+                   (url_base, module)).read()
+    package = "Debian Package Tracker - node-"+module
+    if package in data.decode("utf-8"):
+        print("found at %s/search?package_name=node-%s" %
+                   (url_base, module))
+        found = True
+
+
     for repo in repositories:
         _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
