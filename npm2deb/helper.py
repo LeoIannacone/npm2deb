@@ -8,6 +8,7 @@ import re as _re
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb.utils import debug as _debug
 from npm2deb.mapper import Mapper as _Mapper
+import subprocess
 
 
 DO_PRINT = False
@@ -26,16 +27,10 @@ def search_for_repository(module):
     found = False
     result = {}
     my_print("Looking for existing repositories:")
-    url_base = "https://tracker.debian.org"
-    data = _urlopen("%s/search?package_name=node-%s" %
-                   (url_base, module)).read()
-    package = "Debian Package Tracker - node-"+module
-    if package in data.decode("utf-8"):
-        print("found at %s/search?package_name=node-%s" %
-                   (url_base, module))
-        found = True
-
-
+    content = subprocess.check_output(["rmadison", "-u", "debian", "node-"+module], universal_newlines=False	)
+    if content :
+    	print(content.decode("ascii")),
+    	found = True
     for repo in repositories:
         _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
