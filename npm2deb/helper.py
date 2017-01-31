@@ -27,7 +27,7 @@ def search_for_repository(module):
     result = {}
     my_print("Looking for existing repositories:")
     content = _getstatusoutput(["rmadison -u debian node-"+module])
-    if content :
+    if content[1]:
     	print(content[1]),
     	found = True
     for repo in repositories:
