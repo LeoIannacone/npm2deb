@@ -26,6 +26,10 @@ def search_for_repository(module):
     found = False
     result = {}
     my_print("Looking for existing repositories:")
+    content = _getstatusoutput(["rmadison -u debian node-"+module])
+    if content[1]:
+    	print(content[1]),
+    	found = True
     for repo in repositories:
         _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
