@@ -267,6 +267,11 @@ and may not include tests.\n""")
             else:
                 libs.add('*.js')
 
+        # normalize filepaths
+        libs = set(map(lambda x: _os.path.normpath(x), libs))
+        # sanitize by removing current directory from files list
+        libs.remove('.')
+
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
