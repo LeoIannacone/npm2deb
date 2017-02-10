@@ -93,7 +93,16 @@ X-Debbugs-CC: debian-devel@lists.debian.org
 
  FIX_ME: This ITP report is not ready for submission, until you are
  confident this package description is ready for Debian.
- .""" + description_template
+ .""" + description_template + """
+FIX_ME: Explain why this package is suitable for adding to Debian. Is
+it a dependency of some other package? What benefit does it provide
+compared to other similar packages already in Debian?
+
+FIX_ME: Explain how you intend to consistently maintain this package
+in Debian. If you are not yet a Debian member, does this package need
+a sponsor? Do you have co-maintainers? Are you a member of the Debian
+JavaScript maintainers team?
+"""
 
 LICENSES = {}
 
