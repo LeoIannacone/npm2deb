@@ -6,6 +6,20 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
 
 """
 
+description_template = """
+ Write the short and long descriptions for the Debian package as
+ explained in the Developer's Reference, §6.2.1 – §6.2.3.
+ .
+ You can start with the short upstream package description,
+ “%(upstream_description)s”.
+ .
+ Be aware that most upstream package descriptions are not written to
+ conform with Debian package guidelines. You need to explain the role
+ of this package for a Debian audience.
+ .
+ Node.js is an event-based server-side JavaScript engine.
+"""
+
 CONTROL = """Source: %(Source)s
 Section: web
 Priority: optional
@@ -26,10 +40,7 @@ Depends:
  ${misc:Depends}
  , %(Depends)s
 Description: %(Description)s
- %(Description_Long)s
- .
- Node.js is an event-based server-side JavaScript engine.
-"""
+""" + description_template
 
 RULES = """#!/usr/bin/make -f
 # -*- makefile -*-
@@ -80,11 +91,9 @@ X-Debbugs-CC: debian-devel@lists.debian.org
   Programming Lang: JavaScript
   Description     : %(description)s
 
- FIX_ME bug long description
- .
- Node.js is an event-based server-side JavaScript engine.
-
-"""
+ FIX_ME: This ITP report is not ready for submission, until you are
+ confident this package description is ready for Debian.
+ .""" + description_template
 
 LICENSES = {}
 
