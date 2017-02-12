@@ -270,7 +270,8 @@ and may not include tests.\n""")
         # normalize filepaths
         libs = set(map(lambda x: _os.path.normpath(x), libs))
         # sanitize by removing current directory from files list
-        libs.remove('.')
+        if '.' in libs:
+            libs.remove('.')
 
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
