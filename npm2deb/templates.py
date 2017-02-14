@@ -6,8 +6,7 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
 
 """
 
-description_template = """
- Write the short and long descriptions for the Debian package as
+description_template = """ Write the short and long descriptions for the Debian package as
  explained in the Developer's Reference, §6.2.1 – §6.2.3.
  .
  You can start with the short upstream package description,
@@ -93,7 +92,8 @@ X-Debbugs-CC: debian-devel@lists.debian.org
 
  FIX_ME: This ITP report is not ready for submission, until you are
  confident this package description is ready for Debian.
- .""" + description_template + """
+ .
+""" + description_template + """
 FIX_ME: Explain why this package is suitable for adding to Debian. Is
 it a dependency of some other package? What benefit does it provide
 compared to other similar packages already in Debian?
