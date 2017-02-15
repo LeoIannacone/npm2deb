@@ -139,7 +139,7 @@ def main(argv=None):
 def search_for_module(args):
     _helper.DO_PRINT = True
     # enable all by default
-    if not args.bug and not args.debian and not args.repository:
+    if not (args.bug or args.debian or args.repository):
         args.bug = True
         args.debian = True
         args.repository = True
@@ -147,7 +147,8 @@ def search_for_module(args):
     if args.debian:
         print("\nLooking for similiar package:")
         mapper = _Mapper.get_instance()
-        print("  %s" % mapper.get_debian_package(node_module)['repr'])
+        pkg_info = mapper.get_debian_package(node_module)
+        print("  %s (%s)" % (pkg_info['repr'], pkg_info['suite']))
     if args.repository:
         print("")
         _helper.search_for_repository(node_module)
@@ -182,8 +183,9 @@ def print_view(args):
                   getattr(npm2deb_instance, attr_key, None)))
 
         mapper = _Mapper.get_instance()
-        print(formatted.format("Debian:", mapper
-              .get_debian_package(npm2deb_instance.name)['repr']))
+        pkg_info = mapper.get_debian_package(npm2deb_instance.name)
+        print(formatted.format("Debian:",
+                               "%s (%s)" % (pkg_info['repr'], pkg_info['suite'])))
 
         if mapper.has_warnings():
             print("")
