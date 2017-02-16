@@ -115,6 +115,7 @@ You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
         _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name, shell=True)
 
         if uscan_info[0] != 0:
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
