@@ -29,7 +29,7 @@ class Npm2Deb(object):
         self.json = None
         self.args = args
         self.homepage = None
-        self.description = None
+        self.upstream_description = None
         self.upstream_author = None
         self.upstream_license = None
         self.upstream_version = None
@@ -115,6 +115,7 @@ You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
         _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name, shell=True)
 
         if uscan_info[0] != 0:
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
@@ -305,8 +306,8 @@ and may not include tests.\n""")
                               % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
-        args['Description'] = self.description
-        args['Description_Long'] = 'FIX_ME long description'
+        args['Description'] = 'FIX_ME write the Debian package description'
+        args['upstream_description'] = self.upstream_description
         template = utils.get_template('control')
         utils.create_debian_file('control', template % args)
 
@@ -461,7 +462,8 @@ and may not include tests.\n""")
         args['debian_name'] = self.debian_name
         args['upstream_author'] = self.upstream_author
         args['homepage'] = self.homepage
-        args['description'] = self.description
+        args['description'] = 'FIX_ME write the Debian package description'
+        args['upstream_description'] = self.upstream_description
         args['version'] = self.upstream_version
         args['license'] = self.upstream_license
         content = utils.get_template('wnpp')
@@ -495,9 +497,9 @@ and may not include tests.\n""")
 
     def _get_json_description(self):
         if 'description' in self.json:
-            self.description = self.json['description']
+            self.upstream_description = self.json['description']
         else:
-            self.description = 'FIX_ME description'
+            self.upstream_description = 'FIX_ME no upstream package description'
 
     def _get_json_author(self):
         if self.upstream_author:
