@@ -1,4 +1,3 @@
-have npm2deb &&
 _npm2deb()
 {
     local cur prev options
