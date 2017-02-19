@@ -26,10 +26,6 @@ def search_for_repository(module):
     found = False
     result = {}
     my_print("Looking for existing repositories:")
-    content = _getstatusoutput(["rmadison -u debian node-"+module])
-    if content[1]:
-    	print(content[1]),
-    	found = True
     for repo in repositories:
         _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
@@ -81,32 +77,6 @@ def search_for_bug(module):
             except:
                     continue
         return result
-
-def search_in_new(module):
-    if isinstance(module, _Npm2Deb):
-        module = module.name
-    my_print('Looking for packages in NEW:')
-    _debug(1, "calling new-check")
-    found = False
-    formatted = "  {0:20} {1:>3}"
-    url = "https://api.ftp-master.debian.org/sources_in_suite/new"
-    _debug(1, "opening url %s" % url)
-    data = _urlopen(url).read().decode('utf-8')
-    data = _parseJSON(data)
-    result = []
-    for package in data:
-        name = package['source']
-        version = package['version']
-        if not module in name:
-            continue
-        found = True
-        result.append(package)
-        my_print(formatted.format(package['source'],
-                                  package['version']
-                                 ))
-    if not found:
-        my_print("  None")
-    return result
 
 def search_for_reverse_dependencies(module):
     if isinstance(module, _Npm2Deb):

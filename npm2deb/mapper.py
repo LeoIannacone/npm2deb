@@ -35,6 +35,7 @@ class Mapper(object):
         result['info'] = None
         result['name'] = None
         result['version'] = None
+        result['suite'] = None
         result['repr'] = None
 
         if node_module in self.json:
@@ -58,7 +59,7 @@ class Mapper(object):
             return result
 
         madison = _getstatusoutput(
-            'rmadison -s sid "%s" | grep source' % result['name'])
+            'rmadison -u debian "%s" | grep source' % result['name'])
 
         if madison[0] != 0:
             result['name'] = None
@@ -68,6 +69,7 @@ class Mapper(object):
         if len(tmp) >= 2:
             result['name'] = tmp[0].strip()
             result['version'] = tmp[1].strip()
+            result['suite'] = tmp[2].strip()
             result['repr'] = '%s (%s)' % (result['name'], result['version'])
 
         return result

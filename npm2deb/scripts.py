@@ -100,9 +100,6 @@ def main(argv=None):
         '-d', '--debian', action="store_true",
         default=False, help='search for existing package in debian')
     parser_search.add_argument(
-        '-n', '--new', action="store_true",
-        default=False, help='search for existing package in NEW queue')
-    parser_search.add_argument(
         '-r', '--repository', action="store_true",
         default=False, help='search for existing repository in alioth')
     parser_search.add_argument(
@@ -142,25 +139,22 @@ def main(argv=None):
 def search_for_module(args):
     _helper.DO_PRINT = True
     # enable all by default
-    if not args.bug and not args.debian and not args.repository and not args.new:
+    if not (args.bug or args.debian or args.repository):
         args.bug = True
         args.debian = True
         args.repository = True
-        args.new = True
     node_module = get_npm2deb_instance(args).name
     if args.debian:
         print("\nLooking for similiar package:")
         mapper = _Mapper.get_instance()
-        print("  %s" % mapper.get_debian_package(node_module)['repr'])
+        pkg_info = mapper.get_debian_package(node_module)
+        print("  %s (%s)" % (pkg_info['repr'], pkg_info['suite']))
     if args.repository:
         print("")
         _helper.search_for_repository(node_module)
     if args.bug:
         print("")
         _helper.search_for_bug(node_module)
-    if args.new:
-        print("")
-        _helper.search_in_new(node_module)
     print("")
 
     _show_mapper_warnings()
@@ -189,8 +183,9 @@ def print_view(args):
                   getattr(npm2deb_instance, attr_key, None)))
 
         mapper = _Mapper.get_instance()
-        print(formatted.format("Debian:", mapper
-              .get_debian_package(npm2deb_instance.name)['repr']))
+        pkg_info = mapper.get_debian_package(npm2deb_instance.name)
+        print(formatted.format("Debian:",
+                               "%s (%s)" % (pkg_info['repr'], pkg_info['suite'])))
 
         if mapper.has_warnings():
             print("")
