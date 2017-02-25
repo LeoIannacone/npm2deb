@@ -145,7 +145,7 @@ def search_for_module(args):
         args.repository = True
     node_module = get_npm2deb_instance(args).name
     if args.debian:
-        print("\nLooking for similiar package:")
+        print("\nLooking for similar package:")
         mapper = _Mapper.get_instance()
         pkg_info = mapper.get_debian_package(node_module)
         print("  %s (%s)" % (pkg_info['repr'], pkg_info['suite']))
@@ -293,7 +293,7 @@ def get_npm2deb_instance(args):
 def _show_mapper_warnings():
     mapper = _Mapper.get_instance()
     if mapper.has_warnings():
-        print("Warnings occured:")
+        print("Warnings occurred:")
         mapper.show_warnings()
         print("")
 
