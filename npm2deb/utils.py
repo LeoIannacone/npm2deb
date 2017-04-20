@@ -1,12 +1,14 @@
 from subprocess import getstatusoutput as _getstatusoutput
+from subprocess import Popen as _Popen
+from subprocess import PIPE as _PIPE
 import codecs as _codecs
+import locale as _locale
 import os as _os
 
 from npm2deb import templates as _templates
 
 
 DEBUG_LEVEL = 0
-
 
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
@@ -113,3 +115,71 @@ def debianize_name(name):
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
+
+# taken from https://github.com/pallets/click/blob/master/click/_unicodefun.py
+def verify_python3_env():
+    """Ensures that the environment is good for unicode on Python 3."""
+    try:
+        fs_enc = _codecs.lookup(_locale.getpreferredencoding()).name
+    except Exception:
+        fs_enc = 'ascii'
+    if fs_enc != 'ascii':
+        return
+
+    extra = ''
+    if _os.name == 'posix':
+        rv = _Popen(['locale', '-a'], stdout=_PIPE,
+                    stderr=_PIPE).communicate()[0]
+        good_locales = set()
+        has_c_utf8 = False
+
+        # Make sure we're operating on text here.
+        if isinstance(rv, bytes):
+            rv = rv.decode('ascii', 'replace')
+
+        for line in rv.splitlines():
+            locale = line.strip()
+            if locale.lower().endswith(('.utf-8', '.utf8')):
+                good_locales.add(locale)
+                if locale.lower() in ('c.utf8', 'c.utf-8'):
+                    has_c_utf8 = True
+
+        extra += '\n\n'
+        if not good_locales:
+            extra += (
+                'Additional information: on this system no suitable UTF-8\n'
+                'locales were discovered.  This most likely requires resolving\n'
+                'by reconfiguring the locale system.'
+            )
+        elif has_c_utf8:
+            extra += (
+                'This system supports the C.UTF-8 locale which is recommended.\n'
+                'You might be able to resolve your issue by exporting the\n'
+                'following environment variables:\n\n'
+                '    export LC_ALL=C.UTF-8\n'
+                '    export LANG=C.UTF-8'
+            )
+        else:
+            extra += (
+                'This system lists a couple of UTF-8 supporting locales that\n'
+                'you can pick from.  The following suitable locales were\n'
+                'discovered: %s'
+            ) % ', '.join(sorted(good_locales))
+
+        bad_locale = None
+        for locale in _os.environ.get('LC_ALL'), _os.environ.get('LANG'):
+            if locale and locale.lower().endswith(('.utf-8', '.utf8')):
+                bad_locale = locale
+            if locale is not None:
+                break
+        if bad_locale is not None:
+            extra += (
+                '\n\nnpm2deb discovered that you exported a UTF-8 locale\n'
+                'but the locale system could not pick up from it because\n'
+                'it does not exist.  The exported locale is "%s" but it\n'
+                'is not supported'
+            ) % bad_locale
+
+    raise RuntimeError('npm2deb will abort further execution because Python 3 '
+                       'was configured to use ASCII as encoding for the '
+                       'environment.' + extra)
