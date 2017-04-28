@@ -444,11 +444,18 @@ and may not include tests.\n""")
 
         tarball_file = info[1].strip('\n')
         tarball = tarfile.open(tarball_file)
+        # get the root directory name
+        root_dir = tarball.getnames()[0]
+        # extract root directory name if memberfile contains '/'
+        index_of_slash = root_dir.find('/')
+        if index_of_slash != -1:
+            root_dir = root_dir[:index_of_slash]
+
         tarball.extractall()
         tarball.close()
 
         # rename extracted directory
-        _os.rename('package', self.name)
+        _os.rename(root_dir, self.name)
         # remove tarball file
         _os.remove(tarball_file)
 
