@@ -2,7 +2,7 @@ from json import loads as _parseJSON
 from re import findall as _findall
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
-from re import fullmatch as _fullmatch
+from fnmatch import fnmatch as _fnmatch
 
 from npm2deb.utils import debug as _debug
 from npm2deb.utils import debianize_name as _debianize_name
@@ -44,7 +44,7 @@ class Mapper(object):
             db_package = self.json[node_module]
         else:
             for pattern in self.json.keys():
-                if _fullmatch(pattern.replace('*', '.+'), node_module):
+                if _fnmatch(node_module, pattern):
                     db_package = self.json[pattern]
                     break
 
