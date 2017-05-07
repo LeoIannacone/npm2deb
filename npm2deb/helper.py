@@ -6,7 +6,7 @@ from subprocess import getstatusoutput as _getstatusoutput
 import re as _re
 
 from npm2deb import Npm2Deb as _Npm2Deb
-from npm2deb.utils import debug as _debug
+from npm2deb.utils import debug as _debug, debianize_name as _debianize_name
 from npm2deb.mapper import Mapper as _Mapper
 
 
@@ -17,10 +17,12 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
-
 def search_for_repository(module):
     if isinstance(module, _Npm2Deb):
-        module = module.name
+        module = module.debian_name
+    else:
+        module = 'node-%s' % _debianize_name(module)
+
     repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
@@ -50,7 +52,10 @@ def search_for_repository(module):
 
 def search_for_bug(module):
     if isinstance(module, _Npm2Deb):
-        module = module.name
+        module = module.debian_name
+    else:
+        module = 'node-%s' % _debianize_name(module)
+
     my_print('Looking for wnpp bugs:')
     _debug(1, "calling wnpp-check")
     info = _getstatusoutput('wnpp-check %s' % module)
