@@ -273,6 +273,10 @@ and may not include tests.\n""")
         # sanitize by removing current directory from files list
         if '.' in libs:
             libs.remove('.')
+            # TODO this is a simple workaround, it should ideally ignore npmingore files
+            # and add rest of the files in root directory as described in
+            # https://docs.npmjs.com/misc/developers
+            libs.add('*.js')
 
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
