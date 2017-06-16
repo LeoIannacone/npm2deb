@@ -231,48 +231,9 @@ and may not include tests.\n""")
 
     def create_install(self):
         content = ''
-        libs = {'package.json'}
-        if _os.path.isdir('bin'):
-            libs.add('bin')
-        if _os.path.isdir('lib'):
-            libs.add('lib')
-
-        # install files from directories field
-        if 'directories' in self.json:
-            directories = self.json['directories']
-            if 'bin' in directories:
-                libs.add(directories['bin'])
-            if 'lib' in directories:
-                libs.add(directories['lib'])
-
-        # install files from files field
-        if 'files' in self.json:
-            files = self.json['files']
-            # npm v1.4 returns string if files field has only one entry
-            if isinstance(files, str):
-                libs.add(files)
-            else:
-                libs = libs.union(files)
-
-        # install main if not in a subpath
-        if 'main' in self.json:
-            main = self.json['main']
-            main = _os.path.normpath(main)
-            if main == 'index':
-                main = 'index.js'
-            if not main.find('/') > 0:
-                libs.add(_os.path.normpath(main))
-        else:
-            if _os.path.exists('index.js'):
-                libs.add('index.js')
-            else:
-                libs.add('*.js')
-
-        # normalize filepaths
-        libs = set(map(lambda x: _os.path.normpath(x), libs))
-        # sanitize by removing current directory from files list
-        if '.' in libs:
-            libs.remove('.')
+        libs = _os.listdir()
+        # remove debian directory
+        libs.remove('debian')
 
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
