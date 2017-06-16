@@ -12,6 +12,8 @@ import npm2deb as _
 
 
 def main(argv=None):
+    # verify utf8 support
+    _utils.verify_python3_env()
     if not argv:
         argv = _sys.argv
     parser = _ArgumentParser(prog='npm2deb')
