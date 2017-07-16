@@ -1,14 +1,14 @@
 npm2deb
 =======
 
-a script to make faster and easier packaging nodejs modules
+A script to make faster and easier packaging nodejs modules
 
 ## Requirements
-You need to install these dependencies on your system:
+You need to install the following dependencies on your system:
 ```
 sudo apt-get install devscripts npm python3-dateutil node-github-url-from-git
 ```
-Please, take care to have defined **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** environment variables correctly.
+Please make sure that the environment variables  **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** are defined  correctly.
 
 ## Install
 ```
@@ -42,9 +42,9 @@ commands:
 ```
 
 ### Example
-A workflow example is showed here: [wiki.debian.org/Javascript/Nodejs/Npm2Deb](https://wiki.debian.org/Javascript/Nodejs/Npm2Deb)
+A workflow example is shown here: [wiki.debian.org/Javascript/Nodejs/Npm2Deb](https://wiki.debian.org/Javascript/Nodejs/Npm2Deb)
 
-In the most cases a simple command like this may be enough:
+In most cases a simple command like the following is enough:
 ```
 $ npm2deb create node-module
 ```
