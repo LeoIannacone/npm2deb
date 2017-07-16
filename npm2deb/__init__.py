@@ -396,10 +396,10 @@ and may not include tests.\n""")
 
 
     def download(self):
-        utils.debug(1, "downloading %s tarball from npm registry" % self.name)
-        info = _getstatusoutput('npm pack "%s"' % self.name)
+        utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
+        info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
-            exception = "Error downloading package %s\n" % self.name
+            exception = "Error downloading package %s@s\n" % (self.name, self.version)
             exception += info[1]
             raise ValueError(exception)
 
