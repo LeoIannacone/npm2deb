@@ -8,7 +8,7 @@ You need to install these dependencies on your system:
 ```
 sudo apt-get install devscripts npm python3-dateutil node-github-url-from-git
 ```
-Please, take care to have defined **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** environment variables correctly.
+Please make sure that the environment variables  **DEBEMAIL** (or **EMAIL**) and **DEBFULLNAME** are defined  correctly.
 
 ## Install
 ```
@@ -44,7 +44,7 @@ commands:
 ### Example
 A workflow example is showed here: [wiki.debian.org/Javascript/Nodejs/Npm2Deb](https://wiki.debian.org/Javascript/Nodejs/Npm2Deb)
 
-In the most cases a simple command like this may be enough:
+In most cases a simple command like the following may be enough:
 ```
 $ npm2deb create node-module
 ```
