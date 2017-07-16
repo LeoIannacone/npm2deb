@@ -4,7 +4,7 @@ npm2deb
 A script to make faster and easier packaging nodejs modules
 
 ## Requirements
-You need to install these dependencies on your system:
+You need to install the following dependencies on your system:
 ```
 sudo apt-get install devscripts npm python3-dateutil node-github-url-from-git
 ```
