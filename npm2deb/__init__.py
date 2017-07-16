@@ -350,12 +350,12 @@ and may not include tests.\n""")
 
         else:
             name_is = 'npm'
-            utils.debug(1, "reading json - calling npm view %s" % self.name)
-            info = _getstatusoutput('npm view "%s" --json 2>/dev/null' %
-                                    self.name)
+            utils.debug(1, "reading json - calling npm view %s@%s" % (self.name, self.version))
+            info = _getstatusoutput('npm view "%s@%s" --json 2>/dev/null' %
+                                    (self.name, self.version))
             # if not status 0, raise expection
             if info[0] != 0:
-                info = _getstatusoutput('npm view "%s" --json' % self.name)
+                info = _getstatusoutput('npm view "%s@%s" --json' % (self.name, self.version))
                 exception = 'npm reports errors about %s module:\n' % self.name
                 exception += info[1]
                 raise ValueError(exception)
