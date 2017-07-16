@@ -23,9 +23,9 @@ class Npm2Deb(object):
         if not module_name and not 'node_module' in args:
             raise ValueError('You must specify a module_name')
         if module_name:
-            self.name = module_name
+            self.name, self.version = utils.parse_name(module_name)
         elif 'node_module' in args:
-            self.name = args['node_module']
+            self.name, self.version = utils.parse_name(args['node_module'])
         self.json = None
         self.args = args
         self.homepage = None

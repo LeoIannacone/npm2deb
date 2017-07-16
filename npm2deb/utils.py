@@ -110,6 +110,10 @@ def create_dir(dir):
         raise OSError("Error: directory %s already exists." %
                       oserror.filename)
 
+def parse_name(name):
+    parts = name.partition('@')
+    return parts[0], parts[2]
+
 def debianize_name(name):
     return name.replace('_', '-').lower()
 
