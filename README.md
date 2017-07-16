@@ -1,7 +1,7 @@
 npm2deb
 =======
 
-a script to make faster and easier packaging nodejs modules
+A script to make faster and easier packaging nodejs modules
 
 ## Requirements
 You need to install these dependencies on your system:
@@ -42,9 +42,9 @@ commands:
 ```
 
 ### Example
-A workflow example is showed here: [wiki.debian.org/Javascript/Nodejs/Npm2Deb](https://wiki.debian.org/Javascript/Nodejs/Npm2Deb)
+A workflow example is shown here: [wiki.debian.org/Javascript/Nodejs/Npm2Deb](https://wiki.debian.org/Javascript/Nodejs/Npm2Deb)
 
-In most cases a simple command like the following may be enough:
+In most cases a simple command like the following is enough:
 ```
 $ npm2deb create node-module
 ```
