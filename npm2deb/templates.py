@@ -20,7 +20,7 @@ description_template = """ Write the short and long descriptions for the Debian 
 """
 
 CONTROL = """Source: %(Source)s
-Section: web
+Section: javascript
 Priority: optional
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: %(Uploaders)s
