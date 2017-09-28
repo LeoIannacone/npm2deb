@@ -68,7 +68,7 @@ class Mapper(object):
             return result
 
         madison = _getstatusoutput(
-            'rmadison -u debian "%s" | grep source' % result['name'])
+            'rmadison -u debian "%s" | grep source | tail -1' % result['name'])
 
         if madison[0] != 0:
             result['name'] = None
