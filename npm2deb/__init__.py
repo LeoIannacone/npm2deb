@@ -415,14 +415,13 @@ and may not include tests.\n""")
         tarball.extractall()
         tarball.close()
 
-        # rename extracted directory
-        _os.rename(root_dir, self.name)
         # remove tarball file
         _os.remove(tarball_file)
 
-        if self.name is not self.debian_name:
-            utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
-            _os.rename(self.name, self.debian_name)
+        if root_dir is not self.debian_name:
+            utils.debug(2, "renaming %s to %s" % (root_dir, self.debian_name))
+            # rename extracted directory
+            _os.rename(root_dir, self.debian_name)
 
     def get_ITP(self):
         args = {}
