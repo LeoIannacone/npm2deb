@@ -130,7 +130,7 @@ def create_dir(dir):
                       oserror.filename)
 
 def debianize_name(name):
-    return name.replace('_', '-').lower()
+    return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
