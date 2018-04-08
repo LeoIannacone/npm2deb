@@ -259,11 +259,11 @@ and may not include tests.\n""")
         args['debhelper'] = self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
-        args['Vcs-Git'] = 'https://anonscm.debian.org/' + \
-                          'git/pkg-javascript/%s.git' \
+        args['Vcs-Git'] = 'https://salsa.debian.org/' + \
+                          'js-team/%s.git' \
                           % self.debian_name
-        args['Vcs-Browser'] = 'https://anonscm.debian.org/' + \
-                              'cgit/pkg-javascript/%s.git' \
+        args['Vcs-Browser'] = 'https://salsa.debian.org/' + \
+                              'js-team/%s' \
                               % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
