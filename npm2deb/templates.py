@@ -58,7 +58,7 @@ RULES = """#!/usr/bin/make -f
 
 """
 
-COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: %(upstream_name)s
 Upstream-Contact: %(upstream_contact)s
 Source: %(source)s
@@ -340,7 +340,7 @@ WATCH['fakeupstream'] = """version=3
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*=// \\
- http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
+ https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 """
 
 TESTS = {}
