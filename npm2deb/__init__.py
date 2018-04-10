@@ -525,7 +525,7 @@ and may not include tests.\n""")
             self.homepage = utils.get_npmjs_homepage(self.name)
 
     def _get_Depends(self):
-        depends = ['nodejs']
+        depends = ['nodejs (>= 6)']
         mapper = Mapper.get_instance()
         if 'dependencies' in self.json:
             dependencies = self.json['dependencies']
@@ -552,7 +552,7 @@ and may not include tests.\n""")
 
     def _get_github_url_from_git(self, url):
         result = _getstatusoutput(
-            "nodejs -e "
+            "node -e "
             "\"console.log(require('github-url-from-git')"
             "('%s'));\"" % url)[1]
         if result == 'undefined':
