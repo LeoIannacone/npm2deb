@@ -4,6 +4,7 @@ from xml.dom import minidom as _minidom
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 import re as _re
+import json
 
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb.utils import debug as _debug, debianize_name as _debianize_name
@@ -23,12 +24,24 @@ def search_for_repository(module):
     else:
         module = 'node-%s' % _debianize_name(module)
 
-    repositories = ['collab-maint', 'pkg-javascript']
+    anonscm_repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
     result = {}
-    my_print("Looking for existing repositories:")
-    for repo in repositories:
+    
+    my_print("Looking for existing repositories on salsa.debian.org:")
+    data = json.loads(_urlopen("https://salsa.debian.org/groups/js-team/-/children.json?filter=%s" % module).read())
+    if len(data) > 0:
+        found = True
+        for repo in data:
+            name = repo['name']
+            description = repo['description']
+            result[name] = description
+            my_print(formatted.format(name, description))
+    if found:
+        return result
+    my_print("Looking for existing repositories on anonscm.debian.org:")
+    for repo in anonscm_repositories:
         _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
         data = _urlopen("%s/?a=project_list&pf=%s&s=%s" %
