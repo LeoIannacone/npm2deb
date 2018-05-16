@@ -9,6 +9,16 @@ from npm2deb import templates as _templates
 
 
 DEBUG_LEVEL = 0
+# files starting with this strings will not be included in debian/install
+IGNORED_FILES = [
+    '.',                                  # dotfiles
+    'readme',                             # readme
+    'history', 'changelog',               # history files
+    'license', 'copyright', 'licence',    # legal files
+    'gruntfile', 'gulpfile', 'makefile',  # buid system files
+    'karma.conf', 'bower.json',
+    'test'                                # test files
+]
 
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
@@ -19,6 +29,13 @@ def get_npm_version(module_name):
     return _getstatusoutput(
         'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
 
+def is_ignored(filename):
+    filename = filename.lower()
+    for pattern in IGNORED_FILES:
+        if filename.startswith(pattern):
+            return True
+
+    return False
 
 def get_template(filename):
     result = None

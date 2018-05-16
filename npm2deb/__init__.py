@@ -236,7 +236,8 @@ and may not include tests.\n""")
         libs.remove('debian')
 
         for filename in libs:
-            content += "%s %s/\n" % (filename, self.debian_dest)
+            if not utils.is_ignored(filename):
+                content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
 
     def create_docs(self):
