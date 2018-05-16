@@ -170,7 +170,7 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('tests/control', 'node-debug')
         self.assertEqual(line, 'Depends: node-debug')
         line = self._get_debfile_line('tests/require', 'debug')
-        self.assertEqual(line, """nodejs -e "require('debug');\"""")
+        self.assertEqual(line, """node -e "require('debug');\"""")
 
     ## Issues fixed
     def test_issue_10(self):

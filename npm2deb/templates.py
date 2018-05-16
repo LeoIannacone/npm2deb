@@ -27,7 +27,7 @@ Uploaders: %(Uploaders)s
 Build-Depends:
  debhelper (>= %(debhelper)s)
  , dh-buildinfo
- , nodejs
+ , nodejs (>= 6)
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
@@ -351,5 +351,5 @@ Depends: %(debian_name)s
 
 TESTS['require'] = """#!/bin/sh
 set -e
-nodejs -e "require('%(name)s');"
+node -e "require('%(name)s');"
 """
