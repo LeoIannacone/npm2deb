@@ -40,24 +40,6 @@ def search_for_repository(module):
             my_print(formatted.format(name, description))
     if found:
         return result
-    my_print("Looking for existing repositories on anonscm.debian.org:")
-    for repo in anonscm_repositories:
-        _debug(1, "search for %s in %s" % (module, repo))
-        url_base = "http://anonscm.debian.org/gitweb"
-        data = _urlopen("%s/?a=project_list&pf=%s&s=%s" %
-                       (url_base, repo, module)).read()
-        dom = _minidom.parseString(data)
-        for row in dom.getElementsByTagName('tr')[1:]:
-            try:
-                columns = row.getElementsByTagName('td')
-                name = columns[0].firstChild.getAttribute('href')\
-                    .split('.git')[0].split('?p=')[1]
-                description = columns[1].firstChild.getAttribute('title')
-                found = True
-                result[name] = description
-                my_print(formatted.format(name, description))
-            except:
-                continue
     if not found:
         my_print("  None")
     return result
