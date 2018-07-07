@@ -24,7 +24,6 @@ def search_for_repository(module):
     else:
         module = 'node-%s' % _debianize_name(module)
 
-    anonscm_repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
     result = {}
@@ -38,8 +37,6 @@ def search_for_repository(module):
             description = repo['description']
             result[name] = description
             my_print(formatted.format(name, description))
-    if found:
-        return result
     if not found:
         my_print("  None")
     return result
