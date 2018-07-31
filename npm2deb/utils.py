@@ -4,6 +4,7 @@ from subprocess import PIPE as _PIPE
 import codecs as _codecs
 import locale as _locale
 import os as _os
+from pathlib import Path as _Path
 
 from npm2deb import templates as _templates
 
@@ -122,13 +123,14 @@ def create_file(filename, content):
 def create_dir(dir):
     debug(2, "creating directory %s" % dir)
     try:
-        _os.mkdir(dir)
+        path = _Path(dir)
+        path.mkdir(parents=True)
     except OSError as oserror:
         raise OSError("Error: directory %s already exists." %
                       oserror.filename)
 
 def debianize_name(name):
-    return name.replace('_', '-').lower()
+    return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
