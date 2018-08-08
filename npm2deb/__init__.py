@@ -209,6 +209,7 @@ and may not include tests.\n""")
         except ValueError:
             self.upstream_watch = True
             content = utils.get_watch('fakeupstream') % args
+            content = _re.sub('\.\*=@.*/', '.*=', content)
             utils.create_debian_file('watch', content)
 
     def create_examples(self):

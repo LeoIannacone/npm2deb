@@ -64,7 +64,7 @@ def get_watch(which):
     elif which == 'bitbucket':
         return _templates.WATCH['bitbucket']
     else:
-        return _templates.WATCH['fakeupstream'].replace('@', '')
+        return _templates.WATCH['fakeupstream']
 
 
 def get_license(license):
