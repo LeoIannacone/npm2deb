@@ -18,6 +18,7 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
+
 def search_for_repository(module):
     if isinstance(module, _Npm2Deb):
         module = module.debian_name
@@ -27,9 +28,10 @@ def search_for_repository(module):
     formatted = "  {0:40} -- {1}"
     found = False
     result = {}
-    
+
     my_print("Looking for existing repositories on salsa.debian.org:")
-    data = json.loads(_urlopen("https://salsa.debian.org/groups/js-team/-/children.json?filter=%s" % module).read())
+    data = json.loads(_urlopen(
+        "https://salsa.debian.org/groups/js-team/-/children.json?filter=%s" % module).read())
     if len(data) > 0:
         found = True
         for repo in data:
@@ -72,8 +74,9 @@ def search_for_bug(module):
                                           bug["package"],
                                           bug["url"]))
             except:
-                    continue
+                continue
         return result
+
 
 def search_for_reverse_dependencies(module):
     if isinstance(module, _Npm2Deb):
@@ -124,7 +127,7 @@ def search_for_dependencies(module, recursive=False, force=False,
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         dep_prefix = u'└─' if last_dep else u'├─'
         print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
-                                   result[dep]['version']),
+                                                    result[dep]['version']),
                                    result[dep]['debian'], prefix)
         if recursive and not dep in expanded_dependencies:
             expanded_dependencies.append(dep)

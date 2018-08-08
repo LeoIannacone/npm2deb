@@ -5,7 +5,7 @@ import os
 import inspect
 current = os.path.dirname(os.path.abspath(
                           inspect.getfile(
-                          inspect.currentframe()) + '/..'))
+                              inspect.currentframe()) + '/..'))
 sys.path.append(current)
 
 import unittest
@@ -31,8 +31,8 @@ class npm2deb_fails(unittest.TestCase):
             self.assertTrue(isinstance(err, ValueError))
             # must suggest type of failure
             self.assertTrue(str(err)
-                .find('More than one version found. '
-                      'Please specify one of:') >= 0)
+                            .find('More than one version found. '
+                                  'Please specify one of:') >= 0)
 
 
 class npm_coherences_license(unittest.TestCase):
@@ -111,7 +111,7 @@ class debian(unittest.TestCase):
         n.create_control()
         self.assertEqual(self._get_compat(), str(DEBHELPER))
         self.assertEqual(self._get_debfile_line("control",
-                         " debhelper ("), ' debhelper (>= %s)' % DEBHELPER)
+                                                " debhelper ("), ' debhelper (>= %s)' % DEBHELPER)
 
     def test_debhelper_as_argument(self):
         MY_DEBHELPER = DEBHELPER + 1
@@ -126,7 +126,8 @@ class debian(unittest.TestCase):
         n = Npm2Deb('jade')
         n.create_base_debian()
         n.create_manpages()
-        self.assertEqual(self._get_debfile_line('manpages', 'jade.1'), "jade.1")
+        self.assertEqual(self._get_debfile_line(
+            'manpages', 'jade.1'), "jade.1")
 
     def test_watch_github(self):
         n = Npm2Deb('serve-static')
@@ -172,7 +173,7 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('tests/require', 'debug')
         self.assertEqual(line, """node -e "require('debug');\"""")
 
-    ## Issues fixed
+    # Issues fixed
     def test_issue_10(self):
         n = Npm2Deb('lastfm')
         n.create_base_debian()

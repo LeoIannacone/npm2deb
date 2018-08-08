@@ -21,6 +21,7 @@ IGNORED_FILES = [
     'test'                                # test files
 ]
 
+
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
         print(" debug [%s] - %s" % (level, msg))
@@ -30,6 +31,7 @@ def get_npm_version(module_name):
     return _getstatusoutput(
         'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
 
+
 def is_ignored(filename):
     filename = filename.lower()
     for pattern in IGNORED_FILES:
@@ -37,6 +39,7 @@ def is_ignored(filename):
             return True
 
     return False
+
 
 def get_template(filename):
     result = None
@@ -129,13 +132,17 @@ def create_dir(dir):
         raise OSError("Error: directory %s already exists." %
                       oserror.filename)
 
+
 def debianize_name(name):
     return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
+
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
 
 # taken from https://github.com/pallets/click/blob/master/click/_unicodefun.py
+
+
 def verify_python3_env():
     """Ensures that the environment is good for unicode on Python 3."""
     try:
