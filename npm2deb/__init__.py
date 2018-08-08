@@ -88,7 +88,7 @@ class Npm2Deb(object):
         utils.change_dir('..')
         self.create_itp_bug()
 
-    def initiate_build(self ,saved_path):
+    def initiate_build(self, saved_path):
         """
         Try building deb package after creating required files using start().
         'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
@@ -104,7 +104,8 @@ class Npm2Deb(object):
             self.edit_changelog()
 
             debian_path = "%s/%s/debian" % (self.name, new_dir)
-            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir))
+            print('\nRemember, your new source directory is %s/%s' %
+                  (self.name, new_dir))
 
         else:
             debian_path = "%s/%s/debian" % (self.name, self.debian_name)
@@ -114,15 +115,17 @@ This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
-        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
-        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name, shell=True)
+        _call('/bin/grep --color=auto FIX_ME -r %s/*' %
+              debian_path, shell=True)
+        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' %
+              self.name, shell=True)
 
         if uscan_info[0] != 0:
-            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+            print("\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
         if self.upstream_watch:
-            print ("""
+            print("""
 *** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
 git repo is missing tags. Its better to ask upstream to tag their releases
 instead of using npm dist tarballs as dist tarballs may contain pre built files
@@ -136,19 +139,21 @@ and may not include tests.\n""")
         _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
 
     def run_buildpackage(self):
-        print ("\nBuilding the binary package")
+        print("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
         _call('dpkg-buildpackage', shell=True)
         # removing auto generated temporary files
         _call('debian/rules clean', shell=True)
 
     def run_uupdate(self):
-        print ('\nCreating debian source package...')
-        _call('uupdate -b -f --upstream-version %s' % self.upstream_version, shell=True)
+        print('\nCreating debian source package...')
+        _call('uupdate -b -f --upstream-version %s' %
+              self.upstream_version, shell=True)
 
     def run_uscan(self):
-        print ('\nDownloading source tarball file using debian/watch file...')
-        _call('uscan --download-version %s' % self.upstream_version, shell=True)
+        print('\nDownloading source tarball file using debian/watch file...')
+        _call('uscan --download-version %s' %
+              self.upstream_version, shell=True)
 
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
@@ -158,7 +163,6 @@ and may not include tests.\n""")
                                 '--no-download'
                                 .format(self.debian_name, self.upstream_version))
         return info
-
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
@@ -224,7 +228,7 @@ and may not include tests.\n""")
             for script in self.json['bin']:
                 orig = _os.path.normpath(self.json['bin'][script])
                 links.append("%s/%s usr/bin/%s" %
-                            (dest, orig, script))
+                             (dest, orig, script))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
@@ -395,7 +399,6 @@ and may not include tests.\n""")
         self._get_json_version()
         self._get_json_license()
 
-
     def download(self):
         utils.debug(1, "downloading %s tarball from npm registry" % self.name)
         info = _getstatusoutput('npm pack "%s"' % self.name)
@@ -497,8 +500,8 @@ and may not include tests.\n""")
             if not url:
                 pass            # repository field is not in expected format
             elif url.startswith('git') or (isinstance(repository, dict) and
-                                         'type' in repository and
-                                         repository['type'] == 'git'):
+                                           'type' in repository and
+                                           repository['type'] == 'git'):
                 if url.find('github') >= 0:
                     tmp = self._get_github_url_from_git(url)
                     if tmp:
@@ -519,7 +522,7 @@ and may not include tests.\n""")
         if 'homepage' in self.json:
             self.homepage = self.json['homepage']
         elif self.upstream_repo_url and not \
-             self.upstream_repo_url.find('FIX_ME') >= 0:
+                self.upstream_repo_url.find('FIX_ME') >= 0:
             self.homepage = self.upstream_repo_url
         else:
             self.homepage = utils.get_npmjs_homepage(self.name)

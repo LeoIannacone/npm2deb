@@ -20,7 +20,7 @@ class Mapper(object):
                              "Please use get_instance method.")
         _debug(2, 'loading database from %s' % DB_URL)
         data = _findall('{{{(.*)}}}', _urlopen("%s?action=raw"
-                        % DB_URL).read().decode('utf-8').replace('\n', ''))[0]
+                                               % DB_URL).read().decode('utf-8').replace('\n', ''))[0]
         self.json = _parseJSON(data)
         self._warnings = {}
         self.reset_warnings()
