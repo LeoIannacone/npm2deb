@@ -137,6 +137,13 @@ def debianize_name(name):
     return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
 
 
+def get_latest_debian_standards_version():
+    standards_version = _getstatusoutput(
+        "rmadison -u debian -s sid debian-policy | cut -d'|' -f2| cut -d'.' -f 1,2,3"
+    )[1]
+    return standards_version.strip()
+
+
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
 

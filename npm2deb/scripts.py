@@ -34,7 +34,7 @@ def main(argv=None):
         '--debhelper', default=_.DEBHELPER,
         help='specify debhelper version [default: %(default)s]')
     parser_create.add_argument(
-        '--standards-version', default=_.STANDARDS_VERSION,
+        '--standards-version', default=_utils.get_latest_debian_standards_version(),
         help='set standards-version [default: %(default)s]')
     parser_create.add_argument(
         '--upstream-author', default=None,
