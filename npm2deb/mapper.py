@@ -7,7 +7,6 @@ from fnmatch import fnmatch as _fnmatch
 from npm2deb.utils import debug as _debug
 from npm2deb.utils import debianize_name as _debianize_name
 
-
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 
 
@@ -19,8 +18,10 @@ class Mapper(object):
             raise ValueError("Mapper is a Singleton. "
                              "Please use get_instance method.")
         _debug(2, 'loading database from %s' % DB_URL)
-        data = _findall('{{{(.*)}}}', _urlopen("%s?action=raw"
-                                               % DB_URL).read().decode('utf-8').replace('\n', ''))[0]
+        data = _findall(
+            '{{{(.*)}}}',
+            _urlopen("%s?action=raw" % DB_URL).read().decode('utf-8').replace(
+                '\n', ''))[0]
         self.json = _parseJSON(data)
         self._warnings = {}
         self.reset_warnings()
