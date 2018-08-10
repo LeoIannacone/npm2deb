@@ -4,6 +4,7 @@ from xml.dom import minidom as _minidom
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 import re as _re
+import json
 
 from npm2deb import Npm2Deb as _Npm2Deb
 from npm2deb.utils import debug as _debug, debianize_name as _debianize_name
@@ -17,34 +18,27 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
+
 def search_for_repository(module):
     if isinstance(module, _Npm2Deb):
         module = module.debian_name
     else:
         module = 'node-%s' % _debianize_name(module)
 
-    repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
     result = {}
-    my_print("Looking for existing repositories:")
-    for repo in repositories:
-        _debug(1, "search for %s in %s" % (module, repo))
-        url_base = "http://anonscm.debian.org/gitweb"
-        data = _urlopen("%s/?a=project_list&pf=%s&s=%s" %
-                       (url_base, repo, module)).read()
-        dom = _minidom.parseString(data)
-        for row in dom.getElementsByTagName('tr')[1:]:
-            try:
-                columns = row.getElementsByTagName('td')
-                name = columns[0].firstChild.getAttribute('href')\
-                    .split('.git')[0].split('?p=')[1]
-                description = columns[1].firstChild.getAttribute('title')
-                found = True
-                result[name] = description
-                my_print(formatted.format(name, description))
-            except:
-                continue
+
+    my_print("Looking for existing repositories on salsa.debian.org:")
+    data = json.loads(_urlopen(
+        "https://salsa.debian.org/groups/js-team/-/children.json?filter=%s" % module).read())
+    if len(data) > 0:
+        found = True
+        for repo in data:
+            name = repo['name']
+            description = repo['description']
+            result[name] = description
+            my_print(formatted.format(name, description))
     if not found:
         my_print("  None")
     return result
@@ -80,8 +74,9 @@ def search_for_bug(module):
                                           bug["package"],
                                           bug["url"]))
             except:
-                    continue
+                continue
         return result
+
 
 def search_for_reverse_dependencies(module):
     if isinstance(module, _Npm2Deb):
@@ -132,7 +127,7 @@ def search_for_dependencies(module, recursive=False, force=False,
         result[dep]['debian'] = mapper.get_debian_package(dep)['repr']
         dep_prefix = u'└─' if last_dep else u'├─'
         print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
-                                   result[dep]['version']),
+                                                    result[dep]['version']),
                                    result[dep]['debian'], prefix)
         if recursive and not dep in expanded_dependencies:
             expanded_dependencies.append(dep)

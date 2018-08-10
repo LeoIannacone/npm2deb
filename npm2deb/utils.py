@@ -4,11 +4,23 @@ from subprocess import PIPE as _PIPE
 import codecs as _codecs
 import locale as _locale
 import os as _os
+from pathlib import Path as _Path
 
 from npm2deb import templates as _templates
 
 
 DEBUG_LEVEL = 0
+# files starting with this strings will not be included in debian/install
+IGNORED_FILES = [
+    '.',                                  # dotfiles
+    'readme',                             # readme
+    'history', 'changelog',               # history files
+    'license', 'copyright', 'licence',    # legal files
+    'gruntfile', 'gulpfile', 'makefile',  # buid system files
+    'karma.conf', 'bower.json',
+    'test'                                # test files
+]
+
 
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
@@ -18,6 +30,15 @@ def debug(level, msg):
 def get_npm_version(module_name):
     return _getstatusoutput(
         'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
+
+
+def is_ignored(filename):
+    filename = filename.lower()
+    for pattern in IGNORED_FILES:
+        if filename.startswith(pattern):
+            return True
+
+    return False
 
 
 def get_template(filename):
@@ -105,7 +126,8 @@ def create_file(filename, content):
 def create_dir(dir):
     debug(2, "creating directory %s" % dir)
     try:
-        _os.mkdir(dir)
+        path = _Path(dir)
+        path.mkdir(parents=True)
     except OSError as oserror:
         raise OSError("Error: directory %s already exists." %
                       oserror.filename)
@@ -114,13 +136,17 @@ def parse_name(name):
     parts = name.partition('@')
     return parts[0], parts[2]
 
+
 def debianize_name(name):
-    return name.replace('_', '-').lower()
+    return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
+
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
 
 # taken from https://github.com/pallets/click/blob/master/click/_unicodefun.py
+
+
 def verify_python3_env():
     """Ensures that the environment is good for unicode on Python 3."""
     try:

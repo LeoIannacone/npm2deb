@@ -182,7 +182,7 @@ def print_view(args):
             if key == 'license' or key == 'version':
                 attr_key = 'upstream_%s' % key
             print(formatted.format("%s:" % key.capitalize(),
-                  getattr(npm2deb_instance, attr_key, None)))
+                                   getattr(npm2deb_instance, attr_key, None)))
 
         mapper = _Mapper.get_instance()
         pkg_info = mapper.get_debian_package(npm2deb_instance.name)
@@ -237,7 +237,7 @@ def show_dependencies(args):
             module_deb = _Mapper.get_instance()\
                 .get_debian_package(module_name)["repr"]
             _helper.print_formatted_dependency("%s (%s)" %
-                                              (module_name, module_ver),
+                                               (module_name, module_ver),
                                                module_deb)
             _helper.search_for_dependencies(npm2deb_instance,
                                             args.recursive,
@@ -298,6 +298,7 @@ def _show_mapper_warnings():
         print("Warnings occurred:")
         mapper.show_warnings()
         print("")
+
 
 if __name__ == '__main__':
     main()
