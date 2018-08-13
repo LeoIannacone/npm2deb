@@ -409,8 +409,7 @@ and may not include tests.\n""")
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]
             raise ValueError(exception)
-
-        tarball_file = info[1].strip('\n')
+        tarball_file = info[1].split('\n')[-1]
         tarball = tarfile.open(tarball_file)
         # get the root directory name
         root_dir = tarball.getnames()[0]
