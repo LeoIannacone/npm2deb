@@ -18,9 +18,8 @@ STANDARDS_VERSION = '4.1.1'
 
 
 class Npm2Deb(object):
-
     def __init__(self, module_name=None, args={}):
-        if not module_name and not 'node_module' in args:
+        if not module_name and 'node_module' not in args:
             raise ValueError('You must specify a module_name')
         if module_name:
             self.name, self.version = utils.parse_name(module_name)
@@ -115,13 +114,15 @@ This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
-        _call('/bin/grep --color=auto FIX_ME -r %s/*' %
-              debian_path, shell=True)
-        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' %
-              self.name, shell=True)
+        _call(
+            '/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+        _call(
+            '/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name,
+            shell=True)
 
         if uscan_info[0] != 0:
-            print("\nUse uscan to get orig source files. Fix debian/watch and then run\
+            print(
+                "\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
         if self.upstream_watch:
@@ -136,7 +137,8 @@ and may not include tests.\n""")
         To remove extra line '* New upstream release'
         from debian/changelog
         """
-        _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
+        _call(
+            "sed -i '/* New upstream release/d' debian/changelog", shell=True)
 
     def run_buildpackage(self):
         print("\nBuilding the binary package")
@@ -147,21 +149,22 @@ and may not include tests.\n""")
 
     def run_uupdate(self):
         print('\nCreating debian source package...')
-        _call('uupdate -b -f --upstream-version %s' %
-              self.upstream_version, shell=True)
+        _call(
+            'uupdate -b -f --upstream-version %s' % self.upstream_version,
+            shell=True)
 
     def run_uscan(self):
         print('\nDownloading source tarball file using debian/watch file...')
-        _call('uscan --download-version %s' %
-              self.upstream_version, shell=True)
+        _call(
+            'uscan --download-version %s' % self.upstream_version, shell=True)
 
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
                                 '--package "{}" '
                                 '--upstream-version 0 '
                                 '--download-version {} '
-                                '--no-download'
-                                .format(self.debian_name, self.upstream_version))
+                                '--no-download'.format(self.debian_name,
+                                                       self.upstream_version))
         return info
 
     def create_itp_bug(self):
@@ -228,8 +231,7 @@ and may not include tests.\n""")
         if 'bin' in self.json:
             for script in self.json['bin']:
                 orig = _os.path.normpath(self.json['bin'][script])
-                links.append("%s/%s usr/bin/%s" %
-                             (dest, orig, script))
+                links.append("%s/%s usr/bin/%s" % (dest, orig, script))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
@@ -407,8 +409,7 @@ and may not include tests.\n""")
             exception = "Error downloading package %s@s\n" % (self.name, self.version)
             exception += info[1]
             raise ValueError(exception)
-
-        tarball_file = info[1].strip('\n')
+        tarball_file = info[1].split('\n')[-1]
         tarball = tarfile.open(tarball_file)
         # get the root directory name
         root_dir = tarball.getnames()[0]
@@ -499,10 +500,10 @@ and may not include tests.\n""")
                 url = repository['url']
 
             if not url:
-                pass            # repository field is not in expected format
-            elif url.startswith('git') or (isinstance(repository, dict) and
-                                           'type' in repository and
-                                           repository['type'] == 'git'):
+                pass  # repository field is not in expected format
+            elif url.startswith('git') or (isinstance(repository, dict)
+                                           and 'type' in repository
+                                           and repository['type'] == 'git'):
                 if url.find('github') >= 0:
                     tmp = self._get_github_url_from_git(url)
                     if tmp:
@@ -537,11 +538,13 @@ and may not include tests.\n""")
                 name = mapper.get_debian_package(dep)['name']
                 if not name:
                     name = 'node-%s' % dep
-                    mapper.append_warning('error', dep, 'dependency %s '
-                                          'not in debian' % (name))
+                    mapper.append_warning(
+                        'error', dep, 'dependency %s '
+                        'not in debian' % (name))
                 version = dependencies[dep]
                 if version:
-                    version = version.lower().replace('~', '').replace('^', '').replace('.x', '.0')
+                    version = version.lower().replace('~', '').replace(
+                        '^', '').replace('.x', '.0')
                     if version[0].isdigit():
                         version = '>= %s' % version
                     elif version == '*' or version == 'latest':
