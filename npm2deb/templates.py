@@ -26,7 +26,6 @@ Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.deb
 Uploaders: %(Uploaders)s
 Build-Depends:
  debhelper (>= %(debhelper)s)
- , dh-buildinfo
  , nodejs (>= 6)
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
