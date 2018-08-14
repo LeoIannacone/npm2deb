@@ -1,3 +1,10 @@
+## 0.2.8 (2018-08-15)
+ * [fix] Exclude unwanted files from debian/install
+ * [new] Move primary search from alioth to salsa - closes #106
+ * [new] Support scopes, ie, '@<scope>/' in module names
+ * [new] Use latest standards version
+ * [new] Support packaging of specific version of a module
+
 ## 0.2.7 (2017-07-19)
  * [new] Add all files and directories in tarball to debian/install
  * [new] Support regex in package mapper
