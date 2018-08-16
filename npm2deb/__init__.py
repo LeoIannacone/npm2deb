@@ -22,9 +22,9 @@ class Npm2Deb(object):
         if not module_name and 'node_module' not in args:
             raise ValueError('You must specify a module_name')
         if module_name:
-            self.name = module_name
+            self.name, self.version = utils.parse_name(module_name)
         elif 'node_module' in args:
-            self.name = args['node_module']
+            self.name, self.version = utils.parse_name(args['node_module'])
         self.json = None
         self.args = args
         self.homepage = None
@@ -358,12 +358,12 @@ and may not include tests.\n""")
 
         else:
             name_is = 'npm'
-            utils.debug(1, "reading json - calling npm view %s" % self.name)
-            info = _getstatusoutput(
-                'npm view "%s" --json 2>/dev/null' % self.name)
+            utils.debug(1, "reading json - calling npm view %s@%s" % (self.name, self.version))
+            info = _getstatusoutput('npm view "%s@%s" --json 2>/dev/null' %
+                                    (self.name, self.version))
             # if not status 0, raise expection
             if info[0] != 0:
-                info = _getstatusoutput('npm view "%s" --json' % self.name)
+                info = _getstatusoutput('npm view "%s@%s" --json' % (self.name, self.version))
                 exception = 'npm reports errors about %s module:\n' % self.name
                 exception += info[1]
                 raise ValueError(exception)
@@ -403,10 +403,10 @@ and may not include tests.\n""")
         self._get_json_license()
 
     def download(self):
-        utils.debug(1, "downloading %s tarball from npm registry" % self.name)
-        info = _getstatusoutput('npm pack "%s"' % self.name)
+        utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
+        info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
-            exception = "Error downloading package %s\n" % self.name
+            exception = "Error downloading package %s@s\n" % (self.name, self.version)
             exception += info[1]
             raise ValueError(exception)
         tarball_file = info[1].split('\n')[-1]
