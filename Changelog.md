@@ -1,5 +1,6 @@
 ## 0.2.8 (2018-08-15)
  * [fix] Exclude unwanted files from debian/install
+ * [fix] Switch to releases page in watch instead of now broken tags page
  * [new] Move primary search from alioth to salsa - closes #106
  * [new] Support scopes, ie, '@<scope>/' in module names
  * [new] Use latest standards version
