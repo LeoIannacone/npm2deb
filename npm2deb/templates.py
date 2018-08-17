@@ -328,7 +328,7 @@ WATCH['github'] = """version=3
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
- %(url)s/tags .*/archive/v?([\d\.]+).tar.gz
+ %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
 WATCH['fakeupstream'] = """version=3
