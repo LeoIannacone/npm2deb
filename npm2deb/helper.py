@@ -81,7 +81,7 @@ def search_for_bug(module):
 def search_for_reverse_dependencies(module):
     if isinstance(module, _Npm2Deb):
         module = module.name
-    url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
+    url = "https://skimdb.npmjs.com/registry/_design/app/_view/dependedUpon?startkey=" \
         + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
     url = url % {'name': module}
     _debug(1, "opening url %s" % url)
