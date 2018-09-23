@@ -12,20 +12,19 @@ import tarfile
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
-VERSION = '0.2.6'
+VERSION = '0.2.8'
 DEBHELPER = 10
 STANDARDS_VERSION = '4.1.1'
 
 
 class Npm2Deb(object):
-
     def __init__(self, module_name=None, args={}):
-        if not module_name and not 'node_module' in args:
+        if not module_name and 'node_module' not in args:
             raise ValueError('You must specify a module_name')
         if module_name:
-            self.name = module_name
+            self.name, self.version = utils.parse_name(module_name)
         elif 'node_module' in args:
-            self.name = args['node_module']
+            self.name, self.version = utils.parse_name(args['node_module'])
         self.json = None
         self.args = args
         self.homepage = None
@@ -88,7 +87,7 @@ class Npm2Deb(object):
         utils.change_dir('..')
         self.create_itp_bug()
 
-    def initiate_build(self ,saved_path):
+    def initiate_build(self, saved_path):
         """
         Try building deb package after creating required files using start().
         'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
@@ -104,7 +103,8 @@ class Npm2Deb(object):
             self.edit_changelog()
 
             debian_path = "%s/%s/debian" % (self.name, new_dir)
-            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir))
+            print('\nRemember, your new source directory is %s/%s' %
+                  (self.name, new_dir))
 
         else:
             debian_path = "%s/%s/debian" % (self.name, self.debian_name)
@@ -114,15 +114,19 @@ This is not a crystal ball, so please take a look at auto-generated files.\n
 You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
-        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
-        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name, shell=True)
+        _call(
+            '/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+        _call(
+            '/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name,
+            shell=True)
 
         if uscan_info[0] != 0:
-            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+            print(
+                "\nUse uscan to get orig source files. Fix debian/watch and then run\
                     \n$ uscan --download-current-version\n")
 
         if self.upstream_watch:
-            print ("""
+            print("""
 *** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
 git repo is missing tags. Its better to ask upstream to tag their releases
 instead of using npm dist tarballs as dist tarballs may contain pre built files
@@ -133,32 +137,35 @@ and may not include tests.\n""")
         To remove extra line '* New upstream release'
         from debian/changelog
         """
-        _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
+        _call(
+            "sed -i '/* New upstream release/d' debian/changelog", shell=True)
 
     def run_buildpackage(self):
-        print ("\nBuilding the binary package")
+        print("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
         _call('dpkg-buildpackage', shell=True)
         # removing auto generated temporary files
         _call('debian/rules clean', shell=True)
 
     def run_uupdate(self):
-        print ('\nCreating debian source package...')
-        _call('uupdate -b -f --upstream-version %s' % self.upstream_version, shell=True)
+        print('\nCreating debian source package...')
+        _call(
+            'uupdate -b -f --upstream-version %s' % self.upstream_version,
+            shell=True)
 
     def run_uscan(self):
-        print ('\nDownloading source tarball file using debian/watch file...')
-        _call('uscan --download-version %s' % self.upstream_version, shell=True)
+        print('\nDownloading source tarball file using debian/watch file...')
+        _call(
+            'uscan --download-version %s' % self.upstream_version, shell=True)
 
     def test_uscan(self):
         info = _getstatusoutput('uscan --watchfile "debian/watch" '
                                 '--package "{}" '
                                 '--upstream-version 0 '
                                 '--download-version {} '
-                                '--no-download'
-                                .format(self.debian_name, self.upstream_version))
+                                '--no-download'.format(self.debian_name,
+                                                       self.upstream_version))
         return info
-
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
@@ -205,6 +212,7 @@ and may not include tests.\n""")
         except ValueError:
             self.upstream_watch = True
             content = utils.get_watch('fakeupstream') % args
+            content = _re.sub('\.\*=@.*/', '.*=', content)
             utils.create_debian_file('watch', content)
 
     def create_examples(self):
@@ -223,8 +231,7 @@ and may not include tests.\n""")
         if 'bin' in self.json:
             for script in self.json['bin']:
                 orig = _os.path.normpath(self.json['bin'][script])
-                links.append("%s/%s usr/bin/%s" %
-                            (dest, orig, script))
+                links.append("%s/%s usr/bin/%s" % (dest, orig, script))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
@@ -236,7 +243,8 @@ and may not include tests.\n""")
         libs.remove('debian')
 
         for filename in libs:
-            content += "%s %s/\n" % (filename, self.debian_dest)
+            if not utils.is_ignored(filename):
+                content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
 
     def create_docs(self):
@@ -259,11 +267,11 @@ and may not include tests.\n""")
         args['debhelper'] = self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
-        args['Vcs-Git'] = 'https://anonscm.debian.org/' + \
-                          'git/pkg-javascript/%s.git' \
+        args['Vcs-Git'] = 'https://salsa.debian.org/' + \
+                          'js-team/%s.git' \
                           % self.debian_name
-        args['Vcs-Browser'] = 'https://anonscm.debian.org/' + \
-                              'cgit/pkg-javascript/%s.git' \
+        args['Vcs-Browser'] = 'https://salsa.debian.org/' + \
+                              'js-team/%s' \
                               % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
@@ -350,12 +358,12 @@ and may not include tests.\n""")
 
         else:
             name_is = 'npm'
-            utils.debug(1, "reading json - calling npm view %s" % self.name)
-            info = _getstatusoutput('npm view "%s" --json 2>/dev/null' %
-                                    self.name)
+            utils.debug(1, "reading json - calling npm view %s@%s" % (self.name, self.version))
+            info = _getstatusoutput('npm view "%s@%s" --json 2>/dev/null' %
+                                    (self.name, self.version))
             # if not status 0, raise expection
             if info[0] != 0:
-                info = _getstatusoutput('npm view "%s" --json' % self.name)
+                info = _getstatusoutput('npm view "%s@%s" --json' % (self.name, self.version))
                 exception = 'npm reports errors about %s module:\n' % self.name
                 exception += info[1]
                 raise ValueError(exception)
@@ -394,16 +402,14 @@ and may not include tests.\n""")
         self._get_json_version()
         self._get_json_license()
 
-
     def download(self):
-        utils.debug(1, "downloading %s tarball from npm registry" % self.name)
-        info = _getstatusoutput('npm pack "%s"' % self.name)
+        utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
+        info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
-            exception = "Error downloading package %s\n" % self.name
+            exception = "Error downloading package %s@s\n" % (self.name, self.version)
             exception += info[1]
             raise ValueError(exception)
-
-        tarball_file = info[1].strip('\n')
+        tarball_file = info[1].split('\n')[-1]
         tarball = tarfile.open(tarball_file)
         # get the root directory name
         root_dir = tarball.getnames()[0]
@@ -415,14 +421,13 @@ and may not include tests.\n""")
         tarball.extractall()
         tarball.close()
 
-        # rename extracted directory
-        _os.rename(root_dir, self.name)
         # remove tarball file
         _os.remove(tarball_file)
 
-        if self.name is not self.debian_name:
-            utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
-            _os.rename(self.name, self.debian_name)
+        if root_dir is not self.debian_name:
+            utils.debug(2, "renaming %s to %s" % (root_dir, self.debian_name))
+            # rename extracted directory
+            _os.rename(root_dir, self.debian_name)
 
     def get_ITP(self):
         args = {}
@@ -495,10 +500,10 @@ and may not include tests.\n""")
                 url = repository['url']
 
             if not url:
-                pass            # repository field is not in expected format
-            elif url.startswith('git') or (isinstance(repository, dict) and
-                                         'type' in repository and
-                                         repository['type'] == 'git'):
+                pass  # repository field is not in expected format
+            elif url.startswith('git') or (isinstance(repository, dict)
+                                           and 'type' in repository
+                                           and repository['type'] == 'git'):
                 if url.find('github') >= 0:
                     tmp = self._get_github_url_from_git(url)
                     if tmp:
@@ -519,13 +524,13 @@ and may not include tests.\n""")
         if 'homepage' in self.json:
             self.homepage = self.json['homepage']
         elif self.upstream_repo_url and not \
-             self.upstream_repo_url.find('FIX_ME') >= 0:
+                self.upstream_repo_url.find('FIX_ME') >= 0:
             self.homepage = self.upstream_repo_url
         else:
             self.homepage = utils.get_npmjs_homepage(self.name)
 
     def _get_Depends(self):
-        depends = ['nodejs']
+        depends = ['nodejs (>= 6)']
         mapper = Mapper.get_instance()
         if 'dependencies' in self.json:
             dependencies = self.json['dependencies']
@@ -533,11 +538,13 @@ and may not include tests.\n""")
                 name = mapper.get_debian_package(dep)['name']
                 if not name:
                     name = 'node-%s' % dep
-                    mapper.append_warning('error', dep, 'dependency %s '
-                                          'not in debian' % (name))
+                    mapper.append_warning(
+                        'error', dep, 'dependency %s '
+                        'not in debian' % (name))
                 version = dependencies[dep]
                 if version:
-                    version = version.lower().replace('~', '').replace('^', '').replace('.x', '.0')
+                    version = version.lower().replace('~', '').replace(
+                        '^', '').replace('.x', '.0')
                     if version[0].isdigit():
                         version = '>= %s' % version
                     elif version == '*' or version == 'latest':
@@ -552,7 +559,7 @@ and may not include tests.\n""")
 
     def _get_github_url_from_git(self, url):
         result = _getstatusoutput(
-            "nodejs -e "
+            "node -e "
             "\"console.log(require('github-url-from-git')"
             "('%s'));\"" % url)[1]
         if result == 'undefined':

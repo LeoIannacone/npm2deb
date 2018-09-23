@@ -13,6 +13,7 @@ class remove_extension(install_scripts):
             if script.endswith(".py"):
                 shutil.move(script, script[:-3])
 
+
 setup(name='npm2deb',
       version=VERSION,
       author='Leo Iannacone',

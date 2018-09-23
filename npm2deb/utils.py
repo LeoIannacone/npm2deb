@@ -4,11 +4,28 @@ from subprocess import PIPE as _PIPE
 import codecs as _codecs
 import locale as _locale
 import os as _os
+from pathlib import Path as _Path
 
 from npm2deb import templates as _templates
 
-
 DEBUG_LEVEL = 0
+# files starting with this strings will not be included in debian/install
+IGNORED_FILES = [
+    '.',  # dotfiles
+    'readme',  # readme
+    'history',
+    'changelog',  # history files
+    'license',
+    'copyright',
+    'licence',  # legal files
+    'gruntfile',
+    'gulpfile',
+    'makefile',  # buid system files
+    'karma.conf',
+    'bower.json',
+    'test'  # test files
+]
+
 
 def debug(level, msg):
     if level <= DEBUG_LEVEL:
@@ -18,6 +35,15 @@ def debug(level, msg):
 def get_npm_version(module_name):
     return _getstatusoutput(
         'npm view "%s" version' % module_name)[1].split('\n')[-2].strip()
+
+
+def is_ignored(filename):
+    filename = filename.lower()
+    for pattern in IGNORED_FILES:
+        if filename.startswith(pattern):
+            return True
+
+    return False
 
 
 def get_template(filename):
@@ -105,18 +131,34 @@ def create_file(filename, content):
 def create_dir(dir):
     debug(2, "creating directory %s" % dir)
     try:
-        _os.mkdir(dir)
+        path = _Path(dir)
+        path.mkdir(parents=True)
     except OSError as oserror:
-        raise OSError("Error: directory %s already exists." %
-                      oserror.filename)
+        raise OSError("Error: directory %s already exists." % oserror.filename)
+
+def parse_name(name):
+    parts = name.partition('@')
+    return parts[0], parts[2]
+
 
 def debianize_name(name):
-    return name.replace('_', '-').lower()
+    return name.replace('_', '-').replace('@', '').replace('/', '-').lower()
+
+
+def get_latest_debian_standards_version():
+    standards_version = _getstatusoutput(
+        "rmadison -u debian -s sid debian-policy | cut -d'|' -f2| cut -d'.' -f 1,2,3"
+    )[1]
+    return standards_version.strip()
+
 
 def get_npmjs_homepage(name):
     return 'https://npmjs.com/package/' + name
 
+
 # taken from https://github.com/pallets/click/blob/master/click/_unicodefun.py
+
+
 def verify_python3_env():
     """Ensures that the environment is good for unicode on Python 3."""
     try:
@@ -128,8 +170,8 @@ def verify_python3_env():
 
     extra = ''
     if _os.name == 'posix':
-        rv = _Popen(['locale', '-a'], stdout=_PIPE,
-                    stderr=_PIPE).communicate()[0]
+        rv = _Popen(
+            ['locale', '-a'], stdout=_PIPE, stderr=_PIPE).communicate()[0]
         good_locales = set()
         has_c_utf8 = False
 
@@ -149,22 +191,19 @@ def verify_python3_env():
             extra += (
                 'Additional information: on this system no suitable UTF-8\n'
                 'locales were discovered.  This most likely requires resolving\n'
-                'by reconfiguring the locale system.'
-            )
+                'by reconfiguring the locale system.')
         elif has_c_utf8:
             extra += (
                 'This system supports the C.UTF-8 locale which is recommended.\n'
                 'You might be able to resolve your issue by exporting the\n'
                 'following environment variables:\n\n'
                 '    export LC_ALL=C.UTF-8\n'
-                '    export LANG=C.UTF-8'
-            )
+                '    export LANG=C.UTF-8')
         else:
             extra += (
                 'This system lists a couple of UTF-8 supporting locales that\n'
                 'you can pick from.  The following suitable locales were\n'
-                'discovered: %s'
-            ) % ', '.join(sorted(good_locales))
+                'discovered: %s') % ', '.join(sorted(good_locales))
 
         bad_locale = None
         for locale in _os.environ.get('LC_ALL'), _os.environ.get('LANG'):
@@ -177,8 +216,7 @@ def verify_python3_env():
                 '\n\nnpm2deb discovered that you exported a UTF-8 locale\n'
                 'but the locale system could not pick up from it because\n'
                 'it does not exist.  The exported locale is "%s" but it\n'
-                'is not supported'
-            ) % bad_locale
+                'is not supported') % bad_locale
 
     raise RuntimeError('npm2deb will abort further execution because Python 3 '
                        'was configured to use ASCII as encoding for the '

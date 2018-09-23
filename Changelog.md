@@ -1,3 +1,23 @@
+## 0.2.8 (2018-08-15)
+ * [fix] Exclude unwanted files from debian/install
+ * [fix] Switch to releases page in watch instead of now broken tags page
+ * [new] Move primary search from alioth to salsa - closes #106
+ * [new] Support scopes, ie, '@<scope>/' in module names
+ * [new] Use latest standards version
+ * [new] Support packaging of specific version of a module
+
+## 0.2.7 (2017-07-19)
+ * [new] Add all files and directories in tarball to debian/install
+ * [new] Support regex in package mapper
+ * [new] Abort execution in non-utf environments
+ * [fix] Use debian-name for repository and bug search
+ * [fix] Handle non-standard tarball root directory names
+ * [new] Improved package search
+	 search packages in all debian suites with rmadison
+ * [new] Updated description templates
+ * [new] Use npmjs page as homepage fallback
+ * [fix] Handle arrays in man field
+
 ## 0.2.6 (2016-11-10)
  * [fix] use rmadison to find available packages
  * [fix] convert package name to lowercase

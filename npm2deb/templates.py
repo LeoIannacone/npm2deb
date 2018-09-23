@@ -26,8 +26,7 @@ Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.deb
 Uploaders: %(Uploaders)s
 Build-Depends:
  debhelper (>= %(debhelper)s)
- , dh-buildinfo
- , nodejs
+ , nodejs (>= 6)
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
@@ -58,7 +57,7 @@ RULES = """#!/usr/bin/make -f
 
 """
 
-COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: %(upstream_name)s
 Upstream-Contact: %(upstream_contact)s
 Source: %(source)s
@@ -329,7 +328,7 @@ WATCH['github'] = """version=3
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
- %(url)s/tags .*/archive/v?([\d\.]+).tar.gz
+ %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
 WATCH['fakeupstream'] = """version=3
@@ -340,7 +339,7 @@ WATCH['fakeupstream'] = """version=3
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*=// \\
- http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
+ https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 """
 
 TESTS = {}
@@ -351,5 +350,5 @@ Depends: %(debian_name)s
 
 TESTS['require'] = """#!/bin/sh
 set -e
-nodejs -e "require('%(name)s');"
+node -e "require('%(name)s');"
 """
