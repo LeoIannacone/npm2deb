@@ -4,10 +4,13 @@ from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 from fnmatch import fnmatch as _fnmatch
 
+import apt_pkg
+
 from npm2deb.utils import debug as _debug
 from npm2deb.utils import debianize_name as _debianize_name
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
+MADISON_URL = 'https://api.ftp-master.debian.org/madison?S=true&f=python&package=%s'
 
 
 class Mapper(object):
@@ -25,6 +28,7 @@ class Mapper(object):
         self.json = _parseJSON(data)
         self._warnings = {}
         self.reset_warnings()
+        apt_pkg.init()
 
     @classmethod
     def get_instance(cls):
@@ -68,19 +72,23 @@ class Mapper(object):
         if not result['name']:
             return result
 
-        madison = _getstatusoutput(
-            'rmadison -u debian "%s" | tac | grep source' % result['name'])
-
-        if madison[0] != 0:
+        data = _urlopen(MADISON_URL % result['name']).read().decode('utf-8')
+        packages = _parseJSON(data)
+        if len(packages) < 1:
             result['name'] = None
             return result
-
-        tmp = madison[1].split('|')
-        if len(tmp) >= 2:
-            result['name'] = tmp[0].strip()
-            result['version'] = tmp[1].strip()
-            result['suite'] = tmp[2].strip()
-            result['repr'] = '%s (%s)' % (result['name'], result['version'])
+        result['version'] = '0:0'
+        for suite, versions in packages[0][result['name']].items():
+            for version, source in versions.items():
+                if apt_pkg.version_compare(version, result['version']) > 0:
+                    result['version'] = version
+                    result['suite'] = suite
+                    result['name'] = source['source']
+                    result['repr'] = '%s (%s)' % (result['name'],
+                                                  result['version'])
+        result['version'] = result['version']
+        if result['version'] == '0:0':
+            result['version'] = None
 
         return result
 
