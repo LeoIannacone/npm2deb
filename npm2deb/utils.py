@@ -139,7 +139,9 @@ def create_dir(dir):
 def parse_name(name):
     parts = name.rpartition('@')
     if parts[0] == '':
-        return '@'+parts[2], parts[0]
+        if parts[1] == '@':     
+            return '@'+parts[2], parts[0]
+        return parts[2], parts[0]
     return parts[0], parts[2]
 
 
