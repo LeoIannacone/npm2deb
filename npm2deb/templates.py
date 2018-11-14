@@ -3,7 +3,6 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
   * Initial release (Closes: #nnnn)
 
  -- %(debian_author)s  %(date)s
-
 """
 
 description_template = """ Write the short and long descriptions for the Debian package as
@@ -53,9 +52,7 @@ RULES = """#!/usr/bin/make -f
 
 #override_dh_auto_test:
 
-%(overrides)s
-
-"""
+%(overrides)s"""
 
 COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: %(upstream_name)s
@@ -70,8 +67,7 @@ Files: debian/*
 Copyright: %(debian_date)s, %(debian_author)s
 License: %(debian_license_name)s
 
-%(debian_license)s
-"""
+%(debian_license)s"""
 
 WNPP = """To: submit@bugs.debian.org
 Subject: ITP: %(debian_name)s -- %(description)s
