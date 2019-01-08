@@ -179,6 +179,17 @@ class debian(unittest.TestCase):
         n.create_base_debian()
         n.create_control()
 
+    def test_parse_name(self):
+        n = Npm2Deb('jade@1.11.0')
+        self.assertEqual(n.name, "jade")
+        x = Npm2Deb('@ava/write-file-atomic')
+        self.assertEqual(x.name, '@ava/write-file-atomic')
+        y = Npm2Deb('@types/jquery@2.0.49')
+        self.assertEqual(y.name, '@types/jquery')
+        z = Npm2Deb('@types/jquery')
+        self.assertEqual(z.name, '@types/jquery')
+
+
 
 if __name__ == '__main__':
     unittest.main()
