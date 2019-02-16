@@ -330,10 +330,6 @@ and may not include tests.\n""")
         args = {}
         args['name'] = self.name
         args['debian_name'] = self.debian_name
-        control = utils.get_template('tests/control') % args
-        utils.create_debian_file("tests/control", control)
-        require = utils.get_template("tests/require") % args
-        utils.create_debian_file("tests/require", require)
 
     def create_base_debian(self):
         utils.debug(1, "creating debian files")

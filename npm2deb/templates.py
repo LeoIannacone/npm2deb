@@ -23,9 +23,11 @@ Section: javascript
 Priority: optional
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: %(Uploaders)s
+Testsuite: autopkgtest-pkg-nodejs
 Build-Depends:
  debhelper (>= %(debhelper)s)
  , nodejs (>= 6)
+ , pkg-js-tools
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
@@ -46,11 +48,9 @@ RULES = """#!/usr/bin/make -f
 #export DH_VERBOSE=1
 
 %%:
-	dh $@
+	dh $@ --with nodejs
 
 #override_dh_auto_build:
-
-#override_dh_auto_test:
 
 %(overrides)s"""
 
@@ -336,15 +336,4 @@ opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*=// \\
  https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
-"""
-
-TESTS = {}
-
-TESTS['control'] = """Tests: require
-Depends: %(debian_name)s
-"""
-
-TESTS['require'] = """#!/bin/sh
-set -e
-node -e "require('%(name)s');"
 """
