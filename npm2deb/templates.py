@@ -320,14 +320,14 @@ LICENSES['ISC'] = """ISC
 
 WATCH = {}
 
-WATCH['github'] = """version=3
+WATCH['github'] = """version=4
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
-WATCH['fakeupstream'] = """version=3
+WATCH['fakeupstream'] = """version=4
 # It is not recommended use fakeupstream. Please investigate more.
 # Origin url: %(url)s
 # Take a look at https://wiki.debian.org/debian/watch/
