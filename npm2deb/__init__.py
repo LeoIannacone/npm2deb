@@ -13,8 +13,8 @@ from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
 VERSION = '0.2.8'
-DEBHELPER = 10
-STANDARDS_VERSION = '4.1.1'
+DEBHELPER = 11
+STANDARDS_VERSION = '4.3.0'
 
 
 class Npm2Deb(object):
