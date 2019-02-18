@@ -3,7 +3,6 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
   * Initial release (Closes: #nnnn)
 
  -- %(debian_author)s  %(date)s
-
 """
 
 description_template = """ Write the short and long descriptions for the Debian package as
@@ -24,9 +23,11 @@ Section: javascript
 Priority: optional
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: %(Uploaders)s
+Testsuite: autopkgtest-pkg-nodejs
 Build-Depends:
  debhelper (>= %(debhelper)s)
  , nodejs (>= 6)
+ , pkg-js-tools
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
@@ -47,15 +48,11 @@ RULES = """#!/usr/bin/make -f
 #export DH_VERBOSE=1
 
 %%:
-	dh $@
+	dh $@ --with nodejs
 
 #override_dh_auto_build:
 
-#override_dh_auto_test:
-
-%(overrides)s
-
-"""
+%(overrides)s"""
 
 COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: %(upstream_name)s
@@ -70,8 +67,7 @@ Files: debian/*
 Copyright: %(debian_date)s, %(debian_author)s
 License: %(debian_license_name)s
 
-%(debian_license)s
-"""
+%(debian_license)s"""
 
 WNPP = """To: submit@bugs.debian.org
 Subject: ITP: %(debian_name)s -- %(description)s
@@ -324,14 +320,14 @@ LICENSES['ISC'] = """ISC
 
 WATCH = {}
 
-WATCH['github'] = """version=3
+WATCH['github'] = """version=4
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
-WATCH['fakeupstream'] = """version=3
+WATCH['fakeupstream'] = """version=4
 # It is not recommended use fakeupstream. Please investigate more.
 # Origin url: %(url)s
 # Take a look at https://wiki.debian.org/debian/watch/
@@ -340,15 +336,4 @@ opts=\\
 dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*=// \\
  https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
-"""
-
-TESTS = {}
-
-TESTS['control'] = """Tests: require
-Depends: %(debian_name)s
-"""
-
-TESTS['require'] = """#!/bin/sh
-set -e
-node -e "require('%(name)s');"
 """

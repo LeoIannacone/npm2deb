@@ -56,10 +56,6 @@ def get_template(filename):
         result = _templates.RULES
     elif filename == 'wnpp':
         result = _templates.WNPP
-    elif filename == 'tests/control':
-        result = _templates.TESTS['control']
-    elif filename == 'tests/require':
-        result = _templates.TESTS['require']
     return result
 
 
@@ -137,7 +133,11 @@ def create_dir(dir):
         raise OSError("Error: directory %s already exists." % oserror.filename)
 
 def parse_name(name):
-    parts = name.partition('@')
+    parts = name.rpartition('@')
+    if parts[0] == '':
+        if parts[1] == '@':     
+            return '@'+parts[2], parts[0]
+        return parts[2], parts[0]
     return parts[0], parts[2]
 
 
