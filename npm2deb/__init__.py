@@ -81,6 +81,7 @@ class Npm2Deb(object):
         self.create_dirs()
         self.create_examples()
         self.create_watch()
+        self.create_upstream_metadata()
         self.create_manpages()
         if not self.noclean:
             self.clean()
@@ -214,6 +215,15 @@ and may not include tests.\n""")
             content = utils.get_watch('fakeupstream') % args
             content = _re.sub('\.\*=@.*/', '.*=', content)
             utils.create_debian_file('watch', content)
+
+    def create_upstream_metadata(self):
+        args = {}
+        args['url'] = self.upstream_repo_url
+        args['module'] = self.name
+        if self.upstream_repo_url.find('github') >= 0:
+            content = utils.get_upstream_metadata('github') % args
+            utils.create_dir("debian/upstream")
+            utils.create_debian_file('upstream/metadata', content)
 
     def create_examples(self):
         if _os.path.isdir('examples'):

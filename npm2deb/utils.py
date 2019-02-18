@@ -68,6 +68,10 @@ def get_watch(which):
         return _templates.WATCH['fakeupstream']
 
 
+def get_upstream_metadata(which):
+    return _templates.METADATA.get(which)
+
+
 def get_license(license):
     result = None
     name = license.lower().replace('-', '')
