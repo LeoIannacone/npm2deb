@@ -56,10 +56,6 @@ def get_template(filename):
         result = _templates.RULES
     elif filename == 'wnpp':
         result = _templates.WNPP
-    elif filename == 'tests/control':
-        result = _templates.TESTS['control']
-    elif filename == 'tests/require':
-        result = _templates.TESTS['require']
     return result
 
 

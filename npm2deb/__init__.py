@@ -13,8 +13,8 @@ from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
 VERSION = '0.2.8'
-DEBHELPER = 10
-STANDARDS_VERSION = '4.1.1'
+DEBHELPER = 11
+STANDARDS_VERSION = '4.3.0'
 
 
 class Npm2Deb(object):
@@ -192,7 +192,7 @@ and may not include tests.\n""")
     def create_watch(self):
         args = {}
         args['debian_name'] = self.debian_name
-        args['dversionmangle'] = 's/\+(debian|dfsg|ds|deb)(\.\d+)?$//'
+        args['dversionmangle'] = 'auto'
         args['url'] = self.upstream_repo_url
         args['module'] = self.name
         try:
@@ -330,10 +330,6 @@ and may not include tests.\n""")
         args = {}
         args['name'] = self.name
         args['debian_name'] = self.debian_name
-        control = utils.get_template('tests/control') % args
-        utils.create_debian_file("tests/control", control)
-        require = utils.get_template("tests/require") % args
-        utils.create_debian_file("tests/require", require)
 
     def create_base_debian(self):
         utils.debug(1, "creating debian files")
