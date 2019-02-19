@@ -327,15 +327,12 @@ filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
-WATCH['fakeupstream'] = """version=4
-# It is not recommended use fakeupstream. Please investigate more.
+WATCH['npmregistry'] = """version=4
+# It is not recommended use npmregistry. Please investigate more.
 # Origin url: %(url)s
 # Take a look at https://wiki.debian.org/debian/watch/
-# See also fakeupstream: http://anonscm.debian.org/viewvc/qa/trunk/cgi-bin/fakeupstream.cgi?view=markup
-opts=\\
-dversionmangle=%(dversionmangle)s,\\
-filenamemangle=s/.*=// \\
- https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
+opts="searchmode=plain,pgpmode=none" \
+ https://registry.npmjs.org/%(module)s https://registry.npmjs.org/%(module)s/-/%(module)s-(\d[\d\.]*)@ARCHIVE_EXT@
 """
 
 METADATA = {}
