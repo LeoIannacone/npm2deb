@@ -337,3 +337,14 @@ dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*=// \\
  https://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 """
+
+METADATA = {}
+
+METADATA['github'] = """---
+Archive: GitHub
+Bug-Database: %(url)s/issues
+Contact: %(url)s/issues
+Name: %(module)s
+Repository: %(url)s.git
+Repository-Browse: %(url)s
+"""
