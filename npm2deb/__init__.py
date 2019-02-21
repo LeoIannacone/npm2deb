@@ -128,7 +128,7 @@ You may want fix first these issues:\n""")
 
         if self.upstream_watch:
             print("""
-*** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
+*** Warning ***\nUsing npmregistry to download npm dist tarballs, because upstream
 git repo is missing tags. Its better to ask upstream to tag their releases
 instead of using npm dist tarballs as dist tarballs may contain pre built files
 and may not include tests.\n""")
@@ -200,7 +200,7 @@ and may not include tests.\n""")
             if self.upstream_repo_url.find('github') >= 0:
                 content = utils.get_watch('github') % args
             else:
-                # if not supported, got to fakeupstream
+                # if not supported, got to npmregistry
                 raise ValueError
 
             utils.create_debian_file('watch', content)
@@ -212,7 +212,7 @@ and may not include tests.\n""")
 
         except ValueError:
             self.upstream_watch = True
-            content = utils.get_watch('fakeupstream') % args
+            content = utils.get_watch('npmregistry') % args
             content = _re.sub('\.\*=@.*/', '.*=', content)
             utils.create_debian_file('watch', content)
 

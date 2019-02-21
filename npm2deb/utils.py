@@ -65,7 +65,7 @@ def get_watch(which):
     elif which == 'bitbucket':
         return _templates.WATCH['bitbucket']
     else:
-        return _templates.WATCH['fakeupstream']
+        return _templates.WATCH['npmregistry']
 
 
 def get_upstream_metadata(which):

@@ -136,20 +136,20 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('watch', '/tags')
         self.assertTrue(line is not None and len(line) > 0)
 
-    def test_watch_fakeupstream(self):
-        # must create a fakeupstream since we do not know about git url
+    def test_watch_npmregistry(self):
+        # must create a npmregistry since we do not know about git url
         n = Npm2Deb('yg-panache')
         n.create_base_debian()
         n.create_watch()
-        line = self._get_debfile_line('watch', '/fakeupstream')
+        line = self._get_debfile_line('watch', '/npmregistry')
         self.assertTrue(line is not None and len(line) > 0)
 
     def test_watch_github_with_no_tags(self):
-        # must fallback on fakeupstream if no tags in github
+        # must fallback on npmregistry if no tags in github
         n = Npm2Deb('security')
         n.create_base_debian()
         n.create_watch()
-        line = self._get_debfile_line('watch', '/fakeupstream')
+        line = self._get_debfile_line('watch', '/npmregistry')
         self.assertTrue(line is not None and len(line) > 0)
 
     def test_repository_defined_as_string(self):
