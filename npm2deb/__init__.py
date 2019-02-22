@@ -82,6 +82,7 @@ class Npm2Deb(object):
         self.create_examples()
         self.create_watch()
         self.create_upstream_metadata()
+        self.create_gbp_conf()
         self.create_manpages()
         if not self.noclean:
             self.clean()
@@ -144,6 +145,7 @@ and may not include tests.\n""")
     def run_buildpackage(self):
         print("\nBuilding the binary package")
         _call('dpkg-source -b .', shell=True)
+        _call('rm -rf .gitignore .git* .travis.yml', shell=True)
         _call('dpkg-buildpackage', shell=True)
         # removing auto generated temporary files
         _call('debian/rules clean', shell=True)
@@ -224,6 +226,10 @@ and may not include tests.\n""")
             content = utils.get_upstream_metadata('github') % args
             utils.create_dir("debian/upstream")
             utils.create_debian_file('upstream/metadata', content)
+
+    def create_gbp_conf(self):
+        content = utils.get_gbp_conf()
+        utils.create_debian_file('gbp.conf', content)
 
     def create_examples(self):
         if _os.path.isdir('examples'):
