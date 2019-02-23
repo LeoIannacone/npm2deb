@@ -72,6 +72,10 @@ def get_upstream_metadata(which):
     return _templates.METADATA.get(which)
 
 
+def get_gbp_conf():
+    return _templates.GBPCONF
+
+
 def get_license(license):
     result = None
     name = license.lower().replace('-', '')

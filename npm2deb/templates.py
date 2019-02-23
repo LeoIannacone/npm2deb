@@ -345,3 +345,8 @@ Name: %(module)s
 Repository: %(url)s.git
 Repository-Browse: %(url)s
 """
+
+GBPCONF = """[DEFAULT]
+pristine-tar = True
+filter = [ '.gitignore', '.travis.yml', '.git*' ]
+"""
