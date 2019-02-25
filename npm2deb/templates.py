@@ -166,7 +166,7 @@ LICENSES['Artistic'] = """Artistic-1.0
  can be found in "/usr/share/common-licenses/Artistic".
 """
 
-LICENSES['BSD-2-clause'] = """BSD-2-clause
+LICENSES['BSD-2-clause'] = """%(name)s
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -189,7 +189,7 @@ LICENSES['BSD-2-clause'] = """BSD-2-clause
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-LICENSES['BSD-3-clause'] = """BSD-3-clause
+LICENSES['BSD-3-clause'] = """%(name)s
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -215,7 +215,7 @@ LICENSES['BSD-3-clause'] = """BSD-3-clause
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-LICENSES['BSD-4-clause'] = """BSD-4-clause
+LICENSES['BSD-4-clause'] = """%(name)s
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
