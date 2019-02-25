@@ -62,6 +62,8 @@ def get_template(filename):
 def get_watch(which):
     if which == 'github':
         return _templates.WATCH['github']
+    elif which == 'gitlab':
+        return _templates.WATCH['gitlab']
     elif which == 'bitbucket':
         return _templates.WATCH['bitbucket']
     else:

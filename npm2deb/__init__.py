@@ -196,11 +196,17 @@ and may not include tests.\n""")
         args = {}
         args['debian_name'] = self.debian_name
         args['dversionmangle'] = 'auto'
-        args['url'] = self.upstream_repo_url
+        args['url'] = _re.sub(r'^git\+','',self.upstream_repo_url)
         args['module'] = self.name
+        args['remodule'] = _re.sub(r'\@',r'\@',self.name)
+        args['modulename'] = _re.sub(r'.*/',r'',self.name)
         try:
             if self.upstream_repo_url.find('github') >= 0:
+                utils.debug(1, 'Found GitHub url');
                 content = utils.get_watch('github') % args
+            elif self.upstream_repo_url.find('gitlab') >= 0:
+                utils.debug(1, 'Found GitLab url');
+                content = utils.get_watch('gitlab') % args
             else:
                 # if not supported, got to npmregistry
                 raise ValueError
@@ -210,6 +216,7 @@ and may not include tests.\n""")
             uscan_info = self.test_uscan()
 
             if uscan_info[0] != 0:
+                utils.debug(1, 'Uscan failed, switching to npmregistry')
                 raise ValueError
 
         except ValueError:
@@ -220,10 +227,14 @@ and may not include tests.\n""")
 
     def create_upstream_metadata(self):
         args = {}
-        args['url'] = self.upstream_repo_url
+        args['url'] = _re.sub(r'^git\+','',self.upstream_repo_url)
         args['module'] = self.name
         if self.upstream_repo_url.find('github') >= 0:
             content = utils.get_upstream_metadata('github') % args
+            utils.create_dir("debian/upstream")
+            utils.create_debian_file('upstream/metadata', content)
+        elif self.upstream_repo_url.find('gitlab') >= 0:
+            content = utils.get_upstream_metadata('gitlab') % args
             utils.create_dir("debian/upstream")
             utils.create_debian_file('upstream/metadata', content)
 

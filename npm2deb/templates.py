@@ -327,6 +327,13 @@ filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
+WATCH['gitlab'] = """version=4
+opts=\\
+dversionmangle=%(dversionmangle)s,\\
+filenamemangle=s/.*\/(\d\S+)\/archive\.tar\.gz/%(debian_name)s-$1\.tar\.gz/g \\
+ %(url)s/tags?sort=updated_desc .*/archive/.*?v?([\d\.]+)\.tar\.gz
+"""
+
 WATCH['npmregistry'] = """version=4
 # It is not recommended use npmregistry. Please investigate more.
 # Origin url: %(url)s
@@ -340,6 +347,15 @@ METADATA = {}
 
 METADATA['github'] = """---
 Archive: GitHub
+Bug-Database: %(url)s/issues
+Contact: %(url)s/issues
+Name: %(module)s
+Repository: %(url)s.git
+Repository-Browse: %(url)s
+"""
+
+METADATA['gitlab'] = """---
+Archive: GitLab
 Bug-Database: %(url)s/issues
 Contact: %(url)s/issues
 Name: %(module)s
