@@ -79,6 +79,8 @@ def get_gbp_conf():
 def get_license(license):
     result = None
     name = license.lower().replace('-', '')
+    args = {}
+    args['name'] = license
     if name.startswith('gpl2'):
         result = _templates.LICENSES['GPL-2']
     elif name.startswith('gpl3'):
@@ -92,11 +94,11 @@ def get_license(license):
     elif name.startswith('expat'):
         result = _templates.LICENSES['Expat']
     elif name.startswith('bsd4'):
-        result = _templates.LICENSES['BSD-4-clause']
+        result = _templates.LICENSES['BSD-4-clause'] % args
     elif name.startswith('bsd2'):
-        result = _templates.LICENSES['BSD-2-clause']
+        result = _templates.LICENSES['BSD-2-clause'] % args
     elif name.startswith('bsd'):
-        result = _templates.LICENSES['BSD-3-clause']
+        result = _templates.LICENSES['BSD-3-clause'] % args
     elif name.startswith('artistic'):
         result = _templates.LICENSES['Artistic']
     elif name.startswith('apache'):
