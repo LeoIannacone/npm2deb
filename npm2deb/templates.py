@@ -331,8 +331,9 @@ WATCH['npmregistry'] = """version=4
 # It is not recommended use npmregistry. Please investigate more.
 # Origin url: %(url)s
 # Take a look at https://wiki.debian.org/debian/watch/
-opts="searchmode=plain,pgpmode=none" \
- https://registry.npmjs.org/%(module)s https://registry.npmjs.org/%(module)s/-/%(module)s-(\d[\d\.]*)@ARCHIVE_EXT@
+opts="searchmode=plain,pgpmode=none" \\
+ https://registry.npmjs.org/%(module)s \\
+ https://registry.npmjs.org/%(remodule)s/-/%(modulename)s-(\d[\d\.]*)@ARCHIVE_EXT@
 """
 
 METADATA = {}
