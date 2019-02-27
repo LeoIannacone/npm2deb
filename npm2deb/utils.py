@@ -60,7 +60,7 @@ def get_template(filename):
 
 
 def get_watch(which):
-    return _templates.WATCH.get(which) or _templates.WATCH.get(npmregistry)
+    return _templates.WATCH.get(which) or _templates.WATCH.get('npmregistry')
 
 
 def get_upstream_metadata(which):
