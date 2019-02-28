@@ -196,7 +196,7 @@ and may not include tests.\n""")
         args = {}
         args['debian_name'] = self.debian_name
         args['dversionmangle'] = 'auto'
-        args['url'] = _re.sub(r'^git\+','',self.upstream_repo_url)
+        args['url'] = self.upstream_repo_url
         args['module'] = self.name
         args['remodule'] = _re.sub(r'\@',r'\@',self.name)
         args['modulename'] = _re.sub(r'.*/',r'',self.name)
@@ -532,10 +532,12 @@ and may not include tests.\n""")
                     if tmp:
                         result = tmp
                 else:
-                    url = _re.sub(r'^git@(.*):', r'http://\1/', url)
-                    url = _re.sub(r'^git://', 'http://', url)
+                    utils.debug(1, ("raw URL: %s" % url) )
+                    url = _re.sub(r'^git.*?@(.*?):', r'https://\1/', url)
+                    url = _re.sub(r'^.*?(?:ssh|git).*?://(?:.*?\@)?', 'https://', url)
                     url = _re.sub(r'\.git$', '', url)
                     result = url
+                    utils.debug(1, ("https URL: %s" % url) )
             else:
                 result = url
         self.upstream_repo_url = result
