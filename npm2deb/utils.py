@@ -60,12 +60,7 @@ def get_template(filename):
 
 
 def get_watch(which):
-    if which == 'github':
-        return _templates.WATCH['github']
-    elif which == 'bitbucket':
-        return _templates.WATCH['bitbucket']
-    else:
-        return _templates.WATCH['npmregistry']
+    return _templates.WATCH.get(which) or _templates.WATCH.get('npmregistry')
 
 
 def get_upstream_metadata(which):

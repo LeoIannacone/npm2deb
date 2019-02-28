@@ -327,18 +327,34 @@ filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
  %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
 """
 
+WATCH['gitlab'] = """version=4
+opts=\\
+dversionmangle=%(dversionmangle)s \\
+ %(url)s/tags?sort=updated_desc .*/archive/.*?v?([\d\.]+)\.tar\.gz
+"""
+
 WATCH['npmregistry'] = """version=4
 # It is not recommended use npmregistry. Please investigate more.
 # Origin url: %(url)s
 # Take a look at https://wiki.debian.org/debian/watch/
-opts="searchmode=plain,pgpmode=none" \
- https://registry.npmjs.org/%(module)s https://registry.npmjs.org/%(module)s/-/%(module)s-(\d[\d\.]*)@ARCHIVE_EXT@
+opts="searchmode=plain,pgpmode=none" \\
+ https://registry.npmjs.org/%(module)s \\
+ https://registry.npmjs.org/%(remodule)s/-/%(modulename)s-(\d[\d\.]*)@ARCHIVE_EXT@
 """
 
 METADATA = {}
 
 METADATA['github'] = """---
 Archive: GitHub
+Bug-Database: %(url)s/issues
+Contact: %(url)s/issues
+Name: %(module)s
+Repository: %(url)s.git
+Repository-Browse: %(url)s
+"""
+
+METADATA['gitlab'] = """---
+Archive: GitLab
 Bug-Database: %(url)s/issues
 Contact: %(url)s/issues
 Name: %(module)s
