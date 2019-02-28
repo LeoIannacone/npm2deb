@@ -329,8 +329,7 @@ filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
 
 WATCH['gitlab'] = """version=4
 opts=\\
-dversionmangle=%(dversionmangle)s,\\
-filenamemangle=s/.*\/(\d\S+)\/archive\.tar\.gz/%(debian_name)s-$1\.tar\.gz/g \\
+dversionmangle=%(dversionmangle)s \\
  %(url)s/tags?sort=updated_desc .*/archive/.*?v?([\d\.]+)\.tar\.gz
 """
 
