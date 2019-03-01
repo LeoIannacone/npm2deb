@@ -1,7 +1,6 @@
 from json import loads as _parseJSON
 from re import findall as _findall
 from urllib.request import urlopen as _urlopen
-from subprocess import getstatusoutput as _getstatusoutput
 from fnmatch import fnmatch as _fnmatch
 
 import apt_pkg

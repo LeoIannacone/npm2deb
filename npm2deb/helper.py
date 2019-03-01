@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from json import loads as _parseJSON
-from xml.dom import minidom as _minidom
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
 import re as _re
@@ -63,7 +62,7 @@ def search_for_bug(module):
         for line in lines:
             try:
                 bug = {}
-                match = _re.match('\((.*) - #(\d+).*\) (.*) (.*)$', line)
+                match = _re.match('\\((.*) - #(\\d+).*\\) (.*) (.*)$', line)
                 bug['num'] = match.group(2)
                 bug['type'] = match.group(1)
                 bug['package'] = match.group(4)
@@ -129,7 +128,7 @@ def search_for_dependencies(module, recursive=False, force=False,
         print_formatted_dependency(u"%s %s (%s)" % (dep_prefix, dep,
                                                     result[dep]['version']),
                                    result[dep]['debian'], prefix)
-        if recursive and not dep in expanded_dependencies:
+        if recursive and dep not in expanded_dependencies:
             expanded_dependencies.append(dep)
             if (result[dep]['debian'] and force) or \
                     result[dep]['debian'] is None:
