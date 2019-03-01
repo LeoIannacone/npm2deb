@@ -1,3 +1,17 @@
+## 0.3.0 (2019-03-01)
+ * [fix] sanitize url from ssh and git prefixes
+ * [new] Add support for gitlab repositry
+ * [fix] Use upstream name for BSD licenses
+ * [new] Replace fakeupstream by npmregistry (#136)
+ * [new] Generate upstream/metadata
+ * [fix] Use "auto" in debian/watch
+ * [new] Switch tests to pkg-js-tools
+ * [fix] Update dh version to 11 and standards-version to 4.3.0
+ * [fix] fix support scoped package names handling
+ * [fix] trailing whitespace in debian templates
+ * [fix] query madison API directly to find source package (Closes: #909753)
+ * [fix] Use `skimdb.npmjs.com` to retrieve reverse dependencies
+
 ## 0.2.8 (2018-08-15)
  * [fix] Exclude unwanted files from debian/install
  * [fix] Switch to releases page in watch instead of now broken tags page
