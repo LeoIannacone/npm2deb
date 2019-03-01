@@ -184,7 +184,7 @@ and may not include tests.\n""")
                     _os.remove(filename)
 
     def create_manpages(self):
-        if not 'man' in self.json:
+        if 'man' not in self.json:
             return
         mans = self.json['man']
         if not isinstance(mans, (list, tuple)):
@@ -198,14 +198,14 @@ and may not include tests.\n""")
         args['dversionmangle'] = 'auto'
         args['url'] = self.upstream_repo_url
         args['module'] = self.name
-        args['remodule'] = _re.sub(r'\@',r'\@',self.name)
-        args['modulename'] = _re.sub(r'.*/',r'',self.name)
+        args['remodule'] = _re.sub(r'\@', r'\@', self.name)
+        args['modulename'] = _re.sub(r'.*/', r'', self.name)
         try:
             if self.upstream_repo_url.find('github') >= 0:
-                utils.debug(1, 'Found GitHub url');
+                utils.debug(1, 'Found GitHub url')
                 content = utils.get_watch('github') % args
             elif self.upstream_repo_url.find('gitlab') >= 0:
-                utils.debug(1, 'Found GitLab url');
+                utils.debug(1, 'Found GitLab url')
                 content = utils.get_watch('gitlab') % args
             else:
                 # if not supported, got to npmregistry
@@ -222,12 +222,11 @@ and may not include tests.\n""")
         except ValueError:
             self.upstream_watch = True
             content = utils.get_watch('npmregistry') % args
-            content = _re.sub('\.\*=@.*/', '.*=', content)
             utils.create_debian_file('watch', content)
 
     def create_upstream_metadata(self):
         args = {}
-        args['url'] = _re.sub(r'^git\+','',self.upstream_repo_url)
+        args['url'] = _re.sub(r'^git\+', '', self.upstream_repo_url)
         args['module'] = self.name
         if self.upstream_repo_url.find('github') >= 0:
             content = utils.get_upstream_metadata('github') % args
@@ -368,7 +367,7 @@ and may not include tests.\n""")
     def read_package_info(self):
         data = None
         name_is = None
-        if _re.match("^(http:\/\/|https:\/\/)", self.name):
+        if _re.match("^(http://|https://)", self.name):
             utils.debug(1, "reading json - opening url %s" % self.name)
             data = _urlopen(self.name).read().decode('utf-8')
             name_is = 'url'
@@ -532,12 +531,12 @@ and may not include tests.\n""")
                     if tmp:
                         result = tmp
                 else:
-                    utils.debug(1, ("raw URL: %s" % url) )
+                    utils.debug(1, ("raw URL: %s" % url))
                     url = _re.sub(r'^git.*?@(.*?):', r'https://\1/', url)
                     url = _re.sub(r'^.*?(?:ssh|git).*?://(?:.*?\@)?', 'https://', url)
                     url = _re.sub(r'\.git$', '', url)
                     result = url
-                    utils.debug(1, ("https URL: %s" % url) )
+                    utils.debug(1, ("https URL: %s" % url))
             else:
                 result = url
         self.upstream_repo_url = result
