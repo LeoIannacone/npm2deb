@@ -14,8 +14,6 @@ description_template = """ Write the short and long descriptions for the Debian 
  Be aware that most upstream package descriptions are not written to
  conform with Debian package guidelines. You need to explain the role
  of this package for a Debian audience.
- .
- Node.js is an event-based server-side JavaScript engine.
 """
 
 CONTROL = """Source: %(Source)s
