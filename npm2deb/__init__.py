@@ -428,7 +428,7 @@ and may not include tests.\n""")
         utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
         info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
-            exception = "Error downloading package %s@s\n" % (self.name, self.version)
+            exception = "Error downloading package %s@%s\n" % (self.name, self.version)
             exception += info[1]
             raise ValueError(exception)
         tarball_file = info[1].split('\n')[-1]
