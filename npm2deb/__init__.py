@@ -352,7 +352,7 @@ and may not include tests.\n""")
         _os.system('chmod +x debian/rules')
 
     def create_tests(self):
-        utils.create_dir("debian/tests")
+        utils.create_dir("debian/tests/pkg-js")
         args = {}
         args['name'] = self.name
         args['debian_name'] = self.debian_name
