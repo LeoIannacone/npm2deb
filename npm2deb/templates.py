@@ -25,7 +25,7 @@ Testsuite: autopkgtest-pkg-nodejs
 Build-Depends:
  debhelper (>= %(debhelper)s)
  , nodejs (>= 6)
- , pkg-js-tools
+ , pkg-js-tools (>= 0.8.6)
 Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
