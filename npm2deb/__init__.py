@@ -362,7 +362,6 @@ and may not include tests.\n""")
         utils.create_dir("debian")
         utils.create_dir("debian/source")
         utils.create_debian_file("source/format", "3.0 (quilt)\n")
-        utils.create_debian_file("compat", self.debian_debhelper)
 
     def read_package_info(self):
         data = None

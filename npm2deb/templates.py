@@ -23,7 +23,7 @@ Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.deb
 Uploaders: %(Uploaders)s
 Testsuite: autopkgtest-pkg-nodejs
 Build-Depends:
- debhelper (>= %(debhelper)s)
+ debhelper-compat (= %(debhelper)s)
  , nodejs (>= 6)
  , pkg-js-tools
 Standards-Version: %(Standards-Version)s
