@@ -89,10 +89,6 @@ class debian(unittest.TestCase):
         if os.path.isdir('debian'):
             rmtree('debian')
 
-    def _get_compat(self):
-        with open('debian/compat', 'r') as compat_fd:
-            return compat_fd.read().strip('\n')
-
     def _get_file_line(self, filename, what):
         result = None
         with open(filename, 'r') as file_fd:
@@ -109,18 +105,16 @@ class debian(unittest.TestCase):
         n = Npm2Deb('parse-url')
         n.create_base_debian()
         n.create_control()
-        self.assertEqual(self._get_compat(), str(DEBHELPER))
         self.assertEqual(self._get_debfile_line("control",
-                                                " debhelper ("), ' debhelper (>= %s)' % DEBHELPER)
+                                                " debhelper-compat ("), ' debhelper-compat (= %s)' % DEBHELPER)
 
     def test_debhelper_as_argument(self):
         MY_DEBHELPER = DEBHELPER + 1
         n = Npm2Deb('parse-url', {'debhelper': MY_DEBHELPER})
         n.create_base_debian()
         n.create_control()
-        self.assertEqual(self._get_compat(), str(MY_DEBHELPER))
-        self.assertEqual(self._get_debfile_line("control", " debhelper ("),
-                         ' debhelper (>= %s)' % MY_DEBHELPER)
+        self.assertEqual(self._get_debfile_line("control", " debhelper-compat ("),
+                         ' debhelper-compat (= %s)' % MY_DEBHELPER)
 
     def test_manpages(self):
         n = Npm2Deb('jade')
