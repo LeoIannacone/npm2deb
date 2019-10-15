@@ -76,7 +76,6 @@ class Npm2Deb(object):
         self.create_copyright()
         self.create_control()
         self.create_docs()
-        self.create_install()
         self.create_links()
         self.create_dirs()
         self.create_examples()
@@ -261,17 +260,6 @@ and may not include tests.\n""")
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
-
-    def create_install(self):
-        content = ''
-        libs = _os.listdir()
-        # remove debian directory
-        libs.remove('debian')
-
-        for filename in libs:
-            if not utils.is_ignored(filename):
-                content += "%s %s/\n" % (filename, self.debian_dest)
-        utils.create_debian_file('install', content)
 
     def create_docs(self):
         docs = []
