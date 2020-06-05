@@ -100,6 +100,9 @@ class Npm2Deb(object):
 
             new_dir = '%s-%s' % (self.debian_name, self.upstream_version)
             utils.change_dir('../%s' % new_dir)
+            # copy over non-duplicated changelog
+            _os.rename('../%s/debian/changelog' % self.debian_name, 'debian/changelog')
+            _rmtree('../%s' % self.debian_name)
             self.run_buildpackage()
             self.edit_changelog()
 
