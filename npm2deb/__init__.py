@@ -38,6 +38,7 @@ class Npm2Deb(object):
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         self.upstream_watch = False
+        self.noregistry = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -53,6 +54,9 @@ class Npm2Deb(object):
                 self.debian_debhelper = args['debhelper']
             if 'noclean' in args:
                 self.noclean = args['noclean']
+            if 'noregistry' in args:
+                self.noregistry = args['noregistry']
+                self.noclean = True #I don't know if this is needed, doing it for safety
 
         self.read_package_info()
         self.debian_name = 'node-%s' % utils.debianize_name(self.name)

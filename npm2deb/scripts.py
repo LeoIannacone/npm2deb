@@ -20,6 +20,12 @@ def main(argv=None):
     parser.add_argument(
         '-v', '--version', action='version', version='%(prog)s ' + _.VERSION)
 
+    parser.add_argument(
+                        '--noRegistry', 
+                        action="store_true", 
+                        default=False, 
+                        help='Use a local tarball in NPM format instead of downloading.  Implies -n')
+
     subparsers = parser.add_subparsers(title='commands')
 
     parser_create = subparsers.add_parser(
