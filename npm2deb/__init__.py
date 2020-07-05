@@ -54,8 +54,8 @@ class Npm2Deb(object):
                 self.debian_debhelper = args['debhelper']
             if 'noclean' in args:
                 self.noclean = args['noclean']
-            if 'noregistry' in args:
-                self.noregistry = args['noregistry']
+            if 'no_registry' in args:
+                self.noregistry = args['no_registry']
                 self.noclean = True #I don't know if this is needed, doing it for safety
 
         self.read_package_info()
@@ -418,7 +418,7 @@ and may not include tests.\n""")
         self._get_json_version()
         self._get_json_license()
 
-    def download(self):
+    def download_tarball(self):
         utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
         info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
@@ -426,6 +426,16 @@ and may not include tests.\n""")
             exception += info[1]
             raise ValueError(exception)
         tarball_file = info[1].split('\n')[-1]
+        extract_tarball(tarball_file)
+
+    def given_tarball(self)
+        utils.debug(1, "opening %s tarball" % (self.name))
+        tarball_file = self.name;
+        extract_tarball(tarball_file)
+
+
+    def extract_tarball(self, tarball_file):
+        utils.debug(2,"extracting tarball....")
         tarball = tarfile.open(tarball_file)
         # get the root directory name
         root_dir = tarball.getnames()[0]
@@ -438,7 +448,8 @@ and may not include tests.\n""")
         tarball.close()
 
         # remove tarball file
-        _os.remove(tarball_file)
+        if not self.noclean
+            _os.remove(tarball_file)
 
         if root_dir is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (root_dir, self.debian_name))
