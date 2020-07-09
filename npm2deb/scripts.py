@@ -24,7 +24,7 @@ def main(argv=None):
                         '--no-registry', 
                         action="store_true", 
                         default=False, 
-                        help='Use a local tarball downloading one with NPM.')
+                        help='Use a local tarball instead of downloading one with NPM.')
 
     subparsers = parser.add_subparsers(title='commands')
 
