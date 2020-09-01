@@ -71,7 +71,10 @@ class Npm2Deb(object):
         self.date = _datetime.now(_tz.tzlocal())
 
     def start(self):
-        self.download()
+        if self.noregistry:
+            self.given_tarball()
+        else:
+            self.download_tarball()
         utils.change_dir(self.debian_name)
         self.create_base_debian()
         self.create_tests()
@@ -428,7 +431,7 @@ and may not include tests.\n""")
         tarball_file = info[1].split('\n')[-1]
         extract_tarball(tarball_file)
 
-    def given_tarball(self)
+    def given_tarball(self):
         utils.debug(1, "opening %s tarball" % (self.name))
         tarball_file = self.name;
         extract_tarball(tarball_file)
@@ -448,7 +451,7 @@ and may not include tests.\n""")
         tarball.close()
 
         # remove tarball file
-        if not self.noclean
+        if not self.noclean:
             _os.remove(tarball_file)
 
         if root_dir is not self.debian_name:

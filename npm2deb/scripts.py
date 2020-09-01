@@ -20,12 +20,6 @@ def main(argv=None):
     parser.add_argument(
         '-v', '--version', action='version', version='%(prog)s ' + _.VERSION)
 
-    parser.add_argument(
-                        '--no-registry', 
-                        action="store_true", 
-                        default=False, 
-                        help='Use a local tarball instead of downloading one with NPM.')
-
     subparsers = parser.add_subparsers(title='commands')
 
     parser_create = subparsers.add_parser(
@@ -62,6 +56,11 @@ def main(argv=None):
         help='license used for debian files [default: the same of upstream]')
     parser_create.add_argument(
         'node_module', help='node module available via npm')
+    parser_create.add_argument(
+                        '--no-registry', 
+                        action="store_true", 
+                        default=False, 
+                        help='Use a local tarball instead of downloading one with NPM.')
     parser_create.set_defaults(func=create)
 
     parser_view = subparsers.add_parser(
