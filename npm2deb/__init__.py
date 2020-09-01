@@ -23,8 +23,10 @@ class Npm2Deb(object):
             raise ValueError('You must specify a module_name')
         if module_name:
             self.name, self.version = utils.parse_name(module_name)
+            self.module_name = module_name
         elif 'node_module' in args:
             self.name, self.version = utils.parse_name(args['node_module'])
+            self.module_name = args['node_module']
         self.json = None
         self.args = args
         self.homepage = None
@@ -229,6 +231,8 @@ and may not include tests.\n""")
                 raise ValueError
 
         except ValueError:
+            if self.noregistry:
+                utils.debug(0, 'Please provide an upstream github/gitlab URL for debian/watch')
             self.upstream_watch = True
             content = utils.get_watch('npmregistry') % args
             utils.create_debian_file('watch', content)
@@ -369,6 +373,19 @@ and may not include tests.\n""")
             data = _urlopen(self.name).read().decode('utf-8')
             name_is = 'url'
 
+        elif _os.path.isfile(self.name) and tarfile.is_tarfile(self.name):
+            utils.debug(1, "reading json - opening tarball %s" % self.name)
+            pkgInfo = None
+            with tarfile.open(self.name) as tarball:
+                for info in tarball.getmembers():
+                    if 'package.json' in info.name:
+                        pkgInfo = info
+                        break
+                if pkgInfo is None:
+                    raise ValueError("package.json file not found in tarball")
+                data = tarball.extractfile(pkgInfo).read()
+            name_is = 'tarfile'
+            
         elif _os.path.isfile(self.name):
             utils.debug(1, "reading json - opening file %s" % self.name)
             with open(self.name, 'r') as fd:
@@ -429,12 +446,12 @@ and may not include tests.\n""")
             exception += info[1]
             raise ValueError(exception)
         tarball_file = info[1].split('\n')[-1]
-        extract_tarball(tarball_file)
+        self.extract_tarball(tarball_file)
 
     def given_tarball(self):
-        utils.debug(1, "opening %s tarball" % (self.name))
-        tarball_file = self.name;
-        extract_tarball(tarball_file)
+        utils.debug(1, "opening %s tarball" % (self.module_name))
+        tarball_file = "../" + self.module_name
+        self.extract_tarball(tarball_file)
 
 
     def extract_tarball(self, tarball_file):
@@ -458,6 +475,7 @@ and may not include tests.\n""")
             utils.debug(2, "renaming %s to %s" % (root_dir, self.debian_name))
             # rename extracted directory
             _os.rename(root_dir, self.debian_name)
+        utils.debug(3, "tarball extracted")
 
     def get_ITP(self):
         args = {}
