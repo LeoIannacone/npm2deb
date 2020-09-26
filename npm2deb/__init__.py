@@ -552,7 +552,7 @@ and may not include tests.\n""")
             for dep in dependencies:
                 name = mapper.get_debian_package(dep)['name']
                 if not name:
-                    name = 'node-%s' % dep
+                    name = 'node-%s' % utils.debianize_name(dep)
                     mapper.append_warning(
                         'error', dep, 'dependency %s '
                         'not in debian' % (name))
