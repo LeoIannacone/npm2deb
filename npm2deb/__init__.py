@@ -114,6 +114,7 @@ class Npm2Deb(object):
             _rmtree('../%s' % self.debian_name)
             self.run_buildpackage()
             self.edit_changelog()
+            self.create_git_repository()
 
             debian_path = "%s/%s/debian" % (self.name, new_dir)
             print('\nRemember, your new source directory is %s/%s' %
@@ -615,3 +616,24 @@ and may not include tests.\n""")
         if result == 'undefined':
             result = None
         return result
+
+    def create_git_repository(self):
+        if _os.system('command -v gbp') == 0:
+            dsc_name = None
+            _os.chdir('..')
+            for file in _os.listdir(_os.getcwd()):
+                if file.endswith('.dsc'):
+                    dsc_name = file
+                    break
+            if dsc_name is None:
+                print('No dsc file found! Aborting creating git repository')
+                return
+            if self.debian_name in _os.listdir(_os.getcwd()):
+                _rmtree(self.debian_name)
+            repo_create_status = _call('gbp import-dsc --pristine-tar %s' % dsc_name, shell=True)
+            if repo_create_status == 0:
+                _rmtree('{name}-{version}'.format(name=self.debian_name, version=self.upstream_version))
+            else:
+                print('gbp import-dsc exited with status %s' % repo_create_status)
+        else:
+            print('gbp not found, please: sudo apt-get install git-buildpackage')
