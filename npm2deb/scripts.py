@@ -57,7 +57,7 @@ def main(argv=None):
     parser_create.add_argument(
         'node_module', help='node module available via npm')
     parser_create.add_argument(
-                        '--no-registry', 
+                        '--from-tarball', 
                         action="store_true", 
                         default=False, 
                         help='Use a local tarball instead of downloading one with NPM.')

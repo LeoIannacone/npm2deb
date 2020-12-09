@@ -40,7 +40,7 @@ class Npm2Deb(object):
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         self.upstream_watch = False
-        self.noregistry = False
+        self.from_tarball = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -56,8 +56,8 @@ class Npm2Deb(object):
                 self.debian_debhelper = args['debhelper']
             if 'noclean' in args:
                 self.noclean = args['noclean']
-            if 'no_registry' in args:
-                self.noregistry = args['no_registry']
+            if 'from_tarball' in args:
+                self.from_tarball = args['from_tarball']
                 self.noclean = True #I don't know if this is needed, doing it for safety
 
         self.read_package_info()
@@ -73,7 +73,7 @@ class Npm2Deb(object):
         self.date = _datetime.now(_tz.tzlocal())
 
     def start(self):
-        if self.noregistry:
+        if self.from_tarball:
             self.given_tarball()
         else:
             self.download_tarball()
@@ -232,7 +232,7 @@ and may not include tests.\n""")
                 raise ValueError
 
         except ValueError:
-            if self.noregistry:
+            if self.from_tarball:
                 utils.debug(0, 'Please provide an upstream github/gitlab URL for debian/watch')
             self.upstream_watch = True
             content = utils.get_watch('npmregistry') % args
