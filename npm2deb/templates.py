@@ -321,8 +321,8 @@ WATCH = {}
 WATCH['github'] = """version=4
 opts=\\
 dversionmangle=%(dversionmangle)s,\\
-filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
- %(url)s/releases .*/archive/v?([\d\.]+).tar.gz
+filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/%(modulename)s-$1\.tar\.gz/ \\
+ %(url)s/tags .*/v?(\d\S+)\.tar\.gz
 """
 
 WATCH['gitlab'] = """version=4
