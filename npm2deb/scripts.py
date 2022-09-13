@@ -147,6 +147,11 @@ def main(argv=None):
         'name', nargs='?', help='the license name to show')
     parser_license.set_defaults(func=print_license)
 
+    parser_senditpmail = subparsers.add_parser('senditpmail', help="send itp mail from template")
+    parser_senditpmail.add_argument(
+        'file', help='pass file location to send mail from')
+    parser_senditpmail.set_defaults(func=send_itp)
+
     if len(argv) == 1:
         parser.error("Please specify an option.")
     else:
@@ -318,6 +323,18 @@ def _show_mapper_warnings():
         print("Warnings occurred:")
         mapper.show_warnings()
         print("")
+
+
+def send_itp(args):
+    try:
+        send_to = 'submit@bugs.debian.org'
+        sub = '\"ITP: ' + (args.file.replace('_itp.mail', ''))[args.file.rfind('node-'):] + ' -- FIX_ME write the Debian package description\"'
+        file = open(args.file, 'r').read()
+        mail_body = '\"'+'\n'.join(file.split('\n')[3:])+'\"'
+        open_mail = 'echo '+str(mail_body)+' | mail -s '+str(sub)+' '+str(send_to)
+        _os.system(open_mail)
+    except:
+        print('ITP file not found!')
 
 
 if __name__ == '__main__':
