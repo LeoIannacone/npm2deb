@@ -107,6 +107,9 @@ class Npm2Deb(object):
             self.edit_changelog()
             self.create_git_repository()
 
+            if not _os.path.exists(_os.path.join(saved_path, self.name, new_dir)):
+                new_dir = self.debian_name
+
             debian_path = "%s/%s/debian" % (self.name, new_dir)
             print('\nRemember, your new source directory is %s/%s' %
                   (self.name, new_dir))
