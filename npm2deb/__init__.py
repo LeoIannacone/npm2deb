@@ -23,8 +23,10 @@ class Npm2Deb(object):
             raise ValueError('You must specify a module_name')
         if module_name:
             self.name, self.version = utils.parse_name(module_name)
+            self.module_name = module_name
         elif 'node_module' in args:
             self.name, self.version = utils.parse_name(args['node_module'])
+            self.module_name = args['node_module']
         self.json = None
         self.args = args
         self.homepage = None
@@ -38,6 +40,7 @@ class Npm2Deb(object):
         self.debian_debhelper = DEBHELPER
         self.noclean = False
         self.upstream_watch = False
+        self.from_tarball = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -53,6 +56,9 @@ class Npm2Deb(object):
                 self.debian_debhelper = args['debhelper']
             if 'noclean' in args:
                 self.noclean = args['noclean']
+            if 'from_tarball' in args:
+                self.from_tarball = args['from_tarball']
+                self.noclean = True #I don't know if this is needed, doing it for safety
 
         self.read_package_info()
         self.debian_name = 'node-%s' % utils.debianize_name(self.name)
@@ -67,7 +73,10 @@ class Npm2Deb(object):
         self.date = _datetime.now(_tz.tzlocal())
 
     def start(self):
-        self.download()
+        if self.from_tarball:
+            self.given_tarball()
+        else:
+            self.download_tarball()
         utils.change_dir(self.debian_name)
         self.create_base_debian()
         self.create_tests()
@@ -226,6 +235,8 @@ and may not include tests.\n""")
                 raise ValueError
 
         except ValueError:
+            if self.from_tarball:
+                utils.debug(0, 'Please provide an upstream github/gitlab URL for debian/watch')
             self.upstream_watch = True
             content = utils.get_watch('npmregistry') % args
             utils.create_debian_file('watch', content)
@@ -366,6 +377,19 @@ and may not include tests.\n""")
             data = _urlopen(self.name).read().decode('utf-8')
             name_is = 'url'
 
+        elif _os.path.isfile(self.name) and tarfile.is_tarfile(self.name):
+            utils.debug(1, "reading json - opening tarball %s" % self.name)
+            pkgInfo = None
+            with tarfile.open(self.name) as tarball:
+                for info in tarball.getmembers():
+                    if 'package.json' in info.name:
+                        pkgInfo = info
+                        break
+                if pkgInfo is None:
+                    raise ValueError("package.json file not found in tarball")
+                data = tarball.extractfile(pkgInfo).read()
+            name_is = 'tarfile'
+            
         elif _os.path.isfile(self.name):
             utils.debug(1, "reading json - opening file %s" % self.name)
             with open(self.name, 'r') as fd:
@@ -418,7 +442,7 @@ and may not include tests.\n""")
         self._get_json_version()
         self._get_json_license()
 
-    def download(self):
+    def download_tarball(self):
         utils.debug(1, "downloading %s@%s tarball from npm registry" % (self.name, self.version))
         info = _getstatusoutput('npm pack "%s@%s"' % (self.name, self.version))
         if info[0] is not 0:
@@ -426,6 +450,16 @@ and may not include tests.\n""")
             exception += info[1]
             raise ValueError(exception)
         tarball_file = info[1].split('\n')[-1]
+        self.extract_tarball(tarball_file)
+
+    def given_tarball(self):
+        utils.debug(1, "opening %s tarball" % (self.module_name))
+        tarball_file = "../" + self.module_name
+        self.extract_tarball(tarball_file)
+
+
+    def extract_tarball(self, tarball_file):
+        utils.debug(2,"extracting tarball....")
         tarball = tarfile.open(tarball_file)
         # get the root directory name
         root_dir = tarball.getnames()[0]
@@ -438,12 +472,14 @@ and may not include tests.\n""")
         tarball.close()
 
         # remove tarball file
-        _os.remove(tarball_file)
+        if not self.noclean:
+            _os.remove(tarball_file)
 
         if root_dir is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (root_dir, self.debian_name))
             # rename extracted directory
             _os.rename(root_dir, self.debian_name)
+        utils.debug(3, "tarball extracted")
 
     def get_ITP(self):
         args = {}

@@ -56,6 +56,11 @@ def main(argv=None):
         help='license used for debian files [default: the same of upstream]')
     parser_create.add_argument(
         'node_module', help='node module available via npm')
+    parser_create.add_argument(
+                        '--from-tarball', 
+                        action="store_true", 
+                        default=False, 
+                        help='Use a local tarball instead of downloading one with NPM.')
     parser_create.set_defaults(func=create)
 
     parser_view = subparsers.add_parser(
